@@ -1,6 +1,6 @@
 export const primaryNavigation = [
   { label: "Explore the Map", href: "/explore", icon: "map" },
-  { label: "Curated Itineraries", href: "/itineraries", icon: "route" },
+  { label: "Curated Itineraries", href: "/itineraries", icon: "list" },
   { label: "Heritage Stories", href: "/heritage", icon: "landmark" },
   { label: "Saved Places", href: "/saved", icon: "bookmark" },
 ];
