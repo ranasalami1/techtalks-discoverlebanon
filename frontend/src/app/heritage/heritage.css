@@ -1,0 +1,742 @@
+* {
+  box-sizing: border-box;
+}
+
+body:has(.heritage-page) > .navbar {
+  display: none !important;
+}
+
+body:has(.heritage-page) {
+  margin: 0;
+  background: #f7f5f0;
+}
+
+.heritage-page {
+  --sidebar-width: 275px;
+  --cream: #f7f5f0;
+  --paper: #fbfaf7;
+  --border: #e5e1d8;
+  --text: #171717;
+  --muted: #706e69;
+  --gold: #b28d4f;
+  --olive: #657047;
+
+  width: 100%;
+  min-height: 100vh;
+
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+
+  background: var(--cream);
+  color: var(--text);
+}
+
+/* =========================
+   LEFT SIDEBAR
+========================= */
+
+.heritage-sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+
+  position: sticky;
+  top: 0;
+  align-self: start;
+
+  background: #fbfaf7;
+  border-right: 1px solid #e5e1d8;
+
+  padding: 28px 28px 0;
+
+  overflow: hidden;
+
+  z-index: 100;
+}
+
+.heritage-brand {
+  margin-bottom: 28px;
+}
+
+.brand-arabic {
+  color: var(--gold);
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 31px;
+  line-height: 1;
+
+  margin-bottom: 4px;
+}
+
+.brand-name {
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 21px;
+  line-height: 1.05;
+
+  margin-bottom: 4px;
+}
+
+.heritage-brand p {
+  margin: 0;
+
+  color: #444;
+
+  font-size: 11px;
+}
+
+.heritage-side-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.heritage-side-nav a {
+  min-height: 49px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 0 12px;
+
+  color: #181818;
+
+  text-decoration: none;
+
+  border-radius: 7px;
+
+  font-size: 14px;
+
+  position: relative;
+}
+
+.heritage-side-nav a:hover {
+  background: #f0ede7;
+}
+
+.side-icon {
+  width: 24px;
+
+  font-size: 22px;
+
+  text-align: center;
+}
+
+.heritage-side-nav .side-active {
+  background: #ebe9e4;
+}
+
+.side-active i {
+  position: absolute;
+
+  right: 14px;
+
+  width: 27px;
+  height: 2px;
+
+  background: var(--gold);
+}
+
+.side-divider {
+  height: 1px;
+
+  margin: 17px 0;
+
+  background: #ddd9d0;
+}
+
+/* BOTTOM SIDEBAR */
+
+.heritage-sidebar-bottom {
+  height: 330px;
+
+  position: relative;
+
+  margin-top: 15px;
+
+  overflow: hidden;
+}
+
+.heritage-sidebar-bottom > p {
+  position: absolute;
+
+  left: 22px;
+  top: 10px;
+
+  z-index: 3;
+
+  margin: 0;
+
+  color: #302d27;
+
+  font-family:
+    "Snell Roundhand",
+    "Brush Script MT",
+    cursive;
+
+  font-size: 27px;
+  line-height: 1.05;
+
+  font-style: italic;
+
+  transform: rotate(-7deg);
+}
+
+.sidebar-image {
+  position: absolute;
+
+  width: 320px;
+  height: 250px;
+
+  left: 50%;
+  top: 75px;
+
+  transform: translateX(-50%);
+
+  background-image: url("/images/heritage-sidebar-art.jpg") !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  z-index: 1;
+}
+
+.sidebar-small-words {
+  position: absolute;
+
+  right: 8px;
+  bottom: 18px;
+
+  z-index: 3;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  font-size: 8px;
+  letter-spacing: 2.5px;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.heritage-main {
+  min-width: 0;
+}
+
+/* =========================
+   TOP NAVBAR
+========================= */
+
+.heritage-topbar {
+  height: 66px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  padding: 0 48px;
+
+  background: #fbfaf7;
+
+  border-bottom: 1px solid #eeeae2;
+}
+
+.heritage-topbar nav {
+  display: flex;
+  align-items: center;
+
+  gap: 31px;
+}
+
+.heritage-topbar a {
+  color: #111;
+
+  text-decoration: none;
+
+  font-size: 11px;
+
+  white-space: nowrap;
+}
+
+.heritage-topbar .top-active {
+  position: relative;
+}
+
+.heritage-topbar .top-active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: -13px;
+
+  height: 2px;
+
+  background: var(--gold);
+}
+
+.top-search {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.top-search span {
+  font-size: 21px;
+}
+
+.top-divider {
+  width: 1px;
+  height: 22px;
+
+  background: #b28d4f;
+}
+
+.heritage-topbar button {
+  border: 0;
+
+  background: transparent;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.heritage-hero {
+  width: 100%;
+  height: 195px;
+  position: relative;
+  overflow: hidden;
+
+  background-image: url("/images/heritage-hero.jpg") !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.heritage-hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(247,245,240,0.36),
+      transparent 65%
+    );
+}
+
+.heritage-hero-content {
+  position: relative;
+
+  z-index: 2;
+
+  padding: 30px 34px;
+}
+
+.heritage-label {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #3f3b35;
+
+  font-size: 8px;
+  font-weight: 400;
+
+  letter-spacing: 6px;
+}
+
+.heritage-hero-content h1 {
+  margin: 0;
+
+  color: #171513;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 46px;
+  font-weight: 400;
+
+  line-height: 0.95;
+
+  letter-spacing: -1px;
+}
+
+.heritage-hero-content p {
+  margin: 0;
+
+  color: #4e4942;
+
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.heritage-script {
+  position: absolute;
+
+  top: 25px;
+  right: 75px;
+
+  z-index: 3;
+
+  color: #3a332a;
+
+  font-family:
+    "Snell Roundhand",
+    "Brush Script MT",
+    cursive;
+
+  font-size: 22px;
+  line-height: 1.05;
+
+  font-style: italic;
+
+  transform: rotate(-7deg);
+
+  text-align: center;
+}
+
+.heritage-script span {
+  display: block;
+
+  width: 32px;
+  height: 2px;
+
+  margin: 9px auto 0;
+
+  background: #b28d4f;
+}
+/* =========================
+   CONTENT
+========================= */
+
+.heritage-content {
+  padding: 8px 21px 10px;
+}
+
+/* =========================
+   FILTER BUTTONS
+========================= */
+
+.heritage-filters {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 10px;
+
+  overflow-x: auto;
+}
+
+.heritage-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.heritage-filters button {
+  min-height: 36px;
+
+  padding: 0 16px;
+
+  border: 0;
+  border-radius: 18px;
+
+  background: #efede8;
+
+  color: #393631;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.heritage-filters .filter-active {
+  background: var(--olive);
+
+  color: white;
+}
+
+/* =========================
+   STORY GRID
+========================= */
+
+.heritage-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+/* CARD */
+
+.heritage-card {
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 1px solid #e4e0d7;
+  border-radius: 7px;
+
+  background: #fbfaf7;
+
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.025);
+}
+
+.heritage-card-image {
+  width: 100%;
+  height: 124px;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.heritage-hero-content h3 {
+  margin: 7px 0 4px;
+
+  color: #28241f;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.heritage-card-body {
+  min-height: 122px;
+
+  position: relative;
+
+  padding: 9px 12px 25px;
+}
+
+.story-category {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #77736c;
+
+  font-size: 7px;
+  letter-spacing: 1.5px;
+}
+
+.heritage-card h2 {
+  margin: 0 0 5px;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  line-height: 1.12;
+}
+
+.heritage-card p {
+  margin: 0;
+
+  color: #6e6b64;
+
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.heritage-card-body > a {
+  position: absolute;
+
+  right: 11px;
+  bottom: 8px;
+
+  color: #494640;
+
+  text-decoration: underline;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 9px;
+}
+
+.heritage-card-body > a span {
+  text-decoration: none;
+}
+
+/* =========================
+   BOTTOM BANNER
+========================= */
+
+.heritage-footer-art {
+  height: 110px;
+
+  position: relative;
+  overflow: hidden;
+
+  margin: 0 21px 15px;
+
+  border-radius: 5px;
+
+  background-image: url("/images/heritage-footer.jpg") !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.footer-art-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(247,245,240,0.88) 0%,
+      rgba(247,245,240,0.64) 45%,
+      rgba(247,245,240,0.05) 100%
+    );
+}
+
+.footer-art-text {
+  position: relative;
+
+  z-index: 2;
+
+  padding: 20px 31px;
+}
+
+.footer-art-text > span {
+  font-size: 7px;
+
+  letter-spacing: 3px;
+
+  color: #69655e;
+}
+
+.footer-art-text h2 {
+  margin: 6px 0 7px;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 19px;
+  font-weight: 400;
+
+  font-style: italic;
+}
+
+.footer-art-text i {
+  display: block;
+
+  width: 33px;
+  height: 2px;
+
+  background: var(--gold);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1150px) {
+
+  .heritage-page {
+    --sidebar-width: 230px;
+  }
+
+  .heritage-sidebar {
+    width: 230px;
+
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .heritage-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .heritage-topbar nav {
+    gap: 18px;
+  }
+
+  .heritage-topbar a {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 760px) {
+
+  .heritage-page {
+    display: block;
+  }
+
+  .heritage-sidebar {
+    display: none;
+  }
+
+  .heritage-topbar {
+    height: auto;
+
+    padding: 14px 15px;
+  }
+
+  .heritage-topbar nav {
+    width: 100%;
+
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .heritage-script {
+    display: none;
+  }
+
+  .heritage-hero {
+    height: 215px;
+  }
+
+.heritage-hero-content {
+  position: relative;
+  z-index: 2;
+
+  padding: 28px 34px;
+
+  max-width: 620px;
+}
+
+  .heritage-hero-content h1 {
+    font-size: 38px;
+  }
+
+  .heritage-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .heritage-content {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .heritage-footer-art {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+}
