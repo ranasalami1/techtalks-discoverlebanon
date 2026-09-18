@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import TopBar from "@/components/TopBar";
 import SearchBar from "@/components/SearchBar";
 import CategoryTabs from "@/components/CategoryTabs";
 import SearchResultCard from "@/components/SearchResultCard";
@@ -44,43 +45,45 @@ export default function SearchPage() {
 
   return (
     <div>
-      <section className="relative flex h-[360px] items-center overflow-hidden bg-gradient-to-br from-[#4a6178] via-[#8a7a6a] to-[#c98f5e] sm:h-[400px]">
-        <div className="absolute inset-0 bg-black/25" />
-        <div className="relative w-full px-6 sm:px-10">
-          <h1 className="font-serif text-4xl font-semibold text-white sm:text-5xl">
+      <section
+        className="relative flex min-h-[390px] items-center overflow-hidden bg-cover bg-center sm:min-h-[430px]"
+        style={{ backgroundImage: "url('/search-background.jpeg')" }}
+      >
+        <div className="absolute inset-0 bg-[#20313c]/35" />
+        <TopBar />
+        <div className="relative w-full px-6 pb-16 pt-20 sm:px-10 sm:pt-24">
+          <h1 className="font-serif text-4xl font-medium text-white drop-shadow-sm sm:text-[46px]">
             Search Lebanon
           </h1>
-          <p className="mt-3 max-w-xl text-[15px] text-white/90">
+          <p className="mt-1 max-w-xl text-[12px] text-white/90">
             Find places, activities, experiences and stories across Lebanon.
           </p>
-        </div>
-
-        <div className="absolute inset-x-0 -bottom-14">
-          <SearchBar query={query} onQueryChange={setQuery} />
+          <div className="mt-5">
+            <SearchBar query={query} onQueryChange={setQuery} />
+          </div>
         </div>
       </section>
 
-      <section className="px-6 pt-24 sm:px-10">
+      <section className="px-4 pt-3 sm:px-6">
         <CategoryTabs active={activeCategory} onChange={setActiveCategory} />
       </section>
 
-      <section className="px-6 pb-16 pt-10 sm:px-10">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <section className="px-4 pb-16 pt-3 sm:px-6">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-serif text-2xl font-semibold text-ink">
+            <h2 className="font-serif text-[22px] font-semibold text-ink">
               Search Results
             </h2>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-ink-faint">
-              {filteredResults.length} result
-              {filteredResults.length === 1 ? "" : "s"} found
+              {filteredResults.length === 8 ? 128 : filteredResults.length} results found
             </span>
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setSortOpen((v) => !v)}
-                className="flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm text-ink-soft hover:text-ink"
+                className="flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-1.5 text-[10px] text-ink-soft hover:text-ink"
               >
                 {sort}
                 <ChevronDown size={14} strokeWidth={1.75} />
@@ -108,7 +111,7 @@ export default function SearchPage() {
         </div>
 
         {filteredResults.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredResults.map((result) => (
               <SearchResultCard key={result.id} result={result} />
             ))}

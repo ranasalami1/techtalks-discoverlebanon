@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Bookmark,
   Landmark,
@@ -51,15 +52,17 @@ export default function SearchResultCard({ result }) {
   const Icon = style.icon;
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-border bg-white/60 shadow-sm transition-shadow hover:shadow-md">
-      <div className={`relative h-40 bg-gradient-to-br ${style.image}`}>
-        <Icon
-          size={40}
-          strokeWidth={1.25}
-          className="absolute inset-0 m-auto text-white/50"
+    <article className="group overflow-hidden rounded-lg border border-border bg-[#fffdf8] shadow-[0_2px_10px_rgba(70,55,35,0.06)] transition-shadow hover:shadow-md">
+      <div className="relative h-[112px] overflow-hidden sm:h-[118px]">
+        <Image
+          src={result.image}
+          alt=""
+          fill
+          sizes="(min-width: 1280px) 210px, (min-width: 640px) 50vw, 100vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <span
-          className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[11px] font-medium tracking-wide text-white ${style.badge}`}
+          className={`absolute bottom-2 left-2 rounded-full px-2.5 py-1 text-[9px] font-medium tracking-wide text-white ${style.badge}`}
         >
           {result.badge}
         </span>
@@ -68,7 +71,7 @@ export default function SearchResultCard({ result }) {
           onClick={() => setSaved((v) => !v)}
           aria-pressed={saved}
           aria-label={saved ? "Remove from saved places" : "Save this place"}
-          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 text-ink-soft transition-colors hover:text-olive-dark"
+          className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/85 text-ink-soft transition-colors hover:text-olive-dark"
         >
           <Bookmark
             size={15}
@@ -79,15 +82,15 @@ export default function SearchResultCard({ result }) {
         </button>
       </div>
 
-      <div className="p-4">
-        <h3 className="font-serif text-lg font-semibold text-ink">
+      <div className="p-2.5">
+        <h3 className="font-serif text-[14px] font-semibold text-ink">
           {result.title}
         </h3>
-        <p className="mt-1 flex items-center gap-1 text-[13px] text-ink-faint">
+        <p className="mt-1 flex items-center gap-1 text-[10px] text-ink-faint">
           <MapPin size={12} strokeWidth={1.75} />
           {result.location}
         </p>
-        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+        <p className="mt-1 text-[10px] leading-[1.35] text-ink-soft">
           {result.description}
         </p>
       </div>

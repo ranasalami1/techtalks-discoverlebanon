@@ -29,6 +29,7 @@ export const searchResults = [
     badge: "Cultural Site",
     category: "cultural-sites",
     accent: "olive",
+    image: "https://images.unsplash.com/photo-1609947017136-9daf32a5eb16?auto=format&fit=crop&w=800&q=85",
   },
   {
     id: "cedars-of-god",
@@ -38,6 +39,7 @@ export const searchResults = [
     badge: "Nature",
     category: "nature",
     accent: "green",
+    image: "https://images.unsplash.com/photo-1548013146-72479768bdaa?auto=format&fit=crop&w=800&q=85",
   },
   {
     id: "raouche-rock",
@@ -47,6 +49,7 @@ export const searchResults = [
     badge: "Experience",
     category: "activities",
     accent: "blue",
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=85",
   },
   {
     id: "baalbek-ruins",
@@ -56,6 +59,7 @@ export const searchResults = [
     badge: "Cultural Site",
     category: "cultural-sites",
     accent: "olive",
+    image: "https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=800&q=85",
   },
   {
     id: "deir-el-qamar",
@@ -65,6 +69,7 @@ export const searchResults = [
     badge: "Village",
     category: "places",
     accent: "brown",
+    image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=85",
   },
   {
     id: "local-cuisine",
@@ -74,6 +79,7 @@ export const searchResults = [
     badge: "Food",
     category: "food",
     accent: "red",
+    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=85",
   },
   {
     id: "lebanon-mountain-trail",
@@ -83,6 +89,7 @@ export const searchResults = [
     badge: "Hiking",
     category: "activities",
     accent: "teal",
+    image: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=800&q=85",
   },
   {
     id: "tripoli-old-souk",
@@ -92,5 +99,6 @@ export const searchResults = [
     badge: "Experience",
     category: "cultural-sites",
     accent: "blue",
+    image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=800&q=85",
   },
 ];

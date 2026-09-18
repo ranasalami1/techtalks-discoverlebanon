@@ -10,7 +10,10 @@ import {
   User,
   Settings,
   HelpCircle,
+  Menu,
+  X,
 } from "lucide-react";
+import { useState } from "react";
 
 const primaryNav = [
   { label: "Explore the Map", href: "/map", icon: Map },
@@ -42,11 +45,70 @@ function NavLink({ item, active }) {
   );
 }
 
+function MobileNav() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Open navigation"
+        className="fixed left-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-md lg:hidden"
+      >
+        <Menu size={18} strokeWidth={1.75} />
+      </button>
+      {open && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close navigation"
+            className="absolute inset-0 bg-ink/30"
+          />
+          <aside className="relative flex h-full w-[285px] flex-col justify-between bg-[#fbf8f1] px-7 py-7 shadow-xl">
+            <div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close navigation"
+                  className="text-ink-soft hover:text-ink"
+                >
+                  <X size={20} strokeWidth={1.5} />
+                </button>
+              </div>
+              <Link href="/" className="block" onClick={() => setOpen(false)}>
+                <div className="bg-gradient-to-b from-gold to-olive-dark bg-clip-text text-3xl leading-none text-transparent" style={{ fontFamily: "var(--font-arabic)" }} dir="rtl">
+                  اكتشف لبنان
+                </div>
+                <div className="mt-2 font-serif text-[18px] font-semibold tracking-[0.08em] text-ink">DISCOVER LEBANON</div>
+                <div className="mt-1 text-[10px] text-ink-faint">Interactive Heritage &amp; Activity Guide</div>
+              </Link>
+              <nav className="mt-10 flex flex-col gap-1">
+                {primaryNav.map((item) => <NavLink key={item.href} item={item} active={pathname.startsWith(item.href)} />)}
+              </nav>
+              <div className="my-6 border-t border-border" />
+              <nav className="flex flex-col gap-1">
+                {secondaryNav.map((item) => <NavLink key={item.href} item={item} active={pathname.startsWith(item.href)} />)}
+              </nav>
+            </div>
+            <p className="text-[24px] text-ink-soft" style={{ fontFamily: "var(--font-script)" }}>A deeper way to explore</p>
+          </aside>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-[280px] shrink-0 flex-col justify-between border-r border-border bg-cream px-6 py-8 lg:flex">
+    <>
+      <MobileNav />
+      <aside className="hidden w-[330px] shrink-0 flex-col justify-between border-r border-border bg-[#fbf8f1] px-9 py-8 lg:flex">
       <div>
         <Link href="/" className="block">
           <div
@@ -56,15 +118,15 @@ export default function Sidebar() {
           >
             اكتشف لبنان
           </div>
-          <div className="mt-2 font-serif text-xl font-bold tracking-wide text-ink">
+          <div className="mt-2 font-serif text-[18px] font-semibold tracking-[0.08em] text-ink">
             DISCOVER LEBANON
           </div>
-          <div className="mt-1 text-xs text-ink-faint">
+          <div className="mt-1 text-[10px] text-ink-faint">
             Interactive Heritage &amp; Activity Guide
           </div>
         </Link>
 
-        <nav className="mt-10 flex flex-col gap-1">
+        <nav className="mt-12 flex flex-col gap-1">
           {primaryNav.map((item) => (
             <NavLink
               key={item.href}
@@ -89,7 +151,7 @@ export default function Sidebar() {
 
       <div>
         <p
-          className="text-2xl text-ink-soft"
+          className="text-[26px] text-ink-soft"
           style={{ fontFamily: "var(--font-script)" }}
         >
           A deeper way to explore
@@ -97,7 +159,7 @@ export default function Sidebar() {
 
         <svg
           viewBox="0 0 220 120"
-          className="mt-4 w-full text-olive/40"
+          className="mt-2 w-full text-[#8f8069]/45"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.25"
@@ -110,7 +172,7 @@ export default function Sidebar() {
           <circle cx="200" cy="20" r="10" opacity="0.5" />
         </svg>
 
-        <div className="mt-4 flex items-center justify-between text-[11px] tracking-[0.2em] text-ink-faint">
+        <div className="mt-2 flex items-center justify-between text-[10px] tracking-[0.24em] text-ink-faint">
           <span>
             PLACES
             <br />
@@ -122,6 +184,7 @@ export default function Sidebar() {
           </span>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

@@ -19,14 +19,14 @@ export default function TopBar() {
   const [lang, setLang] = useState("EN");
 
   return (
-    <header className="flex items-center justify-end gap-8 border-b border-border bg-cream px-6 py-5 sm:px-10">
+    <header className="absolute right-0 top-0 z-20 flex items-center justify-end gap-4 border-b border-white/30 bg-transparent px-5 py-4 text-white sm:gap-8 sm:px-10">
       <nav className="hidden items-center gap-8 md:flex">
         {navLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={`text-[13px] font-medium tracking-[0.12em] text-ink-soft transition-colors hover:text-ink ${
-              pathname.startsWith(link.href) ? "text-ink" : ""
+            className={`text-[10px] font-medium tracking-[0.08em] transition-colors hover:text-white ${
+              pathname.startsWith(link.href) ? "text-white" : "text-white/85"
             }`}
           >
             {link.label.toUpperCase()}
@@ -34,27 +34,27 @@ export default function TopBar() {
         ))}
       </nav>
 
-      <div className="hidden h-5 w-px bg-border md:block" />
+      <div className="hidden h-5 w-px bg-white/50 md:block" />
 
       <Link
         href="/search"
-        className={`flex items-center gap-2 text-[13px] font-medium tracking-[0.12em] ${
+        className={`flex items-center gap-2 rounded-sm px-2 py-1 text-[10px] font-semibold tracking-[0.12em] ${
           pathname.startsWith("/search")
-            ? "text-olive-dark underline decoration-2 underline-offset-8"
-            : "text-ink-soft hover:text-ink"
+            ? "bg-white text-ink underline decoration-1 underline-offset-4"
+            : "text-white/90 hover:bg-white/15 hover:text-white"
         }`}
       >
         <Search size={15} strokeWidth={1.75} />
         SEARCH
       </Link>
 
-      <div className="h-5 w-px bg-border" />
+      <div className="h-5 w-px bg-white/50" />
 
       <div className="relative">
         <button
           type="button"
           onClick={() => setLangOpen((open) => !open)}
-          className="flex items-center gap-1 text-[13px] font-medium tracking-[0.12em] text-ink-soft hover:text-ink"
+          className="flex items-center gap-1 text-[10px] font-medium tracking-[0.08em] text-white/85 hover:text-white"
         >
           {lang}
           <ChevronDown size={14} strokeWidth={1.75} />

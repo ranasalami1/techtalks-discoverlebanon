@@ -23,7 +23,7 @@ const icons = {
 
 export default function CategoryTabs({ active, onChange }) {
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {categories.map((category) => {
         const Icon = icons[category.icon];
         const isActive = active === category.id;
@@ -32,7 +32,7 @@ export default function CategoryTabs({ active, onChange }) {
             key={category.id}
             type="button"
             onClick={() => onChange(category.id)}
-            className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+            className={`flex shrink-0 items-center gap-2 rounded-lg border px-3.5 py-2 text-[11px] font-medium transition-colors ${
               isActive
                 ? "border-olive-dark bg-olive-dark text-white"
                 : "border-border bg-white text-ink-soft hover:border-olive-dark/40 hover:text-ink"
