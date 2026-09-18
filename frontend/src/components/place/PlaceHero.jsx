@@ -18,7 +18,7 @@ export default function PlaceHero({ place }) {
 
       <div className="absolute left-4 top-4 sm:left-8 sm:top-6">
         <Link
-          href="/map"
+          href="/explore"
           className="inline-flex items-center gap-1.5 rounded-full bg-cream/90 px-4 py-2 text-[12px] font-medium tracking-[0.1em] text-ink backdrop-blur hover:bg-cream"
         >
           <ChevronLeft size={15} strokeWidth={2} />

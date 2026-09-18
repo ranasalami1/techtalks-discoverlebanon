@@ -1,36 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Bookmark } from "lucide-react";
 
 const STORAGE_KEY = "discover-lebanon:saved-places";
+const listeners = new Set();
 
-function readSaved() {
+function subscribe(callback) {
+  listeners.add(callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    listeners.delete(callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function getSnapshot() {
   try {
-    return JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "[]");
+    return window.localStorage.getItem(STORAGE_KEY) ?? "[]";
+  } catch {
+    return "[]";
+  }
+}
+
+function getServerSnapshot() {
+  return "[]";
+}
+
+function parseSaved(raw) {
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
 export default function SaveButton({ placeId, variant = "solid" }) {
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    setSaved(readSaved().includes(placeId));
-  }, [placeId]);
+  const savedIds = parseSaved(useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot));
+  const saved = savedIds.includes(placeId);
 
   function toggle() {
-    const current = readSaved();
-    const next = current.includes(placeId)
-      ? current.filter((id) => id !== placeId)
-      : [...current, placeId];
+    const next = saved ? savedIds.filter((id) => id !== placeId) : [...savedIds, placeId];
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
-      // storage unavailable — keep in-memory state only
+      // storage unavailable — nothing to persist
     }
-    setSaved(next.includes(placeId));
+    listeners.forEach((listener) => listener());
   }
 
   const base =
@@ -45,17 +62,8 @@ export default function SaveButton({ placeId, variant = "solid" }) {
         : "border border-border text-ink-soft hover:border-olive hover:text-ink";
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-pressed={saved}
-      className={`${base} ${styles}`}
-    >
-      <Bookmark
-        size={16}
-        strokeWidth={1.75}
-        fill={saved ? "currentColor" : "none"}
-      />
+    <button type="button" onClick={toggle} aria-pressed={saved} className={`${base} ${styles}`}>
+      <Bookmark size={16} strokeWidth={1.75} fill={saved ? "currentColor" : "none"} />
       {saved ? "SAVED" : "SAVE PLACE"}
     </button>
   );

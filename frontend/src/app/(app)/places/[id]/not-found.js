@@ -11,7 +11,7 @@ export default function PlaceNotFound() {
         It may have been moved, or the link might be incorrect.
       </p>
       <Link
-        href="/map"
+        href="/explore"
         className="mt-8 rounded-full bg-olive-dark px-6 py-3 text-[13px] font-medium tracking-[0.1em] text-cream hover:bg-olive"
       >
         EXPLORE THE MAP

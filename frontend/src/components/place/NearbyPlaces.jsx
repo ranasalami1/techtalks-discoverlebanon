@@ -10,7 +10,7 @@ export default function NearbyPlaces({ places }) {
     <section>
       <SectionHeading eyebrow="Nearby" title="Also worth the detour">
         <Link
-          href="/map"
+          href="/explore"
           className="text-[13px] font-medium tracking-[0.1em] text-olive-dark hover:underline"
         >
           VIEW ON MAP
