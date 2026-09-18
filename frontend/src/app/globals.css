@@ -26,7 +26,7 @@ body { margin: 0; background: var(--background); color: var(--foreground); font-
 button, a { font: inherit; }
 
 .app-shell { min-height: 100vh; display: flex; }
-.sidebar { position: relative; overflow: hidden; width: 300px; min-height: 100vh; padding: 34px 0 24px; background: var(--sidebar); color: var(--sidebar-ink); display: flex; flex-direction: column; flex-shrink: 0; }
+.sidebar { position: relative; overflow: hidden; width: 300px; min-height: 100vh; padding: 34px 0 24px; background: linear-gradient(rgba(250, 248, 242, .9), rgba(250, 248, 242, .72)), url('/sidebar-background.jpeg') center / cover no-repeat; color: var(--sidebar-ink); display: flex; flex-direction: column; flex-shrink: 0; }
 .sidebar-brand { position: relative; padding: 0 26px 26px; }
 .brand-mark { display: flex; flex-direction: column; gap: 8px; color: inherit; text-decoration: none; transition: transform 180ms ease; }
 .brand-mark:hover { transform: translateY(-2px) rotate(-1deg); }
