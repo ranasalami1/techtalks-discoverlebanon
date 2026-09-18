@@ -1,14 +1,12 @@
-import Sidebar from "@/components/Sidebar";
+import AppShell from "@/components/AppShell";
 import TopBar from "@/components/TopBar";
 
+// Pages under (app) share the sidebar from KAN-4 (AppShell) plus the top navigation bar.
 export default function AppLayout({ children }) {
   return (
-    <div className="flex min-h-screen w-full bg-cream">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar />
-        <main className="flex-1">{children}</main>
-      </div>
-    </div>
+    <AppShell>
+      <TopBar />
+      <main className="flex-1">{children}</main>
+    </AppShell>
   );
 }
