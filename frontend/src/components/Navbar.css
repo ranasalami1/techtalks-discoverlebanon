@@ -1,70 +1,316 @@
-.navbar {
+/* =========================================
+   NAVBAR
+========================================= */
+
+.top-navbar {
   width: 100%;
-  background: #ffffff;
-  padding: 18px 40px;
+  height: 64px;
+
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  border-bottom: 1px solid #e5e5e5;
+
+  padding: 0 28px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e8e5df;
+
+  flex-shrink: 0;
+
+  position: relative;
+  z-index: 100;
 }
+
+
+/* =========================================
+   LINKS
+========================================= */
 
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 32px;
+
+  gap: 30px;
+
+  margin-left: auto;
+
+  white-space: nowrap;
 }
 
-.navbar-links a {
+.navbar-link {
+  color: #171b16;
+
   text-decoration: none;
-  color: #1a1a1a;
-  font-size: 13px;
+
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.5px;
+
+  white-space: nowrap;
 }
 
-.navbar-links a:hover {
-  opacity: 0.7;
+.navbar-link:hover {
+  opacity: 0.65;
 }
 
-.navbar-links .active {
-  border-bottom: 2px solid #b99b5f;
-  padding-bottom: 5px;
+.navbar-link-active {
+  font-weight: 600;
 }
 
-.search-link {
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.navbar-actions {
   display: flex;
   align-items: center;
+
+  gap: 14px;
+
+  margin-left: 30px;
+
+  flex-shrink: 0;
+}
+
+
+/* SEARCH */
+
+.navbar-search {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #171b16;
+
+  text-decoration: none;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+
+/* SEPARATOR */
+
+.navbar-separator {
+  width: 1px;
+  height: 28px;
+
+  background: #c8c3b8;
+}
+
+
+/* =========================================
+   PROFILE
+========================================= */
+
+.navbar-profile {
+  display: flex;
+  align-items: center;
+
   gap: 8px;
-}
 
-.search-icon {
-  font-size: 18px;
-}
+  padding: 0;
 
-.language-btn {
+  border: 0;
   background: transparent;
-  border: none;
-  font-size: 13px;
-  font-weight: 500;
+
+  color: #171b16;
+
   cursor: pointer;
+}
+
+.navbar-profile-picture {
+  width: 36px;
+  height: 36px;
+
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #d8d0c2;
+
+  color: #24291f;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  flex-shrink: 0;
 }
 
-@media (max-width: 768px) {
-  .navbar {
-    padding: 15px 20px;
+.navbar-user-name {
+  font-size: 13px;
+
+  white-space: nowrap;
+}
+
+.navbar-profile-chevron {
+  flex-shrink: 0;
+}
+
+
+/* =========================================
+   LANGUAGE
+========================================= */
+
+.navbar-language {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #171b16;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   MOBILE ELEMENTS
+========================================= */
+
+.navbar-menu-button,
+.navbar-mobile-logo {
+  display: none;
+}
+
+
+/* =========================================
+   MEDIUM SCREEN
+========================================= */
+
+@media (max-width: 1100px) {
+
+  .top-navbar {
+    padding: 0 18px;
   }
 
   .navbar-links {
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
+    gap: 18px;
   }
 
-  .navbar-links a,
-  .language-btn {
+  .navbar-actions {
+    gap: 10px;
+    margin-left: 18px;
+  }
+
+  .navbar-link,
+  .navbar-search {
     font-size: 11px;
+  }
+
+  .navbar-profile-picture {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .top-navbar {
+    height: 60px;
+
+    padding: 0 14px;
+
+    justify-content: space-between;
+  }
+
+
+  /* Hide desktop links */
+
+  .navbar-links {
+    display: none;
+  }
+
+
+  /* Hamburger */
+
+  .navbar-menu-button {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #171b16;
+
+    cursor: pointer;
+
+    z-index: 2;
+  }
+
+
+  /* Center logo */
+
+  .navbar-mobile-logo {
+    display: block;
+
+    position: absolute;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    color: #171b16;
+
+    text-decoration: none;
+
+    font-family: var(--font-playfair), Georgia, serif;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    white-space: nowrap;
+  }
+
+
+  .navbar-actions {
+    margin-left: auto;
+
+    gap: 8px;
+  }
+
+
+  /* Search icon only */
+
+  .navbar-search span {
+    display: none;
+  }
+
+
+  /* Hide desktop profile information */
+
+  .navbar-separator,
+  .navbar-user-name,
+  .navbar-profile-chevron,
+  .navbar-language {
+    display: none;
+  }
+
+
+  .navbar-profile-picture {
+    width: 34px;
+    height: 34px;
   }
 }

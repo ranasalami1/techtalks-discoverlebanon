@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Menu } from "lucide-react";
 import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
 
 export default function AppShell({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,20 +15,17 @@ export default function AppShell({ children }) {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="main-content">
+      <div className="app-main">
 
-        <button
-          className="menu-button"
-          type="button"
-          aria-label="Open navigation"
-          onClick={() => setSidebarOpen(true)}
-        >
-          <Menu size={26} />
-        </button>
+        <Navbar
+          onMenuClick={() => setSidebarOpen(true)}
+        />
 
-        {children}
+        <main className="page-content">
+          {children}
+        </main>
 
-      </main>
+      </div>
 
     </div>
   );

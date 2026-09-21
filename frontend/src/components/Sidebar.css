@@ -1,285 +1,297 @@
-/* =========================
-   SIDEBAR - DESKTOP
-========================= */
+/* =========================================
+   SIDEBAR DESKTOP
+========================================= */
 
 .sidebar {
-  width: 280px;
+  width: 300px;
   height: 100vh;
-  position: fixed;
+
+  flex-shrink: 0;
+
+  position: sticky;
   top: 0;
-  left: 0;
 
   display: flex;
   flex-direction: column;
 
-  padding: 30px 24px;
+  padding: 34px 0 24px;
 
-  background: #f7f4ed;
-  border-right: 1px solid #ddd6c8;
+  background:
+    linear-gradient(
+      rgba(250, 248, 242, 0.9),
+      rgba(250, 248, 242, 0.72)
+    ),
+    url("/sidebar-background.jpeg") center / cover no-repeat;
 
-  z-index: 1000;
+  color: var(--sidebar-ink);
+
+  border-right: 1px solid var(--sidebar-border);
+
   overflow-y: auto;
+
+  z-index: 500;
 }
+
 
 /* BRAND */
 
 .sidebar-brand {
   position: relative;
-  margin-bottom: 35px;
+
+  padding: 0 26px 26px;
 }
 
 .brand-mark {
   display: flex;
   flex-direction: column;
+
+  gap: 8px;
+
+  color: inherit;
+
   text-decoration: none;
-  color: #222;
 }
 
 .brand-mark-arabic {
-  font-size: 25px;
-  font-weight: 600;
+  font-family: var(--font-aref-ruqaa), serif;
+
+  font-size: 27px;
+
+  line-height: 1;
+
+  color: var(--accent-gold);
 }
 
 .brand-mark-en {
-  font-size: 20px;
-  font-weight: 600;
+  font-family: var(--font-playfair), serif;
+
+  font-size: 19px;
+  font-weight: 700;
+
+  letter-spacing: 0.05em;
+
+  text-transform: uppercase;
 }
 
 .brand-tagline {
-  font-size: 11px;
-  margin-top: 5px;
-  color: #777;
+  max-width: 190px;
+
+  margin: 12px 0 0;
+
+  color: var(--sidebar-muted);
+
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+
+  font-size: 12px;
+
+  line-height: 1.5;
 }
+
 
 /* NAVIGATION */
 
 .sidebar-navigation {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  padding-top: 6px;
 }
 
 .sidebar-link {
+  min-height: 46px;
+
   display: flex;
   align-items: center;
+
   gap: 14px;
 
-  padding: 11px 12px;
+  margin: 3px 12px;
+  padding: 0 14px;
 
-  color: #555;
+  border-radius: 10px;
+
+  color: var(--sidebar-ink);
+
   text-decoration: none;
 
-  border-radius: 8px;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
+  font-size: 14.5px;
+  font-weight: 500;
 }
 
 .sidebar-link:hover {
-  background: #ebe5d8;
-  color: #222;
+  background: rgba(76, 97, 66, 0.08);
 }
 
 .sidebar-link-active {
-  background: #e5ddcc;
-  color: #222;
-  font-weight: 600;
+  color: var(--accent);
+
+  background: var(--accent-soft);
 }
 
 .sidebar-link-icon {
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
+
   flex-shrink: 0;
 }
 
 .sidebar-divider {
   height: 1px;
-  background: #d8d0c2;
-  margin: 15px 0;
+
+  margin: 18px 24px 14px;
+
+  background: var(--sidebar-border);
 }
 
-/* BOTTOM TEXT */
+
+/* BOTTOM */
 
 .sidebar-tagline {
-  margin-top: auto;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
+  margin: 22px 26px 0;
+
+  padding-top: 18px;
+}
+
+.sidebar-tagline-accent {
+  display: block;
+
+  width: 34px;
+  height: 2px;
+
+  margin-bottom: 16px;
+
+  background: var(--accent-gold);
 }
 
 .sidebar-tagline p {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-}
 
-.sidebar-tagline-accent {
-  width: 3px;
-  height: 40px;
-  background: #b99b5f;
-}
+  color: var(--sidebar-muted);
 
-/* ILLUSTRATION */
+  font-family: var(--font-caveat), cursive;
+
+  font-size: 23px;
+
+  line-height: 1.25;
+}
 
 .sidebar-illustration {
-  margin-top: 20px;
-  color: #b7aa92;
+  position: relative;
+
+  flex: 1;
+
+  min-height: 130px;
+
+  margin-top: 12px;
+
+  color: #8a744f;
+
+  opacity: 0.55;
+
+  pointer-events: none;
 }
 
 .sidebar-illustration svg {
-  width: 100%;
-  max-width: 200px;
+  position: absolute;
+
+  left: -30px;
+  bottom: -12px;
+
+  width: 210px;
 }
 
-/* CLOSE BUTTON
-   Hidden on desktop
-*/
 
-.sidebar-close {
-  display: none;
-}
+/* DESKTOP */
 
-/* BACKDROP
-   Hidden on desktop
-*/
-
+.sidebar-close,
 .sidebar-backdrop {
   display: none;
 }
 
 
-/* =========================
-   MOBILE / TABLET
-========================= */
+/* =========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 768px) {
 
   .sidebar {
-    width: min(280px, 85vw);
+    position: fixed;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: min(280px, 86vw);
+
+    height: 100vh;
 
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+
+    transition: transform 0.25s ease;
+
+    z-index: 1000;
 
     box-shadow: 5px 0 20px rgba(0, 0, 0, 0.15);
   }
-
-  /* When isOpen === true */
 
   .sidebar-open {
     transform: translateX(0);
   }
 
-  /* Close X */
+
+  /* CLOSE */
 
   .sidebar-close {
     display: block;
 
     position: absolute;
-    top: 0;
-    right: 0;
 
-    border: none;
+    top: 0;
+    right: 20px;
+
+    border: 0;
+
     background: transparent;
 
-    font-size: 28px;
-    cursor: pointer;
+    color: var(--sidebar-muted);
 
-    color: #333;
+    font-size: 28px;
+
+    cursor: pointer;
   }
 
-  /* Dark background behind sidebar */
+
+  /* BACKDROP */
 
   .sidebar-backdrop {
     display: block;
 
     position: fixed;
+
     inset: 0;
 
-    border: none;
     padding: 0;
+
+    border: 0;
 
     background: rgba(0, 0, 0, 0.4);
 
     opacity: 0;
     visibility: hidden;
 
+    pointer-events: none;
+
     transition:
-      opacity 0.3s ease,
-      visibility 0.3s ease;
+      opacity 0.25s ease,
+      visibility 0.25s ease;
 
     z-index: 999;
   }
 
   .sidebar-backdrop-visible {
     opacity: 1;
+
     visibility: visible;
+
+    pointer-events: auto;
   }
-}
-
-
-/* =========================
-   SMALL PHONES
-========================= */
-
-@media (max-width: 480px) {
-
-  .sidebar {
-    width: 85vw;
-    padding: 25px 18px;
-  }
-
-  .brand-mark-arabic {
-    font-size: 22px;
-  }
-
-  .brand-mark-en {
-    font-size: 18px;
-  }
-
-  .sidebar-link {
-    padding: 10px;
-  }
-
-  .sidebar-illustration {
-    max-width: 160px;
-  }
-
-  /* Desktop */
-
-.main-content {
-  margin-left: 280px;
-  min-height: 100vh;
-}
-
-.menu-button {
-  display: none;
-}
-
-
-/* Mobile */
-
-@media (max-width: 768px) {
-
-  .main-content {
-    margin-left: 0;
-  }
-
-  .menu-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin: 16px;
-
-    width: 42px;
-    height: 42px;
-
-    border: 1px solid #ddd;
-    border-radius: 8px;
-
-    background: white;
-    cursor: pointer;
-  }
-}
 }

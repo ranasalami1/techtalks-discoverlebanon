@@ -1,52 +1,132 @@
 "use client";
 
-import "./Navbar.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  Menu,
+  Search,
+  ChevronDown,
+} from "lucide-react";
 
-export default function Navbar() {
+import "./Navbar.css";
+
+export default function Navbar({ onMenuClick }) {
   const pathname = usePathname();
 
+  const links = [
+    {
+      label: "EXPLORE THE MAP",
+      href: "/map",
+    },
+    {
+      label: "CURATED ITINERARIES",
+      href: "/itineraries",
+    },
+    {
+      label: "HERITAGE STORIES",
+      href: "/heritage",
+    },
+  ];
+
   return (
-    <nav className="navbar">
-      <div className="navbar-links">
-        <Link
-          href="/map"
-          className={pathname === "/map" ? "active" : ""}
-        >
-          EXPLORE THE MAP
-        </Link>
+    <header className="top-navbar">
 
-        <Link
-          href="/itineraries"
-          className={pathname === "/itineraries" ? "active" : ""}
-        >
-          CURATED ITINERARIES
-        </Link>
+      {/* MOBILE MENU */}
+      <button
+        className="navbar-menu-button"
+        type="button"
+        aria-label="Open navigation"
+        onClick={onMenuClick}
+      >
+        <Menu size={24} strokeWidth={1.8} />
+      </button>
 
-        <Link
-          href="/heritage"
-          className={pathname === "/heritage" ? "active" : ""}
-        >
-          HERITAGE STORIES
-        </Link>
+      {/* MOBILE LOGO */}
+      <Link
+        href="/"
+        className="navbar-mobile-logo"
+      >
+        Discover Lebanon
+      </Link>
+
+      {/* DESKTOP LINKS */}
+      <nav
+        className="navbar-links"
+        aria-label="Top navigation"
+      >
+        {links.map((link) => {
+          const isActive =
+            pathname === link.href ||
+            pathname.startsWith(`${link.href}/`);
+
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={
+                isActive
+                  ? "navbar-link navbar-link-active"
+                  : "navbar-link"
+              }
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* RIGHT */}
+      <div className="navbar-actions">
 
         <Link
           href="/search"
-          className={
-            pathname === "/search"
-              ? "active search-link"
-              : "search-link"
-          }
+          className="navbar-search"
         >
-          <span className="search-icon">⌕</span>
-          SEARCH
+          <Search size={18} strokeWidth={1.8} />
+          <span>SEARCH</span>
         </Link>
 
-        <button className="language-btn">
-          EN <span>⌄</span>
+        <span
+          className="navbar-separator"
+          aria-hidden="true"
+        />
+
+        {/* PROFILE */}
+        <button
+          className="navbar-profile"
+          type="button"
+          aria-label="Open profile"
+        >
+          <div className="navbar-profile-picture">
+            L
+          </div>
+
+          <span className="navbar-user-name">
+            Lara
+          </span>
+
+          <ChevronDown
+            size={15}
+            strokeWidth={1.7}
+            className="navbar-profile-chevron"
+          />
         </button>
+
+        {/* LANGUAGE */}
+        <button
+          className="navbar-language"
+          type="button"
+        >
+          <span>EN</span>
+
+          <ChevronDown
+            size={14}
+            strokeWidth={1.7}
+          />
+        </button>
+
       </div>
-    </nav>
+
+    </header>
   );
 }
