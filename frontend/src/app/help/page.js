@@ -1,4 +1,4 @@
-import Link from "next/link";
+import AppShell from "@/components/AppShell";
 import "./help.css";
 
 /* ---------- SIMPLE LINE ICONS ---------- */
@@ -40,21 +40,6 @@ function Icon({ type, size = 26 }) {
     );
   }
 
-  if (type === "heritage") {
-    return (
-      <svg {...common}>
-        <path d="M3 9h18" />
-        <path d="M5 9v8" />
-        <path d="M9 9v8" />
-        <path d="M15 9v8" />
-        <path d="M19 9v8" />
-        <path d="M3 17h18" />
-        <path d="M2 20h20" />
-        <path d="M12 3 3 7h18L12 3z" />
-      </svg>
-    );
-  }
-
   if (type === "bookmark") {
     return (
       <svg {...common}>
@@ -68,25 +53,6 @@ function Icon({ type, size = 26 }) {
       <svg {...common}>
         <circle cx="12" cy="8" r="3" />
         <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
-      </svg>
-    );
-  }
-
-  if (type === "settings") {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3V9.6h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88L4.2 7.06 7.06 4.2l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.7.6z" />
-      </svg>
-    );
-  }
-
-  if (type === "help") {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M9.8 9a2.3 2.3 0 1 1 3.55 1.93c-.95.63-1.35 1.03-1.35 2.07" />
-        <circle cx="12" cy="16.8" r=".6" fill="currentColor" />
       </svg>
     );
   }
@@ -143,158 +109,24 @@ function Icon({ type, size = 26 }) {
 
 export default function HelpPage() {
   return (
-    <main className="help-page">
+    <AppShell>
+      <main className="help-page">
 
-      {/* =====================================================
-          LEFT SIDEBAR
-      ====================================================== */}
-
-      <aside className="help-sidebar">
-
-        <div className="help-brand">
-          <div className="brand-arabic">اكتشف لبنان</div>
-
-          <div className="brand-name">
-            DISCOVER LEBANON
-          </div>
-
-          <p>Interactive Heritage &amp; Activity Guide</p>
-        </div>
-
-        <nav className="sidebar-main-nav">
-
-          <Link href="/map">
-            <Icon type="map" />
-            <span>Explore the Map</span>
-          </Link>
-
-          <Link href="/itineraries">
-            <Icon type="list" />
-            <span>Curated Itineraries</span>
-          </Link>
-
-          <Link href="/heritage">
-            <Icon type="heritage" />
-            <span>Heritage Stories</span>
-          </Link>
-
-          <Link href="/saved">
-            <Icon type="bookmark" />
-            <span>Saved Places</span>
-          </Link>
-
-        </nav>
-
-        <div className="sidebar-divider" />
-
-        <nav className="sidebar-secondary-nav">
-
-          <Link href="/account">
-            <Icon type="user" />
-            <span>My Account</span>
-          </Link>
-
-          <Link href="/settings">
-            <Icon type="settings" />
-            <span>Settings</span>
-          </Link>
-
-          <Link href="/help" className="sidebar-selected">
-            <Icon type="help" />
-            <span>Help</span>
-
-            <span className="selected-gold-line" />
-          </Link>
-
-        </nav>
-
-        <div className="sidebar-decorative">
-
-          <div className="sidebar-handwriting">
-            A deeper
-            <br />
-            way to explore
-          </div>
-
-          <div className="sidebar-art" />
-
-          <div className="sidebar-words">
-            <span>PLACES</span>
-            <span>PEOPLE</span>
-            <span>STORIES</span>
-            <span>LEBANON</span>
-
-            <i />
-          </div>
-
-        </div>
-
-      </aside>
-
-      {/* =====================================================
-          RIGHT SIDE
-      ====================================================== */}
-
-      <div className="help-main">
-
-        {/* TOP NAVBAR */}
-
-        <header className="help-topbar">
-
-          <nav className="help-topbar-links">
-
-            <Link href="/map">
-              EXPLORE THE MAP
-            </Link>
-
-            <Link href="/itineraries">
-              CURATED ITINERARIES
-            </Link>
-
-            <Link href="/heritage">
-              HERITAGE STORIES
-            </Link>
-
-            <Link href="/search" className="top-search-link">
-              <Icon type="search" size={22} />
-              SEARCH
-            </Link>
-
-            <span className="top-divider" />
-
-            <button className="top-language">
-              EN
-              <span>⌄</span>
-            </button>
-
-          </nav>
-
-        </header>
-
-        {/* =====================================================
-            HERO
-        ====================================================== */}
+        {/* ================= HERO ================= */}
 
         <section className="help-hero">
-
           <div className="hero-shade" />
 
           <div className="hero-content">
+            <div className="hero-label">SUPPORT</div>
 
-            <div className="hero-label">
-              SUPPORT
-            </div>
-
-            <h1>
-              How can we help?
-            </h1>
+            <h1>How can we help?</h1>
 
             <p>
               Find answers, get guidance, and make the most
               <br />
               of your Discover Lebanon experience.
             </p>
-
           </div>
 
           <div className="hero-handwriting">
@@ -303,12 +135,9 @@ export default function HelpPage() {
             different stories.
             <span />
           </div>
-
         </section>
 
-        {/* =====================================================
-            MAIN CONTENT
-        ====================================================== */}
+        {/* ================= MAIN CONTENT ================= */}
 
         <div className="help-body">
 
@@ -317,29 +146,25 @@ export default function HelpPage() {
             {/* SEARCH */}
 
             <div className="help-search">
-
               <div className="help-search-icon">
                 <Icon type="search" size={25} />
               </div>
 
               <input
                 type="text"
-                placeholder='Search for help (e.g. “how to save a place”, “offline maps”, “itineraries”)'
+                placeholder='Search for help (e.g. "how to save a place", "offline maps", "itineraries")'
               />
 
               <button type="button">
                 Search
               </button>
-
             </div>
 
-            {/* HELP TOPICS */}
+            {/* ================= HELP TOPICS ================= */}
 
             <section className="topics-section">
 
-              <h2>
-                Help Topics
-              </h2>
+              <h2>Help Topics</h2>
 
               <p className="section-subtitle">
                 Browse support articles by category.
@@ -348,14 +173,12 @@ export default function HelpPage() {
               <div className="topics-grid">
 
                 <article className="topic-card">
-
                   <div className="topic-icon">
                     <Icon type="map" size={31} />
                   </div>
 
                   <div>
                     <h3>Getting Started</h3>
-
                     <p>
                       Learn the basics and
                       <br />
@@ -363,21 +186,16 @@ export default function HelpPage() {
                     </p>
                   </div>
 
-                  <span className="topic-arrow">
-                    →
-                  </span>
-
+                  <span className="topic-arrow">→</span>
                 </article>
 
                 <article className="topic-card">
-
                   <div className="topic-icon">
                     <Icon type="pin" size={31} />
                   </div>
 
                   <div>
                     <h3>Explore the Map</h3>
-
                     <p>
                       Find places, filters
                       <br />
@@ -385,21 +203,16 @@ export default function HelpPage() {
                     </p>
                   </div>
 
-                  <span className="topic-arrow">
-                    →
-                  </span>
-
+                  <span className="topic-arrow">→</span>
                 </article>
 
                 <article className="topic-card">
-
                   <div className="topic-icon">
                     <Icon type="list" size={31} />
                   </div>
 
                   <div>
                     <h3>Itineraries</h3>
-
                     <p>
                       How to use and
                       <br />
@@ -407,21 +220,16 @@ export default function HelpPage() {
                     </p>
                   </div>
 
-                  <span className="topic-arrow">
-                    →
-                  </span>
-
+                  <span className="topic-arrow">→</span>
                 </article>
 
                 <article className="topic-card">
-
                   <div className="topic-icon">
                     <Icon type="bookmark" size={31} />
                   </div>
 
                   <div>
                     <h3>Saved Places</h3>
-
                     <p>
                       Manage your
                       <br />
@@ -429,21 +237,16 @@ export default function HelpPage() {
                     </p>
                   </div>
 
-                  <span className="topic-arrow">
-                    →
-                  </span>
-
+                  <span className="topic-arrow">→</span>
                 </article>
 
                 <article className="topic-card">
-
                   <div className="topic-icon">
                     <Icon type="user" size={31} />
                   </div>
 
                   <div>
                     <h3>Account &amp; Settings</h3>
-
                     <p>
                       Profile, preferences
                       <br />
@@ -451,21 +254,16 @@ export default function HelpPage() {
                     </p>
                   </div>
 
-                  <span className="topic-arrow">
-                    →
-                  </span>
-
+                  <span className="topic-arrow">→</span>
                 </article>
 
                 <article className="topic-card">
-
                   <div className="topic-icon">
                     <Icon type="phone" size={31} />
                   </div>
 
                   <div>
                     <h3>Technical Support</h3>
-
                     <p>
                       Troubleshooting
                       <br />
@@ -473,39 +271,28 @@ export default function HelpPage() {
                     </p>
                   </div>
 
-                  <span className="topic-arrow">
-                    →
-                  </span>
-
+                  <span className="topic-arrow">→</span>
                 </article>
 
               </div>
-
             </section>
 
-            {/* FAQ */}
+            {/* ================= FAQ ================= */}
 
             <section className="faq-section">
 
               <div className="faq-heading">
-
-                <h2>
-                  Frequently Asked Questions
-                </h2>
+                <h2>Frequently Asked Questions</h2>
 
                 <button type="button">
                   View All&nbsp; →
                 </button>
-
               </div>
 
               <div className="faq-list">
 
                 <details>
-                  <summary>
-                    How do I save a place?
-                  </summary>
-
+                  <summary>How do I save a place?</summary>
                   <p>
                     Open the place you want to save and select the
                     bookmark option to add it to Saved Places.
@@ -513,10 +300,7 @@ export default function HelpPage() {
                 </details>
 
                 <details>
-                  <summary>
-                    Can I use the app offline?
-                  </summary>
-
+                  <summary>Can I use the app offline?</summary>
                   <p>
                     Saved content and selected map information can be
                     accessed offline when available.
@@ -524,10 +308,7 @@ export default function HelpPage() {
                 </details>
 
                 <details>
-                  <summary>
-                    How do I plan an itinerary?
-                  </summary>
-
+                  <summary>How do I plan an itinerary?</summary>
                   <p>
                     Open Curated Itineraries to discover routes,
                     destinations and activities.
@@ -538,17 +319,13 @@ export default function HelpPage() {
                   <summary>
                     How do I change my language settings?
                   </summary>
-
                   <p>
                     Open Settings and choose your preferred language.
                   </p>
                 </details>
 
                 <details>
-                  <summary>
-                    How can I contact support?
-                  </summary>
-
+                  <summary>How can I contact support?</summary>
                   <p>
                     Use Contact Support or Live Chat from the support
                     panel on the right.
@@ -556,100 +333,68 @@ export default function HelpPage() {
                 </details>
 
               </div>
-
             </section>
 
           </div>
 
-          {/* =====================================================
-              RIGHT SUPPORT COLUMN
-          ====================================================== */}
+          {/* ================= SUPPORT COLUMN ================= */}
 
           <aside className="support-column">
 
             <section className="support-card">
 
-              <h3>
-                Still need help?
-              </h3>
+              <h3>Still need help?</h3>
 
               <p className="support-intro">
                 Our team is here for you.
               </p>
 
               <div className="support-row">
-
                 <div className="support-row-icon">
                   <Icon type="mail" size={25} />
                 </div>
 
                 <div className="support-row-text">
-                  <strong>
-                    Contact Support
-                  </strong>
-
-                  <small>
-                    Send us a message
-                  </small>
+                  <strong>Contact Support</strong>
+                  <small>Send us a message</small>
                 </div>
 
-                <span className="support-chevron">
-                  ›
-                </span>
-
+                <span className="support-chevron">›</span>
               </div>
 
               <div className="support-row">
-
                 <div className="support-row-icon">
                   <Icon type="chat" size={25} />
                 </div>
 
                 <div className="support-row-text">
-                  <strong>
-                    Live Chat
-                  </strong>
-
-                  <small>
-                    Chat with our support team
-                  </small>
+                  <strong>Live Chat</strong>
+                  <small>Chat with our support team</small>
                 </div>
 
-                <span className="support-chevron">
-                  ›
-                </span>
-
+                <span className="support-chevron">›</span>
               </div>
 
               <div className="support-row">
-
                 <div className="support-row-icon">
                   <Icon type="map" size={25} />
                 </div>
 
                 <div className="support-row-text">
-                  <strong>
-                    Visit our Help Center
-                  </strong>
-
-                  <small>
-                    Browse all articles
-                  </small>
+                  <strong>Visit our Help Center</strong>
+                  <small>Browse all articles</small>
                 </div>
 
-                <span className="support-chevron">
-                  ›
-                </span>
-
+                <span className="support-chevron">›</span>
               </div>
 
             </section>
 
+            {/* QUOTE */}
+
             <section className="quote-card">
 
-              <div className="quote-leaf">
-                ❧
-              </div>
+              <div className="quote-leaf">❧</div>
 
               <blockquote>
                 “Questions lead
@@ -667,12 +412,13 @@ export default function HelpPage() {
 
             </section>
 
+            {/* IMAGE CARD */}
+
             <section className="explore-support-card">
 
               <div className="explore-support-shade" />
 
               <div className="explore-support-text">
-
                 <h3>
                   Explore more.
                   <br />
@@ -680,7 +426,6 @@ export default function HelpPage() {
                 </h3>
 
                 <span />
-
               </div>
 
             </section>
@@ -689,8 +434,7 @@ export default function HelpPage() {
 
         </div>
 
-      </div>
-
-    </main>
+      </main>
+    </AppShell>
   );
 }

@@ -2,30 +2,7 @@
    HELP PAGE
 ========================================================= */
 
-* {
-  box-sizing: border-box;
-}
-
-/*
-  Your normal Navbar is in layout.js.
-  The reference design has a special navbar that starts
-  AFTER the left sidebar.
-
-  Therefore we hide the global navbar only while
-  the Help page exists.
-*/
-
-body:has(.help-page) > .navbar {
-  display: none !important;
-}
-
-body:has(.help-page) {
-  margin: 0;
-  background: #f7f5f0;
-}
-
 .help-page {
-  --sidebar-width: 320px;
   --cream: #f7f5f0;
   --paper: #fbfaf7;
   --border: #e4e0d7;
@@ -37,331 +14,12 @@ body:has(.help-page) {
   width: 100%;
   min-height: 100vh;
 
-  display: grid;
-  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
-
   background: var(--cream);
   color: var(--text);
 
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* =========================================================
-   LEFT SIDEBAR
-========================================================= */
-
-.help-sidebar {
-  width: var(--sidebar-width);
-  height: 100vh;
-
-  position: sticky;
-  top: 0;
-  align-self: start;
-
-  background: #fbfaf7;
-  border-right: 1px solid #e6e2d9;
-
-  padding: 34px 28px 0;
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  z-index: 100;
-}
-
-/* cache la scrollbar de la sidebar */
-.help-sidebar::-webkit-scrollbar {
-  display: none;
-}
-
-.help-sidebar {
-  scrollbar-width: none;
-}
-
-/* LOGO */
-
-.help-brand {
-  margin-bottom: 39px;
-}
-
-.brand-arabic {
-  color: var(--gold);
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 34px;
-  font-weight: 500;
-
-  line-height: 1;
-
-  margin-bottom: 5px;
-}
-
-.brand-name {
-  max-width: 245px;
-
-  color: #101010;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 23px;
-  line-height: 1.03;
-
-  margin-bottom: 5px;
-}
-
-.help-brand p {
-  margin: 0;
-
-  color: #363636;
-
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-/* MAIN NAV */
-
-.sidebar-main-nav,
-.sidebar-secondary-nav {
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-main-nav a,
-.sidebar-secondary-nav a {
-  width: 100%;
-
-  min-height: 54px;
-
-  display: flex;
-  align-items: center;
-
-  gap: 16px;
-
-  padding: 0 12px;
-
-  border-radius: 8px;
-
-  color: #171717;
-
-  text-decoration: none;
-
-  font-size: 15px;
-  font-weight: 400;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.sidebar-main-nav a:hover,
-.sidebar-secondary-nav a:hover {
-  background: #f1eee8;
-}
-
-.sidebar-main-nav svg,
-.sidebar-secondary-nav svg {
-  flex-shrink: 0;
-}
-
-.sidebar-divider {
-  height: 1px;
-
-  margin: 17px 0;
-
-  background: #dedad1;
-}
-
-/* SELECTED HELP */
-
-.sidebar-secondary-nav .sidebar-selected {
-  position: relative;
-
-  background: #eeece6;
-}
-
-.selected-gold-line {
-  width: 28px;
-  height: 2px;
-
-  position: absolute;
-  right: 18px;
-
-  background: var(--gold);
-}
-
-/* SIDEBAR DECORATIVE */
-.sidebar-decorative {
-  height: 350px;
-  position: relative;
-  margin-top: 10px;
-  overflow: hidden;
-}
-
-.sidebar-handwriting {
-  position: absolute;
-
-  left: 22px;
-  top: 15px;
-
-  color: #302d27;
-
-  font-family:
-    "Snell Roundhand",
-    "Brush Script MT",
-    cursive;
-
-  font-size: 28px;
-  line-height: 1.05;
-
-  font-style: italic;
-
-  transform: rotate(-8deg);
-
-  z-index: 3;
-}
-
-.sidebar-art {
-  position: absolute;
-
-  width: 360px;
-  height: 285px;
-
-  left: 50%;
-  top: 75px;
-
-  transform: translateX(-50%);
-
-  background-image: url("/images/help-sidebar-art.png");
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: contain;
-
-  z-index: 1;
-}
-
-.sidebar-words {
-  position: absolute;
-
-  right: 10px;
-  bottom: 32px;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 6px;
-
-  font-size: 9px;
-
-  letter-spacing: 3px;
-
-  color: #36342f;
-}
-
-.sidebar-words i {
-  width: 22px;
-  height: 2px;
-
-  margin-top: 6px;
-
-  background: var(--gold);
-}
-
-/* =========================================================
-   MAIN RIGHT AREA
-========================================================= */
-
-.help-main {
-  min-width: 0;
-
-  background: var(--cream);
-}
-
-/* =========================================================
-   TOP NAVBAR
-========================================================= */
-
-.help-topbar {
-  width: 100%;
-  height: 70px;
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  background: #fbfaf7;
-
-  border-bottom: 1px solid #eeeae2;
-
-  padding: 0 48px;
-}
-
-.help-topbar-links {
-  display: flex;
-  align-items: center;
-
-  gap: 34px;
-}
-
-.help-topbar-links a {
-  color: #111;
-
-  text-decoration: none;
-
-  font-size: 12px;
-  font-weight: 400;
-
-  white-space: nowrap;
-
-  transition: color 0.2s ease;
-}
-
-.help-topbar-links a:hover {
-  color: #8d7040;
-}
-
-.top-search-link {
-  display: flex;
-  align-items: center;
-
-  gap: 9px;
-}
-
-.top-divider {
-  width: 1px;
-  height: 24px;
-
-  margin-left: 2px;
-
-  background: #ae8b50;
-}
-
-.top-language {
-  display: flex;
-  align-items: center;
-
-  gap: 8px;
-
-  padding: 0;
-
-  border: 0;
-
-  color: #111;
-  background: transparent;
-
-  font-size: 12px;
-
-  cursor: pointer;
-}
 
 /* =========================================================
    HERO
@@ -404,7 +62,6 @@ body:has(.help-page) {
 
 .hero-content {
   position: relative;
-
   z-index: 2;
 
   padding: 37px 39px;
@@ -416,7 +73,6 @@ body:has(.help-page) {
   margin-bottom: 11px;
 
   font-size: 9px;
-
   letter-spacing: 6px;
 }
 
@@ -425,14 +81,10 @@ body:has(.help-page) {
 
   color: white;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family: Georgia, "Times New Roman", serif;
 
   font-size: 48px;
   font-weight: 400;
-
   line-height: 0.98;
 }
 
@@ -443,7 +95,6 @@ body:has(.help-page) {
 
   font-size: 16px;
   font-weight: 300;
-
   line-height: 1.35;
 }
 
@@ -482,6 +133,7 @@ body:has(.help-page) {
   background: #b38e4f;
 }
 
+
 /* =========================================================
    BODY
 ========================================================= */
@@ -504,8 +156,9 @@ body:has(.help-page) {
   min-width: 0;
 }
 
+
 /* =========================================================
-   SEARCH BAR
+   SEARCH
 ========================================================= */
 
 .help-search {
@@ -533,11 +186,12 @@ body:has(.help-page) {
   align-items: center;
 
   margin-right: 13px;
+
+  flex-shrink: 0;
 }
 
 .help-search input {
   flex: 1;
-
   min-width: 0;
 
   border: 0;
@@ -548,13 +202,11 @@ body:has(.help-page) {
   color: #333;
 
   font-family: inherit;
-
   font-size: 13px;
 }
 
 .help-search input::placeholder {
   color: #8a8884;
-
   opacity: 1;
 }
 
@@ -572,7 +224,6 @@ body:has(.help-page) {
   color: white;
 
   font-family: inherit;
-
   font-size: 13px;
 
   cursor: pointer;
@@ -583,6 +234,7 @@ body:has(.help-page) {
 .help-search button:hover {
   background: #56613b;
 }
+
 
 /* =========================================================
    HEADINGS
@@ -598,10 +250,7 @@ body:has(.help-page) {
 
   color: #181715;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family: Georgia, "Times New Roman", serif;
 
   font-size: 26px;
   font-weight: 500;
@@ -614,6 +263,7 @@ body:has(.help-page) {
 
   font-size: 12px;
 }
+
 
 /* =========================================================
    TOPIC CARDS
@@ -638,7 +288,7 @@ body:has(.help-page) {
 
   gap: 14px;
 
-  padding: 17px 17px;
+  padding: 17px;
 
   border: 1px solid #e6e2da;
   border-radius: 8px;
@@ -671,15 +321,10 @@ body:has(.help-page) {
 
   color: #1b1916;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family: Georgia, "Times New Roman", serif;
 
   font-size: 15px;
   font-weight: 500;
-
-  white-space: nowrap;
 }
 
 .topic-card p {
@@ -702,6 +347,7 @@ body:has(.help-page) {
   color: #413e37;
 }
 
+
 /* =========================================================
    FAQ
 ========================================================= */
@@ -714,6 +360,8 @@ body:has(.help-page) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  gap: 15px;
 
   margin-bottom: 9px;
 }
@@ -789,10 +437,7 @@ body:has(.help-page) {
 .faq-list details p {
   margin: 0;
 
-  padding:
-    0
-    17px
-    14px;
+  padding: 0 17px 14px;
 
   color: #706e68;
 
@@ -800,8 +445,9 @@ body:has(.help-page) {
   line-height: 1.45;
 }
 
+
 /* =========================================================
-   RIGHT SUPPORT COLUMN
+   SUPPORT COLUMN
 ========================================================= */
 
 .support-column {
@@ -811,7 +457,10 @@ body:has(.help-page) {
   gap: 13px;
 }
 
-/* SUPPORT CARD */
+
+/* =========================================================
+   SUPPORT CARD
+========================================================= */
 
 .support-card {
   padding: 20px 19px 14px;
@@ -825,10 +474,7 @@ body:has(.help-page) {
 .support-card h3 {
   margin: 0 0 4px;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family: Georgia, "Times New Roman", serif;
 
   font-size: 19px;
   font-weight: 500;
@@ -888,7 +534,10 @@ body:has(.help-page) {
   font-size: 19px;
 }
 
-/* QUOTE CARD */
+
+/* =========================================================
+   QUOTE CARD
+========================================================= */
 
 .quote-card {
   min-height: 190px;
@@ -921,10 +570,7 @@ body:has(.help-page) {
 
   color: #312e28;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family: Georgia, "Times New Roman", serif;
 
   font-size: 16px;
   line-height: 1.25;
@@ -953,7 +599,10 @@ body:has(.help-page) {
   letter-spacing: 0.5px;
 }
 
-/* LOWER IMAGE CARD */
+
+/* =========================================================
+   LOWER IMAGE CARD
+========================================================= */
 
 .explore-support-card {
   height: 176px;
@@ -973,8 +622,6 @@ body:has(.help-page) {
   background-position: center;
   background-repeat: no-repeat;
 }
-
-
 
 .explore-support-shade {
   position: absolute;
@@ -1002,14 +649,10 @@ body:has(.help-page) {
 .explore-support-text h3 {
   margin: 0;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family: Georgia, "Times New Roman", serif;
 
   font-size: 19px;
   font-weight: 400;
-
   line-height: 1.15;
 }
 
@@ -1024,23 +667,12 @@ body:has(.help-page) {
   background: #cca054;
 }
 
+
 /* =========================================================
    LARGE DESKTOP
 ========================================================= */
 
 @media (min-width: 1500px) {
-
-  .help-page {
-    --sidebar-width: 330px;
-  }
-
-  .help-sidebar {
-    width: 330px;
-  }
-
-  .help-topbar {
-    padding-right: 58px;
-  }
 
   .help-body {
     grid-template-columns:
@@ -1054,38 +686,12 @@ body:has(.help-page) {
   }
 }
 
+
 /* =========================================================
    TABLET
 ========================================================= */
 
 @media (max-width: 1120px) {
-
-  .help-page {
-    --sidebar-width: 250px;
-  }
-
-  .help-sidebar {
-    width: 250px;
-
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .brand-arabic {
-    font-size: 29px;
-  }
-
-  .brand-name {
-    font-size: 20px;
-  }
-
-  .help-topbar-links {
-    gap: 18px;
-  }
-
-  .help-topbar-links a {
-    font-size: 10px;
-  }
 
   .help-body {
     grid-template-columns: 1fr;
@@ -1095,47 +701,28 @@ body:has(.help-page) {
     display: grid;
 
     grid-template-columns:
-      repeat(3, 1fr);
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .topics-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 }
+
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
-@media (max-width: 800px) {
-
-  .help-page {
-    display: block;
-  }
-
-  .help-sidebar {
-    display: none;
-  }
-
-  .help-topbar {
-    height: auto;
-
-    padding: 16px 20px;
-  }
-
-  .help-topbar-links {
-    width: 100%;
-
-    flex-wrap: wrap;
-    justify-content: center;
-
-    gap: 14px 20px;
-  }
+@media (max-width: 768px) {
 
   .help-hero {
     height: 215px;
   }
 
   .hero-content {
-    padding:
-      34px
-      22px;
+    padding: 34px 22px;
   }
 
   .hero-content h1 {
@@ -1151,10 +738,7 @@ body:has(.help-page) {
   }
 
   .help-body {
-    padding:
-      16px
-      16px
-      30px;
+    padding: 16px 16px 30px;
   }
 
   .topics-grid {
@@ -1171,5 +755,42 @@ body:has(.help-page) {
 
   .help-search button {
     width: 90px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .hero-content h1 {
+    font-size: 34px;
+  }
+
+  .hero-content p br {
+    display: none;
+  }
+
+  .help-search {
+    padding-left: 12px;
+  }
+
+  .help-search input {
+    font-size: 11px;
+  }
+
+  .help-search button {
+    width: 76px;
+  }
+
+  .topics-section h2,
+  .faq-section h2 {
+    font-size: 22px;
+  }
+
+  .faq-heading {
+    align-items: flex-start;
   }
 }
