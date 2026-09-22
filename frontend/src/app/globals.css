@@ -1,26 +1,239 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f2ea;
+  --foreground: #233238;
+  --ink-muted: #697276;
+
+  --sidebar: #faf8f2;
+  --sidebar-ink: #24291f;
+  --sidebar-muted: #6f7266;
+  --sidebar-border: #e6e1d2;
+
+  --accent: #4c6142;
+  --accent-soft: #dfe4d2;
+  --accent-gold: #bd9752;
 }
+
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+* {
+  box-sizing: border-box;
 }
 
+
+html,
 body {
+  min-height: 100%;
+}
+
+
+body {
+  margin: 0;
+
   background: var(--background);
+
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+
+button,
+a {
+  font: inherit;
+}
+
+
+/* =========================================
+   APP
+========================================= */
+
+.app-shell {
+  width: 100%;
+
+  min-height: 100vh;
+
+  display: flex;
+}
+
+
+.app-main {
+  flex: 1;
+
+  min-width: 0;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+.page-content {
+  width: 100%;
+
+  min-width: 0;
+
+  flex: 1;
+}
+
+
+/* =========================================
+   WELCOME PAGE
+========================================= */
+
+.welcome-page {
+  width: 100%;
+
+  min-height: calc(100vh - 64px);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 40px;
+
+  padding: 9vw 11vw;
+
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(228, 163, 90, 0.2),
+      transparent 28%
+    ),
+    var(--background);
+}
+
+
+.welcome-copy {
+  max-width: 620px;
+}
+
+
+.eyebrow {
+  color: #ae7040;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+
+  text-transform: uppercase;
+}
+
+
+.welcome-page h1 {
+  max-width: 600px;
+
+  margin: 18px 0 24px;
+
+  color: var(--sidebar-ink);
+
+  font-size: clamp(42px, 6vw, 82px);
+
+  font-weight: 500;
+
+  letter-spacing: -0.04em;
+
+  line-height: 0.98;
+}
+
+
+.welcome-description {
+  max-width: 450px;
+
+  color: var(--ink-muted);
+
+  font-size: 16px;
+
+  line-height: 1.7;
+}
+
+
+/* STAMP */
+
+.welcome-stamp {
+  width: 170px;
+  height: 170px;
+
+  display: grid;
+
+  place-items: center;
+  align-content: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid rgba(35, 50, 56, 0.3);
+
+  border-radius: 50%;
+
+  color: var(--sidebar-ink);
+
+  transform: rotate(8deg);
+}
+
+
+.welcome-stamp span {
+  color: #ae7040;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+}
+
+
+.welcome-stamp small {
+  margin-top: 8px;
+
+  font-size: 10px;
+
+  letter-spacing: 0.18em;
+
+  line-height: 1.5;
+
+  text-align: center;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .app-shell {
+    display: block;
+  }
+
+
+  .app-main {
+    width: 100%;
+  }
+
+
+  .welcome-page {
+    min-height: calc(100vh - 60px);
+
+    display: block;
+
+    padding: 14vh 10vw 12vh;
+  }
+
+
+  .welcome-stamp {
+    margin-top: 70px;
+  }
 }
