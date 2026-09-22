@@ -1,23 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
 
 export default function AppShell({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="app-shell">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      <div className="app-content">
-        <header className="mobile-header">
-          <button className="menu-button" type="button" aria-label="Open navigation" aria-expanded={isSidebarOpen} onClick={() => setIsSidebarOpen(true)}>
-            <span /><span /><span />
-          </button>
-          <span className="mobile-brand">Discover Lebanon</span>
-        </header>
-        {children}
+
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
+      <div className="app-main">
+
+        <Navbar
+          onMenuClick={() => setSidebarOpen(true)}
+        />
+
+        <main className="page-content">
+          {children}
+        </main>
+
       </div>
+
     </div>
   );
 }
