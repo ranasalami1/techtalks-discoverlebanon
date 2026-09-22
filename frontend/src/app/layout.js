@@ -1,4 +1,11 @@
-import { Geist, Geist_Mono, Playfair_Display, Mrs_Saint_Delafield, Amiri } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Playfair_Display,
+  Caveat,
+  Aref_Ruqaa,
+} from "next/font/google";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -11,35 +18,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-serif",
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
   subsets: ["latin"],
 });
 
-const script = Mrs_Saint_Delafield({
-  variable: "--font-script",
-  weight: "400",
-  subsets: ["latin"],
-});
-
-const arabic = Amiri({
-  variable: "--font-arabic",
-  weight: ["400", "700"],
+const arefRuqaa = Aref_Ruqaa({
+  variable: "--font-aref-ruqaa",
   subsets: ["arabic"],
+  weight: ["400", "700"],
 });
 
 export const metadata = {
   title: "Discover Lebanon",
-  description: "Interactive Heritage & Activity Guide",
+  description: "Explore the places and stories of Lebanon.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${script.variable} ${arabic.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${caveat.variable} ${arefRuqaa.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-cream text-ink">{children}</body>
+      <body className="min-h-full">
+        {children}
+      </body>
     </html>
   );
 }
