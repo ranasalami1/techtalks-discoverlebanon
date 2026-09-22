@@ -1,742 +1,796 @@
-* {
-  box-sizing: border-box;
-}
-
-body:has(.heritage-page) > .navbar {
-  display: none !important;
-}
-
-body:has(.heritage-page) {
-  margin: 0;
-  background: #f7f5f0;
-}
+/* =====================================================
+   HERITAGE STORIES
+===================================================== */
 
 .heritage-page {
-  --sidebar-width: 275px;
-  --cream: #f7f5f0;
-  --paper: #fbfaf7;
-  --border: #e5e1d8;
-  --text: #171717;
-  --muted: #706e69;
-  --gold: #b28d4f;
-  --olive: #657047;
+  --heritage-bg: #f7f5ef;
+  --heritage-card: #fbfaf7;
+  --heritage-border: #e4e0d7;
+  --heritage-text: #26231e;
+  --heritage-muted: #716d65;
+  --heritage-olive: #687254;
+  --heritage-gold: #b49258;
 
   width: 100%;
+  min-width: 0;
   min-height: 100vh;
 
-  display: grid;
-  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
-
-  background: var(--cream);
-  color: var(--text);
+  background: var(--heritage-bg);
+  color: var(--heritage-text);
 }
 
-/* =========================
-   LEFT SIDEBAR
-========================= */
 
-.heritage-sidebar {
-  width: var(--sidebar-width);
-  height: 100vh;
-
-  position: sticky;
-  top: 0;
-  align-self: start;
-
-  background: #fbfaf7;
-  border-right: 1px solid #e5e1d8;
-
-  padding: 28px 28px 0;
-
-  overflow: hidden;
-
-  z-index: 100;
-}
-
-.heritage-brand {
-  margin-bottom: 28px;
-}
-
-.brand-arabic {
-  color: var(--gold);
-
-  font-family: Georgia, "Times New Roman", serif;
-
-  font-size: 31px;
-  line-height: 1;
-
-  margin-bottom: 4px;
-}
-
-.brand-name {
-  font-family: Georgia, "Times New Roman", serif;
-
-  font-size: 21px;
-  line-height: 1.05;
-
-  margin-bottom: 4px;
-}
-
-.heritage-brand p {
-  margin: 0;
-
-  color: #444;
-
-  font-size: 11px;
-}
-
-.heritage-side-nav {
-  display: flex;
-  flex-direction: column;
-}
-
-.heritage-side-nav a {
-  min-height: 49px;
-
-  display: flex;
-  align-items: center;
-
-  gap: 15px;
-
-  padding: 0 12px;
-
-  color: #181818;
-
-  text-decoration: none;
-
-  border-radius: 7px;
-
-  font-size: 14px;
-
-  position: relative;
-}
-
-.heritage-side-nav a:hover {
-  background: #f0ede7;
-}
-
-.side-icon {
-  width: 24px;
-
-  font-size: 22px;
-
-  text-align: center;
-}
-
-.heritage-side-nav .side-active {
-  background: #ebe9e4;
-}
-
-.side-active i {
-  position: absolute;
-
-  right: 14px;
-
-  width: 27px;
-  height: 2px;
-
-  background: var(--gold);
-}
-
-.side-divider {
-  height: 1px;
-
-  margin: 17px 0;
-
-  background: #ddd9d0;
-}
-
-/* BOTTOM SIDEBAR */
-
-.heritage-sidebar-bottom {
-  height: 330px;
-
-  position: relative;
-
-  margin-top: 15px;
-
-  overflow: hidden;
-}
-
-.heritage-sidebar-bottom > p {
-  position: absolute;
-
-  left: 22px;
-  top: 10px;
-
-  z-index: 3;
-
-  margin: 0;
-
-  color: #302d27;
-
-  font-family:
-    "Snell Roundhand",
-    "Brush Script MT",
-    cursive;
-
-  font-size: 27px;
-  line-height: 1.05;
-
-  font-style: italic;
-
-  transform: rotate(-7deg);
-}
-
-.sidebar-image {
-  position: absolute;
-
-  width: 320px;
-  height: 250px;
-
-  left: 50%;
-  top: 75px;
-
-  transform: translateX(-50%);
-
-  background-image: url("/images/heritage-sidebar-art.jpg") !important;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  z-index: 1;
-}
-
-.sidebar-small-words {
-  position: absolute;
-
-  right: 8px;
-  bottom: 18px;
-
-  z-index: 3;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 5px;
-
-  font-size: 8px;
-  letter-spacing: 2.5px;
-}
-
-/* =========================
-   MAIN
-========================= */
-
-.heritage-main {
-  min-width: 0;
-}
-
-/* =========================
-   TOP NAVBAR
-========================= */
-
-.heritage-topbar {
-  height: 66px;
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  padding: 0 48px;
-
-  background: #fbfaf7;
-
-  border-bottom: 1px solid #eeeae2;
-}
-
-.heritage-topbar nav {
-  display: flex;
-  align-items: center;
-
-  gap: 31px;
-}
-
-.heritage-topbar a {
-  color: #111;
-
-  text-decoration: none;
-
-  font-size: 11px;
-
-  white-space: nowrap;
-}
-
-.heritage-topbar .top-active {
-  position: relative;
-}
-
-.heritage-topbar .top-active::after {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: -13px;
-
-  height: 2px;
-
-  background: var(--gold);
-}
-
-.top-search {
-  display: flex;
-  align-items: center;
-
-  gap: 7px;
-}
-
-.top-search span {
-  font-size: 21px;
-}
-
-.top-divider {
-  width: 1px;
-  height: 22px;
-
-  background: #b28d4f;
-}
-
-.heritage-topbar button {
-  border: 0;
-
-  background: transparent;
-
-  font-size: 11px;
-
-  cursor: pointer;
-}
-
-/* =========================
+/* =====================================================
    HERO
-========================= */
+===================================================== */
 
 .heritage-hero {
-  width: 100%;
-  height: 195px;
   position: relative;
+
+  width: 100%;
+  height: 200px;
+
   overflow: hidden;
 
-  background-image: url("/images/heritage-hero.jpg") !important;
+  background-image: url("/images/heritage-hero.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: center 48%;
   background-repeat: no-repeat;
 }
+
 
 .heritage-hero-overlay {
   position: absolute;
   inset: 0;
 
-  background:
-    linear-gradient(
-      90deg,
-      rgba(247,245,240,0.36),
-      transparent 65%
-    );
+  background: linear-gradient(
+    90deg,
+    rgba(250, 248, 242, 0.94) 0%,
+    rgba(250, 248, 242, 0.72) 27%,
+    rgba(250, 248, 242, 0.15) 55%,
+    rgba(250, 248, 242, 0.03) 100%
+  );
 }
+
+
+/* HERO LEFT TEXT */
 
 .heritage-hero-content {
   position: relative;
-
   z-index: 2;
 
-  padding: 30px 34px;
+  width: 50%;
+
+  padding: 31px 0 0 32px;
 }
+
 
 .heritage-label {
   display: block;
 
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 
-  color: #3f3b35;
+  color: #4c4942;
 
   font-size: 8px;
-  font-weight: 400;
+  font-weight: 500;
 
-  letter-spacing: 6px;
+  letter-spacing: 5px;
 }
+
 
 .heritage-hero-content h1 {
   margin: 0;
 
-  color: #171513;
+  color: #171512;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family: Georgia, "Times New Roman", serif;
 
-  font-size: 46px;
+  font-size: 47px;
   font-weight: 400;
 
-  line-height: 0.95;
+  line-height: 0.92;
 
-  letter-spacing: -1px;
+  letter-spacing: -1.4px;
 }
+
+
+.heritage-hero-content h3 {
+  margin: 8px 0 3px;
+
+  color: #29251f;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 16px;
+  font-weight: 500;
+
+  line-height: 1.1;
+}
+
 
 .heritage-hero-content p {
   margin: 0;
 
-  color: #4e4942;
+  color: #5f5a52;
 
-  font-size: 12px;
-  line-height: 1.35;
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 11px;
+
+  line-height: 1.25;
 }
+
+
+/* HERO HANDWRITING */
 
 .heritage-script {
   position: absolute;
 
-  top: 25px;
-  right: 75px;
-
   z-index: 3;
 
-  color: #3a332a;
+  top: 29px;
+  right: 63px;
+
+  color: #40392f;
 
   font-family:
-    "Snell Roundhand",
     "Brush Script MT",
+    "Segoe Script",
     cursive;
 
   font-size: 22px;
-  line-height: 1.05;
-
   font-style: italic;
 
-  transform: rotate(-7deg);
+  line-height: 1;
 
   text-align: center;
+
+  transform: rotate(-8deg);
 }
+
 
 .heritage-script span {
-  display: block;
+  display: inline-block;
 
-  width: 32px;
-  height: 2px;
+  margin-left: 26px;
 
-  margin: 9px auto 0;
-
-  background: #b28d4f;
+  font-size: 21px;
 }
-/* =========================
+
+
+/* =====================================================
    CONTENT
-========================= */
+===================================================== */
 
 .heritage-content {
-  padding: 8px 21px 10px;
+  padding: 7px 18px 14px;
 }
 
-/* =========================
-   FILTER BUTTONS
-========================= */
+
+/* =====================================================
+   FILTER BAR
+===================================================== */
 
 .heritage-filters {
+  display: grid;
+
+  grid-template-columns:
+    0.85fr
+    1.2fr
+    1.25fr
+    1.1fr
+    1.1fr
+    0.85fr
+    0.85fr
+    0.95fr;
+
+  gap: 7px;
+
   width: 100%;
+
+  margin-bottom: 10px;
+}
+
+
+.heritage-filters button {
+  height: 37px;
 
   display: flex;
   align-items: center;
+  justify-content: center;
 
   gap: 8px;
 
-  margin-bottom: 10px;
-
-  overflow-x: auto;
-}
-
-.heritage-filters::-webkit-scrollbar {
-  display: none;
-}
-
-.heritage-filters button {
-  min-height: 36px;
-
-  padding: 0 16px;
+  padding: 0 8px;
 
   border: 0;
-  border-radius: 18px;
+  border-radius: 11px;
 
   background: #efede8;
 
-  color: #393631;
+  color: #37342e;
 
-  font-size: 10px;
+  font-family: inherit;
+
+  font-size: 9px;
+  font-weight: 400;
 
   white-space: nowrap;
 
   cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
 }
+
+
+.heritage-filters button:hover {
+  background: #e5e2db;
+}
+
+
+.heritage-filters button:active {
+  transform: scale(0.98);
+}
+
 
 .heritage-filters .filter-active {
-  background: var(--olive);
-
-  color: white;
+  background: var(--heritage-olive);
+  color: #ffffff;
 }
 
-/* =========================
-   STORY GRID
-========================= */
+
+.heritage-filters .filter-active:hover {
+  background: #5d674b;
+}
+
+
+.filter-icon {
+  font-size: 16px;
+
+  line-height: 1;
+}
+
+
+/* =====================================================
+   GRID
+===================================================== */
 
 .heritage-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
-  gap: 12px;
+  gap: 10px 11px;
 }
 
-/* CARD */
+
+/* =====================================================
+   CARDS
+===================================================== */
 
 .heritage-card {
   min-width: 0;
-
   overflow: hidden;
-
-  border: 1px solid #e4e0d7;
-  border-radius: 7px;
-
-  background: #fbfaf7;
-
-  box-shadow:
-    0 3px 12px rgba(0, 0, 0, 0.025);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e3dfd6;
+  border-radius: 9px;
+  background: var(--heritage-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.035);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
+.heritage-card:hover {
+  transform: translateY(-3px);
+  border-color: #d7d1c5;
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* CARD IMAGE */
 .heritage-card-image {
   width: 100%;
-  height: 124px;
-
+  height: 135px;
+  flex-shrink: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
-.heritage-hero-content h3 {
-  margin: 7px 0 4px;
-
-  color: #28241f;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 17px;
-  font-weight: 500;
+  transition: transform 300ms ease;
 }
 
+.heritage-card:hover .heritage-card-image {
+  transform: scale(1.025);
+}
+
+/* CARD BODY */
 .heritage-card-body {
-  min-height: 122px;
-
-  position: relative;
-
-  padding: 9px 12px 25px;
+  min-height: 125px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px 9px;
 }
 
+/* CATEGORY */
 .story-category {
   display: block;
-
-  margin-bottom: 4px;
-
-  color: #77736c;
-
+  margin-bottom: 5px;
+  color: #81796d;
   font-size: 7px;
-  letter-spacing: 1.5px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 1.6px;
 }
 
+/* CARD TITLE */
 .heritage-card h2 {
-  margin: 0 0 5px;
-
+  margin: 0 0 6px;
+  color: #29251f;
   font-family: Georgia, "Times New Roman", serif;
-
   font-size: 15px;
-  font-weight: 500;
-
-  line-height: 1.12;
+  font-weight: 400;
+  line-height: 1.08;
 }
 
+/* DESCRIPTION */
 .heritage-card p {
   margin: 0;
-
-  color: #6e6b64;
-
-  font-size: 9px;
-  line-height: 1.35;
+  color: #6d685f;
+  font-family: Arial, sans-serif;
+  font-size: 9.5px;
+  line-height: 1.4;
 }
 
+/* READ MORE */
 .heritage-card-body > a {
-  position: absolute;
-
-  right: 11px;
-  bottom: 8px;
-
-  color: #494640;
-
-  text-decoration: underline;
-
+  margin-top: auto;
+  padding-top: 9px;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4e4a43;
   font-family: Georgia, "Times New Roman", serif;
-
   font-size: 9px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 150ms ease, gap 150ms ease;
+}
+
+.heritage-card-body > a:hover {
+  color: var(--heritage-olive);
+  gap: 9px;
 }
 
 .heritage-card-body > a span {
   text-decoration: none;
+  font-size: 12px;
 }
 
-/* =========================
-   BOTTOM BANNER
-========================= */
+/* =====================================================
+   BOTTOM QUOTE BANNER
+===================================================== */
 
-.heritage-footer-art {
-  height: 110px;
-
+.heritage-bottom-banner {
   position: relative;
+
+  height: 100px;
+
+  display: grid;
+
+  grid-template-columns: 150px 1fr 44%;
+
+  align-items: center;
+
+  margin-top: 9px;
+
   overflow: hidden;
 
-  margin: 0 21px 15px;
+  border: 1px solid #e5e1d8;
+  border-radius: 6px;
 
-  border-radius: 5px;
-
-  background-image: url("/images/heritage-footer.jpg") !important;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #f3f0e9;
 }
 
-.footer-art-overlay {
+
+/* =====================================================
+   LEAF DECORATION
+===================================================== */
+
+.heritage-leaves {
+  position: relative;
+
+  width: 130px;
+  height: 100px;
+
+  margin-left: 10px;
+
+  overflow: hidden;
+}
+
+
+.leaf-stem {
   position: absolute;
-  inset: 0;
 
-  background:
-    linear-gradient(
-      90deg,
-      rgba(247,245,240,0.88) 0%,
-      rgba(247,245,240,0.64) 45%,
-      rgba(247,245,240,0.05) 100%
-    );
+  width: 2px;
+  height: 120px;
+
+  left: 47px;
+  top: -4px;
+
+  background: #65705a;
+
+  transform: rotate(28deg);
+  transform-origin: bottom;
 }
 
-.footer-art-text {
+
+.leaf {
+  position: absolute;
+
+  width: 46px;
+  height: 17px;
+
+  border: 1px solid #65705a;
+
+  border-radius: 100% 0 100% 0;
+
+  background: rgba(101, 112, 90, 0.08);
+}
+
+
+.leaf-1 {
+  left: 45px;
+  top: 12px;
+
+  transform: rotate(-24deg);
+}
+
+
+.leaf-2 {
+  left: 25px;
+  top: 34px;
+
+  transform: rotate(35deg) scaleX(-1);
+}
+
+
+.leaf-3 {
+  left: 61px;
+  top: 49px;
+
+  transform: rotate(-23deg);
+}
+
+
+.leaf-4 {
+  left: 20px;
+  top: 68px;
+
+  transform: rotate(32deg) scaleX(-1);
+}
+
+
+/* =====================================================
+   BOTTOM QUOTE
+===================================================== */
+
+.heritage-bottom-quote {
   position: relative;
 
   z-index: 2;
 
-  padding: 20px 31px;
+  padding-left: 6px;
 }
 
-.footer-art-text > span {
-  font-size: 7px;
 
-  letter-spacing: 3px;
+.heritage-bottom-quote p {
+  margin: 0;
 
-  color: #69655e;
-}
-
-.footer-art-text h2 {
-  margin: 6px 0 7px;
+  color: #5d584f;
 
   font-family: Georgia, "Times New Roman", serif;
 
-  font-size: 19px;
-  font-weight: 400;
-
+  font-size: 14px;
   font-style: italic;
+
+  line-height: 1.5;
 }
 
-.footer-art-text i {
+
+.heritage-bottom-quote > span {
   display: block;
 
-  width: 33px;
+  width: 39px;
   height: 2px;
 
-  background: var(--gold);
+  margin-top: 8px;
+
+  background: var(--heritage-gold);
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+
+/* =====================================================
+   BOTTOM LANDSCAPE ART
+===================================================== */
+
+.heritage-bottom-art {
+  position: absolute;
+
+  top: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 48%;
+
+  background-image: url("/images/heritage-footer.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  opacity: 0.48;
+}
+
+
+.heritage-bottom-art::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    90deg,
+    #f3f0e9 0%,
+    rgba(243, 240, 233, 0.7) 18%,
+    rgba(243, 240, 233, 0.18) 55%,
+    rgba(243, 240, 233, 0.06) 100%
+  );
+}
+
+
+/* RIGHT WORDS */
+
+.heritage-bottom-words {
+  position: absolute;
+
+  z-index: 3;
+
+  top: 15px;
+  right: 17px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+
+.heritage-bottom-words span {
+  color: #5e594f;
+
+  font-size: 6px;
+  font-weight: 500;
+
+  letter-spacing: 3px;
+}
+
+
+/* =====================================================
+   RESPONSIVE — SMALL DESKTOP / TABLET
+===================================================== */
 
 @media (max-width: 1150px) {
 
-  .heritage-page {
-    --sidebar-width: 230px;
+  .heritage-filters {
+    display: flex;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
   }
 
-  .heritage-sidebar {
-    width: 230px;
 
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .heritage-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .heritage-topbar nav {
-    gap: 18px;
-  }
-
-  .heritage-topbar a {
-    font-size: 9px;
-  }
-}
-
-@media (max-width: 760px) {
-
-  .heritage-page {
-    display: block;
-  }
-
-  .heritage-sidebar {
+  .heritage-filters::-webkit-scrollbar {
     display: none;
   }
 
-  .heritage-topbar {
-    height: auto;
 
-    padding: 14px 15px;
+  .heritage-filters button {
+    min-width: max-content;
+
+    padding: 0 15px;
   }
 
-  .heritage-topbar nav {
-    width: 100%;
 
-    flex-wrap: wrap;
-    justify-content: center;
+  .heritage-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+
+  .heritage-card-image {
+    height: 165px;
+  }
+
+
+  .heritage-card-body {
+    min-height: 110px;
+  }
+
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 850px) {
+
+  .heritage-hero {
+    height: 205px;
+  }
+
+
+  .heritage-hero-content {
+    width: 65%;
+
+    padding-left: 25px;
+  }
+
+
+  .heritage-hero-content h1 {
+    font-size: 40px;
+  }
+
+
+  .heritage-script {
+    right: 25px;
+
+    font-size: 18px;
+  }
+
+
+  .heritage-bottom-banner {
+    grid-template-columns: 110px 1fr;
+
+    height: 105px;
+  }
+
+
+  .heritage-leaves {
+    transform: scale(0.8);
+
+    transform-origin: left center;
+  }
+
+
+  .heritage-bottom-art {
+    width: 45%;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 650px) {
+
+  .heritage-hero {
+    height: 210px;
+
+    background-position: 58% center;
+  }
+
+
+  .heritage-hero-overlay {
+    background: linear-gradient(
+      90deg,
+      rgba(250, 248, 242, 0.94),
+      rgba(250, 248, 242, 0.55),
+      rgba(250, 248, 242, 0.1)
+    );
+  }
+
+
+  .heritage-hero-content {
+    width: 90%;
+
+    padding: 29px 18px 0;
+  }
+
+
+  .heritage-label {
+    font-size: 7px;
+
+    letter-spacing: 3px;
+  }
+
+
+  .heritage-hero-content h1 {
+    font-size: 36px;
+  }
+
+
+  .heritage-hero-content h3 {
+    font-size: 14px;
+  }
+
+
+  .heritage-hero-content p {
+    max-width: 300px;
+
+    font-size: 10px;
+  }
+
 
   .heritage-script {
     display: none;
   }
 
-  .heritage-hero {
-    height: 215px;
+
+  .heritage-content {
+    padding: 8px 12px 14px;
   }
 
-.heritage-hero-content {
-  position: relative;
-  z-index: 2;
-
-  padding: 28px 34px;
-
-  max-width: 620px;
-}
-
-  .heritage-hero-content h1 {
-    font-size: 38px;
-  }
 
   .heritage-grid {
     grid-template-columns: 1fr;
+
+    gap: 12px;
   }
 
-  .heritage-content {
-    padding-left: 15px;
-    padding-right: 15px;
+
+  .heritage-card-image {
+    height: 190px;
   }
 
-  .heritage-footer-art {
-    margin-left: 15px;
-    margin-right: 15px;
+
+  .heritage-card-body {
+    min-height: 105px;
+
+    padding: 8px 11px 26px;
   }
+
+
+  .heritage-card h2 {
+    font-size: 16px;
+  }
+
+
+  .heritage-card p {
+    font-size: 9px;
+  }
+
+
+  .heritage-bottom-banner {
+    display: flex;
+
+    min-height: 120px;
+    height: auto;
+
+    padding: 20px;
+  }
+
+
+  .heritage-leaves {
+    display: none;
+  }
+
+
+  .heritage-bottom-quote {
+    padding: 0;
+
+    z-index: 4;
+  }
+
+
+  .heritage-bottom-art {
+    width: 100%;
+
+    opacity: 0.25;
+  }
+
 }

@@ -1,238 +1,262 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import AppShell from "@/components/AppShell";
 import "./heritage.css";
+
+/* =====================================================
+   HERITAGE STORIES DATA
+===================================================== */
 
 const stories = [
   {
+    slug: "byblos",
     image: "/images/byblos.jpg",
     category: "ANCIENT HISTORY",
-    title: "Byblos: Where History Began",
+    filter: "ancient-history",
+    title: "Byblos: A Journey Through Time",
     description:
-      "Walk through one of the world's oldest continuously inhabited cities and discover layers of Lebanon's ancient past.",
+      "One of the world's oldest continuously inhabited cities, where civilizations left their mark.",
   },
   {
+    slug: "keepers-of-tradition",
     image: "/images/keepers.jpg",
     category: "PEOPLE",
-    title: "Keepers of Tradition",
+    filter: "people",
+    title: "The Keepers of Tradition",
     description:
-      "Meet the people preserving Lebanon's traditions, crafts and stories for future generations.",
+      "Meet the artisans, farmers and locals who keep Lebanon's heritage alive, generation after generation.",
   },
   {
+    slug: "villages-on-the-mountain",
     image: "/images/villages.jpg",
-    category: "TRADITIONAL LIFE",
-    title: "Life in the Mountain Villages",
+    category: "ARCHITECTURE",
+    filter: "architecture",
+    title: "The Villages on the Mountain",
     description:
-      "Discover the rhythms, customs and daily life that shaped generations across Lebanon's mountains.",
+      "Stone houses, narrow streets and timeless landscapes that tell stories of resilience and belonging.",
   },
   {
+    slug: "taste-of-heritage",
     image: "/images/cuisine.jpg",
     category: "CUISINE",
-    title: "Flavors Passed Down",
+    filter: "cuisine",
+    title: "A Taste of Heritage",
     description:
-      "Explore family recipes, local ingredients and the traditions behind Lebanon's celebrated cuisine.",
+      "From traditional recipes to local ingredients, Lebanese cuisine is a story of land, people and culture.",
   },
   {
+    slug: "festivals-that-unite",
     image: "/images/festivals.jpg",
-    category: "FESTIVALS",
-    title: "Celebrations Through Time",
+    category: "TRADITIONS",
+    filter: "festivals",
+    title: "Festivals That Unite",
     description:
-      "From village gatherings to cultural festivals, discover the celebrations that bring communities together.",
+      "Celebrations, music and rituals that reflect the spirit and diversity of Lebanon.",
   },
   {
+    slug: "sacred-landscapes",
     image: "/images/landscapes.jpg",
-    category: "ARCHITECTURE",
-    title: "Built Into the Landscape",
+    category: "NATURE & HERITAGE",
+    filter: "traditional-life",
+    title: "Sacred Landscapes",
     description:
-      "Explore stone houses, arches and historic structures shaped by Lebanon's diverse landscapes.",
+      "Forests, valleys and natural wonders that have inspired generations and shaped our history.",
   },
   {
+    slug: "hands-that-create",
     image: "/images/crafts.jpg",
     category: "ARTS & CRAFTS",
-    title: "Hands of Heritage",
+    filter: "arts-crafts",
+    title: "Hands That Create",
     description:
-      "Discover traditional craftsmanship and the artisans keeping centuries-old skills alive.",
+      "The story behind Lebanon's traditional crafts — from pottery to weaving, a legacy of skill and soul.",
   },
   {
+    slug: "stories-from-the-land",
     image: "/images/stories-land.jpg",
     category: "PEOPLE",
-    title: "Stories of the Land",
+    filter: "people",
+    title: "Stories from the Land",
     description:
-      "Listen to the memories and experiences connecting Lebanese communities to the places they call home.",
+      "Personal stories of courage, belonging and love for a homeland that never stops inspiring.",
   },
 ];
 
+
+/* =====================================================
+   FILTERS
+===================================================== */
+
+const filters = [
+  {
+    id: "all",
+    label: "All Stories",
+  },
+  {
+    id: "ancient-history",
+    label: "Ancient History",
+  },
+  {
+    id: "traditional-life",
+    label: "Traditional Life",
+  },
+  {
+    id: "arts-crafts",
+    label: "Arts & Crafts",
+  },
+  {
+    id: "architecture",
+    label: "Architecture",
+  },
+  {
+    id: "cuisine",
+    label: "Cuisine",
+  },
+  {
+    id: "people",
+    label: "People",
+  },
+  {
+    id: "festivals",
+    label: "Festivals",
+  },
+];
+
+
+/* =====================================================
+   PAGE
+===================================================== */
+
 export default function HeritagePage() {
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  /* Filter the cards */
+
+  const filteredStories =
+    activeFilter === "all"
+      ? stories
+      : stories.filter(
+          (story) => story.filter === activeFilter
+        );
+
   return (
-    <main className="heritage-page">
+    <AppShell>
 
-      {/* LEFT SIDEBAR */}
-      <aside className="heritage-sidebar">
+      <main className="heritage-page">
 
-        <div className="heritage-brand">
-          <div className="brand-arabic">اكتشف لبنان</div>
-          <div className="brand-name">DISCOVER LEBANON</div>
-          <p>Interactive Heritage &amp; Activity Guide</p>
-        </div>
+        {/* =================================================
+            HERO
+        ================================================= */}
 
-        <nav className="heritage-side-nav">
-
-          <Link href="/map">
-            <span className="side-icon">⌖</span>
-            <span>Explore the Map</span>
-          </Link>
-
-          <Link href="/itineraries">
-            <span className="side-icon">▣</span>
-            <span>Curated Itineraries</span>
-          </Link>
-
-          <Link href="/heritage" className="side-active">
-            <span className="side-icon">♜</span>
-            <span>Heritage Stories</span>
-            <i />
-          </Link>
-
-          <Link href="/saved">
-            <span className="side-icon">♡</span>
-            <span>Saved Places</span>
-          </Link>
-
-        </nav>
-
-        <div className="side-divider" />
-
-        <nav className="heritage-side-nav secondary">
-
-          <Link href="/account">
-            <span className="side-icon">♙</span>
-            <span>My Account</span>
-          </Link>
-
-          <Link href="/settings">
-            <span className="side-icon">⚙</span>
-            <span>Settings</span>
-          </Link>
-
-          <Link href="/help">
-            <span className="side-icon">?</span>
-            <span>Help</span>
-          </Link>
-
-        </nav>
-
-        <div className="heritage-sidebar-bottom">
-          <p>
-            Stories that
-            <br />
-            live on.
-          </p>
-
-          <div className="sidebar-image" />
-
-          <div className="sidebar-small-words">
-            <span>PEOPLE</span>
-            <span>PLACES</span>
-            <span>TRADITIONS</span>
-            <span>LEBANON</span>
-          </div>
-        </div>
-
-      </aside>
-
-      {/* RIGHT SIDE */}
-      <div className="heritage-main">
-
-        {/* TOP NAVBAR */}
-        <header className="heritage-topbar">
-
-          <nav>
-            <Link href="/map">
-              EXPLORE THE MAP
-            </Link>
-
-            <Link href="/itineraries">
-              CURATED ITINERARIES
-            </Link>
-
-            <Link href="/heritage" className="top-active">
-              HERITAGE STORIES
-            </Link>
-
-            <Link href="/search" className="top-search">
-              <span>⌕</span>
-              SEARCH
-            </Link>
-
-            <div className="top-divider" />
-
-            <button>
-              EN <span>⌄</span>
-            </button>
-          </nav>
-
-        </header>
-
-        {/* HERO */}
         <section className="heritage-hero">
 
           <div className="heritage-hero-overlay" />
 
           <div className="heritage-hero-content">
-  <span className="heritage-label">
-    PEOPLE &nbsp;&nbsp; PLACES &nbsp;&nbsp; TRADITIONS
-  </span>
 
-  <h1>Heritage Stories</h1>
+            <span className="heritage-label">
+              PEOPLE &nbsp;&nbsp;&nbsp; PLACES &nbsp;&nbsp;&nbsp; TRADITIONS
+            </span>
 
-  <h3>Real stories. Lasting heritage.</h3>
+            <h1>
+              Heritage Stories
+            </h1>
 
-  <p>
-    Discover the rich history, vibrant traditions and inspiring
-    <br />
-    people that make Lebanon unique.
-  </p>
-</div>
+            <h3>
+              Real stories. Lasting heritage.
+            </h3>
 
-<div className="heritage-script">
-  More
-  <br />
-  than places.
-  <br />
-  They are stories.
-  <span></span>
-</div>
+            <p>
+              Discover the rich history, vibrant traditions and inspiring
+              <br />
+              people that make Lebanon unique.
+            </p>
+
+          </div>
+
+
+          {/* HANDWRITTEN TEXT */}
 
           <div className="heritage-script">
-            Every place
+
+            More
             <br />
-            has a story.
+
+            than places.
+            <br />
+
+            <span>
+              They are stories.
+            </span>
+
           </div>
 
         </section>
 
-        {/* FILTERS */}
+
+        {/* =================================================
+            CONTENT
+        ================================================= */}
+
         <section className="heritage-content">
 
-          <div className="heritage-filters">
 
-            <button className="filter-active">
-              All Stories
-            </button>
+          {/* =================================================
+              FILTERS
+          ================================================= */}
 
-            <button>Ancient History</button>
-            <button>Traditional Life</button>
-            <button>Arts &amp; Crafts</button>
-            <button>Architecture</button>
-            <button>Cuisine</button>
-            <button>People</button>
-            <button>Festivals</button>
+          <div
+            className="heritage-filters"
+            role="tablist"
+            aria-label="Filter heritage stories"
+          >
+
+            {filters.map((filter) => {
+
+              const isActive =
+                activeFilter === filter.id;
+
+              return (
+                <button
+                  key={filter.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  className={
+                    isActive
+                      ? "filter-active"
+                      : ""
+                  }
+                  onClick={() =>
+                    setActiveFilter(filter.id)
+                  }
+                >
+
+                  {filter.label}
+
+                </button>
+              );
+            })}
 
           </div>
 
-          {/* CARDS */}
+
+          {/* =================================================
+              STORY CARDS
+          ================================================= */}
+
           <div className="heritage-grid">
 
-            {stories.map((story) => (
-              <article className="heritage-card" key={story.title}>
+            {filteredStories.map((story) => (
+
+              <article
+                className="heritage-card"
+                key={story.slug}
+              >
+
+                {/* IMAGE */}
 
                 <div
                   className="heritage-card-image"
@@ -241,54 +265,150 @@ export default function HeritagePage() {
                   }}
                 />
 
+
+                {/* CARD CONTENT */}
+
                 <div className="heritage-card-body">
 
                   <span className="story-category">
                     {story.category}
                   </span>
 
+
                   <h2>
                     {story.title}
                   </h2>
+
 
                   <p>
                     {story.description}
                   </p>
 
-                  <Link href="#">
-                    Read More <span>→</span>
+
+                  <Link
+                    href={`/heritage/${story.slug}`}
+                  >
+                    Read More
+
+                    <span>
+                      →
+                    </span>
                   </Link>
 
                 </div>
 
               </article>
+
             ))}
 
           </div>
 
+
+          {/* =================================================
+              EMPTY FILTER
+          ================================================= */}
+
+          {filteredStories.length === 0 && (
+
+            <div className="heritage-empty">
+
+              <h2>
+                No stories found
+              </h2>
+
+              <p>
+                There are no heritage stories in this
+                category yet.
+              </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveFilter("all")
+                }
+              >
+                View All Stories
+              </button>
+
+            </div>
+
+          )}
+
+
+          {/* =================================================
+              BOTTOM DECORATIVE BANNER
+          ================================================= */}
+
+          <section className="heritage-bottom-banner">
+
+
+            {/* LEAVES */}
+
+            <div
+              className="heritage-leaves"
+              aria-hidden="true"
+            >
+
+              <span className="leaf-stem" />
+
+              <span className="leaf leaf-1" />
+
+              <span className="leaf leaf-2" />
+
+              <span className="leaf leaf-3" />
+
+              <span className="leaf leaf-4" />
+
+            </div>
+
+
+            {/* QUOTE */}
+
+            <div className="heritage-bottom-quote">
+
+              <p>
+                “Every place in Lebanon has a story,
+                <br />
+                and every story keeps a piece of us alive.”
+              </p>
+
+              <span />
+
+            </div>
+
+
+            {/* BACKGROUND ART */}
+
+            <div className="heritage-bottom-art">
+
+              <div className="heritage-bottom-words">
+
+                <span>
+                  PLACES
+                </span>
+
+                <span>
+                  PEOPLE
+                </span>
+
+                <span>
+                  STORIES
+                </span>
+
+                <span>
+                  LEBANON
+                </span>
+
+              </div>
+
+            </div>
+
+          </section>
+
         </section>
 
-        {/* BOTTOM DECORATIVE IMAGE */}
-        <section className="heritage-footer-art">
+      </main>
 
-          <div className="footer-art-overlay" />
-
-          <div className="footer-art-text">
-            <span>OUR HERITAGE</span>
-
-            <h2>
-              Stories carried
-              <br />
-              through generations.
-            </h2>
-
-            <i />
-          </div>
-
-        </section>
-
-      </div>
-
-    </main>
+    </AppShell>
   );
 }
