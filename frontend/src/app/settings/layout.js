@@ -2,6 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AppShell from "@/components/AppShell";
+import "./settings.css";
+
+/* =========================
+   BASE ICON
+========================= */
 
 function Icon({ children, size = 16 }) {
   return (
@@ -14,17 +20,22 @@ function Icon({ children, size = 16 }) {
       strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       {children}
     </svg>
   );
 }
 
+/* =========================
+   SETTINGS MENU ICONS
+========================= */
+
 function IconGear(props) {
   return (
     <Icon {...props}>
       <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </Icon>
   );
 }
@@ -93,47 +104,111 @@ function IconHelpCircle(props) {
   );
 }
 
+/* =========================
+   INTERNAL SETTINGS MENU
+========================= */
+
 const sections = [
-  { name: "General", href: "/settings", icon: IconGear },
-  { name: "Notifications", href: "/settings/notifications", icon: IconBell },
-  { name: "Privacy & Security", href: "/settings/privacy-security", icon: IconLock },
-  { name: "Display", href: "/settings/display", icon: IconSun },
-  { name: "Language", href: "/settings/language", icon: IconGlobe },
-  { name: "Data & Storage", href: "/settings/data-storage", icon: IconDatabase },
-  { name: "Help & Support", href: "/settings/help-support", icon: IconHelpCircle },
+  {
+    name: "General",
+    href: "/settings",
+    icon: IconGear,
+  },
+  {
+    name: "Notifications",
+    href: "/settings/notifications",
+    icon: IconBell,
+  },
+  {
+    name: "Privacy & Security",
+    href: "/settings/privacy-security",
+    icon: IconLock,
+  },
+  {
+    name: "Display",
+    href: "/settings/display",
+    icon: IconSun,
+  },
+  {
+    name: "Language",
+    href: "/settings/language",
+    icon: IconGlobe,
+  },
+  {
+    name: "Data & Storage",
+    href: "/settings/data-storage",
+    icon: IconDatabase,
+  },
+  {
+    name: "Help & Support",
+    href: "/settings/help-support",
+    icon: IconHelpCircle,
+  },
 ];
+
+/* =========================
+   SETTINGS LAYOUT
+========================= */
 
 export default function SettingsLayout({ children }) {
   const pathname = usePathname();
 
   return (
-    <main className="settings-page">
-      <section className="settings-hero">
-        <div className="settings-hero-overlay" />
-        <div className="settings-hero-content">
-          <span>YOUR EXPERIENCE</span>
-          <h1>Settings</h1>
-          <p>Customize your experience and make Discover Lebanon truly yours.</p>
-        </div>
-      </section>
+    <AppShell>
+      <main className="settings-page">
 
-      <section className="settings-container">
-        <aside className="settings-menu">
-          <p className="menu-label">SETTINGS</p>
-          {sections.map(({ name, href, icon: ItemIcon }) => (
-            <Link
-              key={name}
-              href={href}
-              className={`menu-item ${pathname === href ? "active" : ""}`}
-            >
-              <ItemIcon size={15} />
-              {name}
-            </Link>
-          ))}
-        </aside>
+        {/* SETTINGS HERO */}
 
-        <div className="settings-main">{children}</div>
-      </section>
-    </main>
+        <section className="settings-hero">
+          <div className="settings-hero-overlay" />
+
+          <div className="settings-hero-content">
+            <span>YOUR EXPERIENCE</span>
+
+            <h1>Settings</h1>
+
+            <p>
+              Customize your experience and make Discover Lebanon truly yours.
+            </p>
+          </div>
+        </section>
+
+        {/* SETTINGS CONTENT */}
+
+        <section className="settings-container">
+
+          {/* INTERNAL SETTINGS MENU */}
+
+          <aside className="settings-menu">
+            <p className="menu-label">SETTINGS</p>
+
+            {sections.map(({ name, href, icon: ItemIcon }) => {
+              const isActive =
+                href === "/settings"
+                  ? pathname === "/settings"
+                  : pathname === href || pathname.startsWith(`${href}/`);
+
+              return (
+                <Link
+                  key={name}
+                  href={href}
+                  className={`menu-item${isActive ? " active" : ""}`}
+                >
+                  <ItemIcon size={17} />
+                  <span>{name}</span>
+                </Link>
+              );
+            })}
+          </aside>
+
+          {/* CURRENT SETTINGS PAGE */}
+
+          <div className="settings-main">
+            {children}
+          </div>
+
+        </section>
+      </main>
+    </AppShell>
   );
 }
