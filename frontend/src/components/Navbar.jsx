@@ -16,7 +16,7 @@ export default function Navbar({ onMenuClick }) {
   const links = [
     {
       label: "EXPLORE THE MAP",
-      href: "/map",
+      href: "/explore",
     },
     {
       label: "CURATED ITINERARIES",
