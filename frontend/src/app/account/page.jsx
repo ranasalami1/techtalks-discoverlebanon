@@ -2,17 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import AppShell from "@/components/AppShell";
+import "./account.css";
 
-/**
- * My Account Page — Discover Lebanon
- * Rebuilt to match the provided dashboard design: left sidebar nav,
- * cover-photo header, profile card with avatar, stats, tabs, saved
- * places, upcoming itineraries, preferences toggles, account settings.
- *
- * IMPORTANT: The cover photo and place thumbnails below are illustrated
- * placeholders. Swap the relevant background-image / <img> sources for
- * your real photo assets once available.
- */
+/* =====================================================
+   DATA
+===================================================== */
 
 const initialAccount = {
   fullName: "Lara Khoury",
@@ -22,9 +17,21 @@ const initialAccount = {
 };
 
 const savedPlaces = [
-  { name: "Byblos Citadel", location: "Byblos" },
-  { name: "Cedars of God", location: "Bsharri" },
-  { name: "Raouche Rock", location: "Beirut" },
+  {
+    name: "Byblos Citadel",
+    location: "Byblos",
+    image: "/images/byblos-account.jpg",
+  },
+  {
+    name: "Cedars of God",
+    location: "Bsharri",
+    image: "/images/ceders-account.jpg",
+  },
+  {
+    name: "Raouché Rock",
+    location: "Beirut",
+    image: "/images/raouche.jpg",
+  },
 ];
 
 const initialPreferences = {
@@ -36,28 +43,150 @@ const initialPreferences = {
   festivalsEvents: true,
 };
 
-const sidebarLinks = [
-  { label: "Explore the Map", href: "/explore" },
-  { label: "Curated Itineraries", href: "/itineraries" },
-  { label: "Heritage Stories", href: "/stories" },
-  { label: "Saved Places", href: "/saved" },
-  { label: "My Account", href: "/account", active: true },
-  { label: "Settings", href: "/settings" },
-  { label: "Help", href: "/help" },
+const tabs = [
+  "Overview",
+  "Saved Places",
+  "My Itineraries",
+  "Activity History",
+  "Preferences",
 ];
 
-const tabs = ["Overview", "Saved Places", "My Itineraries", "Activity History", "Preferences"];
+/* =====================================================
+   VALIDATION
+===================================================== */
 
 function validateProfile(values) {
   const errors = {};
-  if (!values.fullName.trim()) errors.fullName = "Full name can't be empty";
+
+  if (!values.fullName.trim()) {
+    errors.fullName = "Full name can't be empty";
+  }
+
   if (!values.email.trim()) {
     errors.email = "Email can't be empty";
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
     errors.email = "Enter a valid email address";
   }
+
   return errors;
 }
+
+/* =====================================================
+   ICONS
+===================================================== */
+
+function Icon({ children, size = 18 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+function PinIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </Icon>
+  );
+}
+
+function BookmarkIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M6 3h12v18l-6-4-6 4Z" />
+    </Icon>
+  );
+}
+
+function HeartIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
+    </Icon>
+  );
+}
+
+function UserIcon(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21a8 8 0 0 1 16 0" />
+    </Icon>
+  );
+}
+
+function GridIcon(props) {
+  return (
+    <Icon {...props}>
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
+    </Icon>
+  );
+}
+
+function MapIcon(props) {
+  return (
+    <Icon {...props}>
+      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6" />
+      <line x1="9" y1="3" x2="9" y2="18" />
+      <line x1="15" y1="6" x2="15" y2="21" />
+    </Icon>
+  );
+}
+
+function ClockIcon(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </Icon>
+  );
+}
+
+function GearIcon(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19 13.5v-3l-2-.7a7 7 0 0 0-.7-1.7l.9-1.9-2.1-2.1-1.9.9a7 7 0 0 0-1.7-.7L10.5 2h-3l-.7 2a7 7 0 0 0-1.7.7l-1.9-.9-2.1 2.1.9 1.9a7 7 0 0 0-.7 1.7l-2 .7v3l2 .7a7 7 0 0 0 .7 1.7l-.9 1.9 2.1 2.1 1.9-.9a7 7 0 0 0 1.7.7l.7 2h3l.7-2a7 7 0 0 0 1.7-.7l1.9.9 2.1-2.1-.9-1.9a7 7 0 0 0 .7-1.7Z" />
+    </Icon>
+  );
+}
+
+function CameraIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M4 7h3l2-3h6l2 3h3v13H4Z" />
+      <circle cx="12" cy="13" r="4" />
+    </Icon>
+  );
+}
+
+function EditIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </Icon>
+  );
+}
+
+/* =====================================================
+   PAGE
+===================================================== */
 
 export default function MyAccountPage() {
   const [values, setValues] = useState(initialAccount);
@@ -67,13 +196,6 @@ export default function MyAccountPage() {
   const [activeTab, setActiveTab] = useState("Overview");
   const [preferences, setPreferences] = useState(initialPreferences);
   const [saved, setSaved] = useState(false);
-
-  const initials = values.fullName
-    .split(" ")
-    .map((p) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   const handleEditClick = () => {
     setDraft(values);
@@ -88,738 +210,1016 @@ export default function MyAccountPage() {
     setIsEditing(false);
   };
 
-  const handleChange = (field) => (e) => {
-    setDraft((d) => ({ ...d, [field]: e.target.value }));
+  const handleChange = (field) => (event) => {
+    setDraft((current) => ({
+      ...current,
+      [field]: event.target.value,
+    }));
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
+  const handleSave = (event) => {
+    event.preventDefault();
+
     const validationErrors = validateProfile(draft);
     setErrors(validationErrors);
+
     if (Object.keys(validationErrors).length === 0) {
       setValues(draft);
       setIsEditing(false);
       setSaved(true);
-      // TODO: send updated profile to backend here once available
     }
   };
 
   const togglePreference = (key) => {
-    setPreferences((p) => ({ ...p, [key]: !p[key] }));
-    // TODO: persist preference changes to backend here once available
+    setPreferences((current) => ({
+      ...current,
+      [key]: !current[key],
+    }));
   };
 
   return (
-    <div className="dashboard">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=Caveat:wght@500;600&display=swap');
+    <AppShell>
+      <main className="account-page">
 
-        * { box-sizing: border-box; }
+        {/* HERO */}
 
-        .dashboard {
-          display: grid;
-          grid-template-columns: 230px 1fr;
-          min-height: 100vh;
-          font-family: 'Work Sans', sans-serif;
-          color: #2B2620;
-          background: #FBF8F2;
-        }
+        <section className="account-hero">
+          <div className="account-hero-overlay" />
 
-        .sidebar {
-          background: #FBF8F2;
-          border-right: 1px solid #E9E1CF;
-          padding: 24px 20px;
-        }
-
-        .sidebar__brand-ar {
-          font-size: 17px;
-          color: #B98A46;
-          font-weight: 600;
-          margin: 0;
-        }
-
-        .sidebar__brand-en {
-          font-family: 'Fraunces', serif;
-          font-size: 16px;
-          font-weight: 600;
-          margin: 2px 0 0;
-        }
-
-        .sidebar__brand-sub {
-          font-size: 10px;
-          color: #6B6355;
-          margin: 2px 0 24px;
-        }
-
-        .sidebar__nav {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-
-        .sidebar__nav a {
-          padding: 10px 12px;
-          border-radius: 8px;
-          font-size: 13.5px;
-          color: #2B2620;
-          text-decoration: none;
-        }
-
-        .sidebar__nav a:hover {
-          background: #F0EADA;
-        }
-
-        .sidebar__nav a.active {
-          background: #5C6B4A;
-          color: #FFFFFF;
-          font-weight: 600;
-        }
-
-        .sidebar__tagline {
-          margin-top: 32px;
-          font-family: 'Caveat', cursive;
-          font-size: 20px;
-          color: #6B6355;
-          line-height: 1.2;
-        }
-
-        .main {
-          padding: 0 40px 60px;
-          max-width: 1100px;
-        }
-
-        .cover {
-          position: relative;
-          height: 150px;
-          border-radius: 0 0 16px 16px;
-          margin: 0 -40px;
-          background-image:
-            linear-gradient(180deg, rgba(20,28,20,0.15) 0%, rgba(20,28,20,0.45) 100%),
-            url('/images/byblos-hero.jpg');
-          background-size: cover;
-          background-position: center;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          padding: 0 40px;
-        }
-
-        .cover h1 {
-          font-family: 'Fraunces', serif;
-          font-weight: 500;
-          font-size: 26px;
-          color: #FFFFFF;
-          margin: 0 0 4px;
-          text-shadow: 0 2px 10px rgba(0,0,0,0.25);
-        }
-
-        .cover p.subtitle {
-          font-size: 13px;
-          color: #F5F1E6;
-          margin: 0;
-          text-shadow: 0 1px 6px rgba(0,0,0,0.25);
-        }
-
-        .cover .cover-tagline {
-          position: absolute;
-          right: 32px;
-          top: 20px;
-          font-family: 'Caveat', cursive;
-          font-size: 18px;
-          color: #FFFFFF;
-          text-align: right;
-          text-shadow: 0 1px 6px rgba(0,0,0,0.25);
-        }
-
-        .profile-row {
-          display: flex;
-          gap: 20px;
-          align-items: flex-start;
-          margin-top: -44px;
-          position: relative;
-          z-index: 2;
-          flex-wrap: wrap;
-        }
-
-        .avatar-circle {
-          width: 88px;
-          height: 88px;
-          border-radius: 50%;
-          border: 4px solid #FBF8F2;
-          background: #5C6B4A;
-          color: #FFFFFF;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: 'Fraunces', serif;
-          font-size: 28px;
-          flex-shrink: 0;
-        }
-
-        .profile-card {
-          flex: 1;
-          background: #FFFFFF;
-          border-radius: 12px;
-          padding: 16px 20px;
-          box-shadow: 0 6px 24px rgba(30,30,20,0.06);
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          flex-wrap: wrap;
-          min-width: 260px;
-        }
-
-        .profile-card__info h2 {
-          font-family: 'Fraunces', serif;
-          font-weight: 500;
-          font-size: 19px;
-          margin: 0 0 2px;
-        }
-
-        .profile-card__info p {
-          margin: 2px 0 0;
-          font-size: 12.5px;
-          color: #6B6355;
-        }
-
-        .edit-btn {
-          margin-left: auto;
-          padding: 8px 16px;
-          border-radius: 999px;
-          border: 1.5px solid #DDD3BE;
-          background: #FFFFFF;
-          font-size: 12.5px;
-          font-weight: 600;
-          color: #2B2620;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .edit-btn:hover {
-          background: #FAF6EC;
-        }
-
-        .stats-card {
-          background: #FFFFFF;
-          border-radius: 12px;
-          padding: 16px 20px;
-          box-shadow: 0 6px 24px rgba(30,30,20,0.06);
-          display: flex;
-          gap: 24px;
-          align-items: center;
-          flex-wrap: wrap;
-        }
-
-        .stats-card__member {
-          font-size: 11.5px;
-          color: #6B6355;
-          border-right: 1px solid #E9E1CF;
-          padding-right: 20px;
-        }
-
-        .stats-card__member strong {
-          display: block;
-          font-size: 13px;
-          color: #2B2620;
-        }
-
-        .stat {
-          text-align: center;
-        }
-
-        .stat strong {
-          display: block;
-          font-family: 'Fraunces', serif;
-          font-size: 20px;
-        }
-
-        .stat span {
-          font-size: 10.5px;
-          color: #6B6355;
-        }
-
-        .success-banner {
-          background: #E9F0E6;
-          border: 1.5px solid #A8C39B;
-          color: #33502C;
-          padding: 10px 14px;
-          border-radius: 8px;
-          font-size: 13px;
-          margin-top: 24px;
-        }
-
-        .tabs {
-          display: flex;
-          gap: 6px;
-          margin-top: 28px;
-          border-bottom: 1px solid #E9E1CF;
-          flex-wrap: wrap;
-        }
-
-        .tabs button {
-          padding: 10px 16px;
-          border: none;
-          background: none;
-          font-size: 13px;
-          font-weight: 500;
-          color: #6B6355;
-          cursor: pointer;
-          border-bottom: 2px solid transparent;
-        }
-
-        .tabs button.active {
-          color: #2B2620;
-          font-weight: 600;
-          border-bottom: 2px solid #5C6B4A;
-        }
-
-        .panels-grid {
-          display: grid;
-          grid-template-columns: 1.4fr 1fr;
-          gap: 20px;
-          margin-top: 22px;
-        }
-
-        .panel {
-          background: #FFFFFF;
-          border-radius: 12px;
-          padding: 20px;
-          box-shadow: 0 6px 24px rgba(30,30,20,0.06);
-        }
-
-        .panel__header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 14px;
-        }
-
-        .panel__header h3 {
-          font-family: 'Fraunces', serif;
-          font-weight: 500;
-          font-size: 16px;
-          margin: 0;
-        }
-
-        .panel__header a {
-          font-size: 12px;
-          color: #5C6B4A;
-          text-decoration: none;
-          font-weight: 600;
-        }
-
-        .places-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 12px;
-        }
-
-        .place-card__thumb {
-          height: 70px;
-          border-radius: 8px;
-          background: linear-gradient(135deg, #CFE0DA, #E7DCC2);
-          margin-bottom: 8px;
-        }
-
-        .place-card p {
-          margin: 0;
-          font-size: 12px;
-          font-weight: 600;
-        }
-
-        .place-card span {
-          font-size: 10.5px;
-          color: #6B6355;
-        }
-
-        .itinerary-card {
-          display: flex;
-          gap: 12px;
-        }
-
-        .itinerary-card__thumb {
-          width: 70px;
-          height: 70px;
-          border-radius: 8px;
-          background: linear-gradient(135deg, #E7DCC2, #CFE0DA);
-          flex-shrink: 0;
-        }
-
-        .itinerary-card p {
-          margin: 0 0 4px;
-          font-weight: 600;
-          font-size: 13px;
-        }
-
-        .itinerary-card span {
-          display: block;
-          font-size: 11.5px;
-          color: #6B6355;
-        }
-
-        .preferences-panel {
-          margin-top: 20px;
-        }
-
-        .pref-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px 24px;
-        }
-
-        .pref-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 13px;
-          padding: 6px 0;
-        }
-
-        .switch {
-          width: 36px;
-          height: 20px;
-          border-radius: 999px;
-          background: #E3DAC5;
-          border: none;
-          position: relative;
-          cursor: pointer;
-          flex-shrink: 0;
-        }
-
-        .switch.on {
-          background: #5C6B4A;
-        }
-
-        .switch__knob {
-          position: absolute;
-          top: 2px;
-          left: 2px;
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: #FFFFFF;
-          transition: left 0.15s ease;
-        }
-
-        .switch.on .switch__knob {
-          left: 18px;
-        }
-
-        .settings-panel {
-          margin-top: 20px;
-        }
-
-        .settings-list {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .settings-list a,
-        .settings-list button {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 12px 0;
-          border-bottom: 1px solid #F0EADA;
-          font-size: 13px;
-          color: #2B2620;
-          text-decoration: none;
-          background: none;
-          border-left: none;
-          border-right: none;
-          border-top: none;
-          width: 100%;
-          text-align: left;
-          cursor: pointer;
-        }
-
-        .settings-list a:last-child,
-        .settings-list button:last-child {
-          border-bottom: none;
-        }
-
-        .settings-list .sign-out {
-          color: #B3492C;
-          font-weight: 600;
-        }
-
-        .field {
-          margin-bottom: 14px;
-        }
-
-        .field label {
-          display: block;
-          font-size: 12px;
-          font-weight: 600;
-          color: #6B6355;
-          margin-bottom: 5px;
-        }
-
-        .field input {
-          width: 100%;
-          padding: 10px 12px;
-          border-radius: 8px;
-          border: 1.5px solid #E3DAC5;
-          background: #FBFAF6;
-          font-size: 13.5px;
-          font-family: 'Work Sans', sans-serif;
-          color: #2B2620;
-        }
-
-        .field input:focus {
-          outline: none;
-          border-color: #5C6B4A;
-        }
-
-        .field input.has-error {
-          border-color: #B3492C;
-        }
-
-        .field .error-text {
-          margin-top: 5px;
-          font-size: 11.5px;
-          color: #B3492C;
-        }
-
-        .form-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 10px;
-          margin-top: 16px;
-        }
-
-        .btn-secondary {
-          padding: 9px 18px;
-          border-radius: 999px;
-          border: 1.5px solid #DDD3BE;
-          background: #FFFFFF;
-          font-size: 12.5px;
-          font-weight: 600;
-          color: #2B2620;
-          cursor: pointer;
-        }
-
-        .btn-primary-sm {
-          padding: 9px 18px;
-          border-radius: 999px;
-          border: none;
-          background: #5C6B4A;
-          color: #FFFFFF;
-          font-size: 12.5px;
-          font-weight: 600;
-          cursor: pointer;
-        }
-
-        @media (max-width: 900px) {
-          .dashboard { grid-template-columns: 1fr; }
-          .sidebar { display: none; }
-          .main { padding: 0 20px 40px; }
-          .cover { margin: 0 -20px; }
-          .panels-grid { grid-template-columns: 1fr; }
-          .places-grid { grid-template-columns: 1fr 1fr; }
-          .stats-card { justify-content: space-between; }
-        }
-      `}</style>
-
-      <aside className="sidebar">
-        <p className="sidebar__brand-ar">اكتشف لبنان</p>
-        <p className="sidebar__brand-en">DISCOVER LEBANON</p>
-        <p className="sidebar__brand-sub">Interactive Heritage &amp; Activity Guide</p>
-        <nav className="sidebar__nav">
-          {sidebarLinks.map((link) => (
-            <Link key={link.label} href={link.href} className={link.active ? "active" : ""}>
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <p className="sidebar__tagline">A deeper<br />way to explore</p>
-      </aside>
-
-      <main className="main">
-        <div className="cover">
-          <span className="cover-tagline">Same places,<br />different stories</span>
-          <h1>My Account</h1>
-          <p className="subtitle">Manage your profile, preferences and saved experiences.</p>
-        </div>
-
-        <div className="profile-row">
-          <div className="avatar-circle">{initials}</div>
-
-          <div className="profile-card">
-            <div className="profile-card__info">
-              <h2>{values.fullName}</h2>
-              <p>{values.email}</p>
-              <p>{values.location} - {values.bio}</p>
-            </div>
-            {!isEditing && (
-              <button type="button" className="edit-btn" onClick={handleEditClick}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                </svg>
-                Edit Profile
-              </button>
-            )}
-          </div>
-
-          <div className="stats-card">
-            <div className="stats-card__member">
-              Member since<br /><strong>September 2025</strong>
-            </div>
-            <div className="stat"><strong>12</strong><span>Places Visited</span></div>
-            <div className="stat"><strong>8</strong><span>Saved Places</span></div>
-            <div className="stat"><strong>4</strong><span>Itineraries Completed</span></div>
-          </div>
-        </div>
-
-        {saved && <div className="success-banner">Your profile changes have been saved.</div>}
-
-        {isEditing && (
-          <div className="panel" style={{ marginTop: 20 }}>
-            <h3 style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 16, margin: "0 0 14px" }}>
-              Edit Profile
-            </h3>
-            <form onSubmit={handleSave} noValidate>
-              <div className="field">
-                <label htmlFor="fullName">Full name</label>
-                <input
-                  id="fullName"
-                  type="text"
-                  value={draft.fullName}
-                  onChange={handleChange("fullName")}
-                  className={errors.fullName ? "has-error" : ""}
-                />
-                {errors.fullName && <div className="error-text">{errors.fullName}</div>}
-              </div>
-              <div className="field">
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  value={draft.email}
-                  onChange={handleChange("email")}
-                  className={errors.email ? "has-error" : ""}
-                />
-                {errors.email && <div className="error-text">{errors.email}</div>}
-              </div>
-              <div className="field">
-                <label htmlFor="location">Location</label>
-                <input id="location" type="text" value={draft.location} onChange={handleChange("location")} />
-              </div>
-              <div className="field">
-                <label htmlFor="bio">Bio</label>
-                <input id="bio" type="text" value={draft.bio} onChange={handleChange("bio")} />
-              </div>
-              <div className="form-actions">
-                <button type="button" className="btn-secondary" onClick={handleCancel}>Cancel</button>
-                <button type="submit" className="btn-primary-sm">Save changes</button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        <div className="tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              className={activeTab === tab ? "active" : ""}
-              onClick={() => setActiveTab(tab)}
-              type="button"
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {activeTab === "Overview" && (
-          <>
-            <div className="panels-grid">
-              <div className="panel">
-                <div className="panel__header">
-                  <h3>Recently Saved</h3>
-                  <Link href="/saved">View All &#8594;</Link>
-                </div>
-                <div className="places-grid">
-                  {savedPlaces.map((place) => (
-                    <div className="place-card" key={place.name}>
-                      <div className="place-card__thumb" />
-                      <p>{place.name}</p>
-                      <span>{place.location}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="panel">
-                <div className="panel__header">
-                  <h3>My Upcoming Itineraries</h3>
-                  <Link href="/itineraries">View All &#8594;</Link>
-                </div>
-                <div className="itinerary-card">
-                  <div className="itinerary-card__thumb" />
-                  <div>
-                    <p>A Day in the Chouf</p>
-                    <span>Sat, Oct 4, 2025</span>
-                    <span>Chouf - Nature, Culture, Food</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="panel preferences-panel">
-              <div className="panel__header">
-                <h3>Preferences</h3>
-              </div>
-              <div className="pref-grid">
-                {[
-                  ["natureOutdoors", "Nature & Outdoors"],
-                  ["familyFriendly", "Family Friendly"],
-                  ["culturalHeritage", "Cultural Heritage"],
-                  ["adventureActivities", "Adventure Activities"],
-                  ["foodGastronomy", "Food & Gastronomy"],
-                  ["festivalsEvents", "Festivals & Events"],
-                ].map(([key, label]) => (
-                  <div className="pref-row" key={key}>
-                    <span>{label}</span>
-                    <button
-                      type="button"
-                      className={`switch ${preferences[key] ? "on" : ""}`}
-                      onClick={() => togglePreference(key)}
-                      aria-label={`Toggle ${label}`}
-                    >
-                      <span className="switch__knob" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="panel settings-panel">
-              <div className="panel__header">
-                <h3>Account Settings</h3>
-              </div>
-              <div className="settings-list">
-                <Link href="/account/personal-info">Personal Information &#8250;</Link>
-                <Link href="/account/change-password">Change Password &#8250;</Link>
-                <Link href="/account/notifications">Notifications &#8250;</Link>
-                <Link href="/account/language">Language: English &#8250;</Link>
-                <button type="button" className="sign-out">Sign Out</button>
-              </div>
-            </div>
-          </>
-        )}
-
-        {activeTab !== "Overview" && (
-          <div className="panel" style={{ marginTop: 22 }}>
-            <p style={{ margin: 0, fontSize: 13, color: "#6B6355" }}>
-              {activeTab} content goes here - build this out the same way as Overview once the backend/data for it is ready.
+          <div className="account-hero-content">
+            <h1>My Account</h1>
+            <p>
+              Manage your profile, preferences and saved experiences.
             </p>
           </div>
-        )}
+
+          <div className="account-hero-note">
+            Same places,
+            <br />
+            different stories.
+          </div>
+        </section>
+
+        <div className="account-content">
+
+          {/* PROFILE */}
+
+          <section className="account-profile-grid">
+
+            <div className="account-profile-card">
+
+              <div className="account-avatar-wrap">
+                <img
+                  src="/images/profile.jpg"
+                  alt="Lara Khoury"
+                  className="account-avatar"
+                />
+
+                <button
+                  type="button"
+                  className="account-camera"
+                  aria-label="Change profile photo"
+                >
+                  <CameraIcon size={15} />
+                </button>
+              </div>
+
+              <div className="account-profile-info">
+                <h2>{values.fullName}</h2>
+
+                <p>{values.email}</p>
+
+                <p className="account-location">
+                  <PinIcon size={14} />
+                  {values.location}
+                </p>
+
+                <p className="account-bio">
+                  {values.bio}
+                </p>
+              </div>
+
+              {!isEditing && (
+                <button
+                  type="button"
+                  className="account-edit-button"
+                  onClick={handleEditClick}
+                >
+                  <EditIcon size={14} />
+                  Edit Profile
+                </button>
+              )}
+
+            </div>
+
+            {/* STATS */}
+
+            <div className="account-stats-card">
+
+              <div className="account-member">
+                <span className="member-leaf">⌁</span>
+
+                <div>
+                  <strong>Member since</strong>
+                  <span>September 2025</span>
+                </div>
+              </div>
+
+              <div className="account-stats">
+
+                <div className="account-stat">
+                  <PinIcon size={21} />
+                  <strong>12</strong>
+                  <span>Places Visited</span>
+                </div>
+
+                <div className="account-stat">
+                  <BookmarkIcon size={21} />
+                  <strong>8</strong>
+                  <span>Saved Places</span>
+                </div>
+
+                <div className="account-stat">
+                  <HeartIcon size={21} />
+                  <strong>4</strong>
+                  <span>Itineraries Completed</span>
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* SUCCESS */}
+
+          {saved && (
+            <div className="account-success">
+              Your profile changes have been saved.
+            </div>
+          )}
+
+          {/* EDIT PROFILE */}
+
+          {isEditing && (
+            <section className="account-panel account-edit-panel">
+
+              <h3>Edit Profile</h3>
+
+              <form onSubmit={handleSave} noValidate>
+
+                <div className="account-field">
+                  <label htmlFor="fullName">
+                    Full name
+                  </label>
+
+                  <input
+                    id="fullName"
+                    value={draft.fullName}
+                    onChange={handleChange("fullName")}
+                    className={errors.fullName ? "has-error" : ""}
+                  />
+
+                  {errors.fullName && (
+                    <span className="account-error">
+                      {errors.fullName}
+                    </span>
+                  )}
+                </div>
+
+                <div className="account-field">
+                  <label htmlFor="email">
+                    Email
+                  </label>
+
+                  <input
+                    id="email"
+                    type="email"
+                    value={draft.email}
+                    onChange={handleChange("email")}
+                    className={errors.email ? "has-error" : ""}
+                  />
+
+                  {errors.email && (
+                    <span className="account-error">
+                      {errors.email}
+                    </span>
+                  )}
+                </div>
+
+                <div className="account-field">
+                  <label htmlFor="location">
+                    Location
+                  </label>
+
+                  <input
+                    id="location"
+                    value={draft.location}
+                    onChange={handleChange("location")}
+                  />
+                </div>
+
+                <div className="account-field">
+                  <label htmlFor="bio">
+                    Bio
+                  </label>
+
+                  <input
+                    id="bio"
+                    value={draft.bio}
+                    onChange={handleChange("bio")}
+                  />
+                </div>
+
+                <div className="account-form-actions">
+
+                  <button
+                    type="button"
+                    className="account-secondary-button"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="account-primary-button"
+                  >
+                    Save changes
+                  </button>
+
+                </div>
+
+              </form>
+
+            </section>
+          )}
+
+          {/* =====================================================
+              TABS
+          ===================================================== */}
+
+          <nav className="account-tabs">
+
+            {tabs.map((tab, index) => {
+              const icons = [
+                GridIcon,
+                BookmarkIcon,
+                MapIcon,
+                ClockIcon,
+                GearIcon,
+              ];
+
+              const TabIcon = icons[index];
+
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  className={activeTab === tab ? "active" : ""}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  <TabIcon size={18} />
+                  <span>{tab}</span>
+                </button>
+              );
+            })}
+
+          </nav>
+
+          {/* =====================================================
+              OVERVIEW
+          ===================================================== */}
+
+          {activeTab === "Overview" && (
+            <div className="account-overview">
+
+              <div className="account-left-column">
+
+                {/* RECENTLY SAVED */}
+
+                <section className="account-section">
+
+                  <div className="account-section-heading">
+
+                    <h3>Recently Saved</h3>
+
+                    <button
+                      type="button"
+                      className="account-view-all-button"
+                      onClick={() => setActiveTab("Saved Places")}
+                    >
+                      View All →
+                    </button>
+
+                  </div>
+
+                  <div className="saved-places-grid">
+
+                    {savedPlaces.map((place) => (
+                      <article
+                        className="saved-place-card"
+                        key={place.name}
+                      >
+
+                        <div className="saved-place-image-wrap">
+
+                          <img
+                            src={place.image}
+                            alt={place.name}
+                            className="saved-place-image"
+                          />
+
+                          <BookmarkIcon size={16} />
+
+                        </div>
+
+                        <div className="saved-place-info">
+
+                          <strong>
+                            {place.name}
+                          </strong>
+
+                          <span>
+                            <PinIcon size={11} />
+                            {place.location}
+                          </span>
+
+                        </div>
+
+                      </article>
+                    ))}
+
+                  </div>
+
+                </section>
+
+                {/* OVERVIEW PREFERENCES */}
+
+                <section className="account-panel account-preferences">
+
+                  <h3>Preferences</h3>
+
+                  <div className="account-preferences-grid">
+
+                    {[
+                      ["natureOutdoors", "Nature & Outdoors"],
+                      ["familyFriendly", "Family Friendly"],
+                      ["culturalHeritage", "Cultural Heritage"],
+                      ["adventureActivities", "Adventure Activities"],
+                      ["foodGastronomy", "Food & Gastronomy"],
+                      ["festivalsEvents", "Festivals & Events"],
+                    ].map(([key, label]) => (
+
+                      <div
+                        className="account-preference-row"
+                        key={key}
+                      >
+
+                        <span>{label}</span>
+
+                        <button
+                          type="button"
+                          className={`account-switch ${
+                            preferences[key] ? "on" : ""
+                          }`}
+                          onClick={() => togglePreference(key)}
+                          aria-label={`Toggle ${label}`}
+                        >
+                          <span />
+                        </button>
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                </section>
+
+              </div>
+
+              {/* RIGHT COLUMN */}
+
+              <div className="account-right-column">
+
+                {/* UPCOMING */}
+
+                <section className="account-section">
+
+                  <div className="account-section-heading">
+
+                    <h3>My Upcoming Itineraries</h3>
+
+                    <button
+                      type="button"
+                      className="account-view-all-button"
+                      onClick={() => setActiveTab("My Itineraries")}
+                    >
+                      View All →
+                    </button>
+
+                  </div>
+
+                  <article className="upcoming-itinerary">
+
+                    <img
+                      src="/images/chouf.jpg"
+                      alt="Chouf landscape"
+                    />
+
+                    <div className="upcoming-itinerary-info">
+
+                      <strong>
+                        A Day in the Chouf
+                      </strong>
+
+                      <span>
+                        Sat, Oct 4, 2025
+                      </span>
+
+                      <span>Chouf</span>
+
+                      <span>
+                        Nature, Culture, Food
+                      </span>
+
+                    </div>
+
+                    <button
+                      type="button"
+                      className="itinerary-arrow"
+                      onClick={() =>
+                        setActiveTab("My Itineraries")
+                      }
+                      aria-label="Open itinerary"
+                    >
+                      →
+                    </button>
+
+                  </article>
+
+                </section>
+
+                {/* ACCOUNT SETTINGS */}
+
+                <section className="account-panel account-settings">
+
+                  <h3>Account Settings</h3>
+
+                  <div className="account-settings-list">
+
+                    <Link href="/settings">
+
+                      <span>
+                        <UserIcon size={16} />
+                        Personal Information
+                      </span>
+
+                      <b>›</b>
+
+                    </Link>
+
+                    <Link href="/settings/privacy-security">
+
+                      <span>
+                        Change Password
+                      </span>
+
+                      <b>›</b>
+
+                    </Link>
+
+                    <Link href="/settings/notifications">
+
+                      <span>
+                        Notifications
+                      </span>
+
+                      <b>›</b>
+
+                    </Link>
+
+                    <Link href="/settings/language">
+
+                      <span>
+                        Language
+                      </span>
+
+                      <span className="setting-value">
+                        English
+                        <b>›</b>
+                      </span>
+
+                    </Link>
+
+                    <button
+                      type="button"
+                      className="account-sign-out"
+                    >
+                      Sign Out
+                    </button>
+
+                  </div>
+
+                </section>
+
+              </div>
+
+            </div>
+          )}
+
+          {/* =====================================================
+              SAVED PLACES
+          ===================================================== */}
+
+          {activeTab === "Saved Places" && (
+            <section className="account-tab-content">
+
+              <div className="account-tab-heading">
+
+                <div>
+
+                  <span className="account-tab-eyebrow">
+                    YOUR COLLECTION
+                  </span>
+
+                  <h2>Saved Places</h2>
+
+                  <p>
+                    Places you've saved to explore later.
+                  </p>
+
+                </div>
+
+                <span className="saved-count">
+                  {savedPlaces.length} saved places
+                </span>
+
+              </div>
+
+              <div className="saved-tab-grid">
+
+                {savedPlaces.map((place) => (
+
+                  <article
+                    className="saved-tab-card"
+                    key={place.name}
+                  >
+
+                    <div className="saved-tab-image-wrap">
+
+                      <img
+                        src={place.image}
+                        alt={place.name}
+                        className="saved-tab-image"
+                      />
+
+                      <button
+                        type="button"
+                        className="saved-tab-bookmark"
+                        aria-label={`Remove ${place.name} from saved places`}
+                      >
+                        <BookmarkIcon size={17} />
+                      </button>
+
+                    </div>
+
+                    <div className="saved-tab-card-content">
+
+                      <div>
+
+                        <h3>
+                          {place.name}
+                        </h3>
+
+                        <span className="saved-tab-location">
+                          <PinIcon size={12} />
+                          {place.location}
+                        </span>
+
+                      </div>
+
+                      <Link
+                        href="/map"
+                        className="saved-tab-explore"
+                      >
+                        Explore →
+                      </Link>
+
+                    </div>
+
+                  </article>
+
+                ))}
+
+              </div>
+
+            </section>
+          )}
+
+          {/* =====================================================
+              MY ITINERARIES
+          ===================================================== */}
+
+          {activeTab === "My Itineraries" && (
+            <section className="account-tab-content">
+
+              <div className="account-tab-heading">
+
+                <div>
+
+                  <span className="account-tab-eyebrow">
+                    YOUR JOURNEYS
+                  </span>
+
+                  <h2>My Itineraries</h2>
+
+                  <p>
+                    Keep track of your upcoming and completed adventures.
+                  </p>
+
+                </div>
+
+                <Link
+                  href="/itineraries"
+                  className="account-create-itinerary"
+                >
+                  + Explore Itineraries
+                </Link>
+
+              </div>
+
+              <div className="my-itineraries-grid">
+
+                {/* CHOUF */}
+
+                <article className="my-itinerary-card">
+
+                  <img
+                    src="/images/chouf.jpg"
+                    alt="Chouf landscape"
+                    className="my-itinerary-image"
+                  />
+
+                  <div className="my-itinerary-content">
+
+                    <div className="my-itinerary-top">
+
+                      <span className="itinerary-status upcoming">
+                        UPCOMING
+                      </span>
+
+                      <span className="itinerary-date">
+                        Sat, Oct 4, 2025
+                      </span>
+
+                    </div>
+
+                    <h3>
+                      A Day in the Chouf
+                    </h3>
+
+                    <p className="my-itinerary-location">
+                      <PinIcon size={12} />
+                      Chouf, Lebanon
+                    </p>
+
+                    <p className="my-itinerary-description">
+                      A day surrounded by nature, culture and
+                      authentic Lebanese food.
+                    </p>
+
+                    <div className="my-itinerary-tags">
+                      <span>Nature</span>
+                      <span>Culture</span>
+                      <span>Food</span>
+                    </div>
+
+                    <Link
+                      href="/itineraries"
+                      className="my-itinerary-link"
+                    >
+                      View Itinerary →
+                    </Link>
+
+                  </div>
+
+                </article>
+
+                {/* BYBLOS */}
+
+                <article className="my-itinerary-card">
+
+                  <img
+                    src="/images/byblos-account.jpg"
+                    alt="Byblos"
+                    className="my-itinerary-image"
+                  />
+
+                  <div className="my-itinerary-content">
+
+                    <div className="my-itinerary-top">
+
+                      <span className="itinerary-status completed">
+                        COMPLETED
+                      </span>
+
+                      <span className="itinerary-date">
+                        Sun, Sep 14, 2025
+                      </span>
+
+                    </div>
+
+                    <h3>
+                      Historic Byblos
+                    </h3>
+
+                    <p className="my-itinerary-location">
+                      <PinIcon size={12} />
+                      Byblos, Lebanon
+                    </p>
+
+                    <p className="my-itinerary-description">
+                      Discover ancient ruins, traditional streets
+                      and the historic Mediterranean coast.
+                    </p>
+
+                    <div className="my-itinerary-tags">
+                      <span>Heritage</span>
+                      <span>History</span>
+                      <span>Culture</span>
+                    </div>
+
+                    <Link
+                      href="/itineraries"
+                      className="my-itinerary-link"
+                    >
+                      View Itinerary →
+                    </Link>
+
+                  </div>
+
+                </article>
+
+              </div>
+
+            </section>
+          )}
+
+          {/* =====================================================
+              ACTIVITY HISTORY
+          ===================================================== */}
+
+          {activeTab === "Activity History" && (
+            <section className="account-tab-content">
+
+              <div className="account-tab-heading">
+
+                <div>
+
+                  <span className="account-tab-eyebrow">
+                    YOUR JOURNEY
+                  </span>
+
+                  <h2>Activity History</h2>
+
+                  <p>
+                    A look back at the places, stories and
+                    experiences you've explored.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="activity-history-list">
+
+                {/* ACTIVITY 1 */}
+
+                <div className="activity-history-item">
+
+                  <div className="activity-history-icon">
+                    <PinIcon size={17} />
+                  </div>
+
+                  <div className="activity-history-content">
+
+                    <div>
+                      <strong>
+                        Visited Byblos Citadel
+                      </strong>
+
+                      <span>
+                        Byblos, Lebanon
+                      </span>
+                    </div>
+
+                    <span className="activity-history-date">
+                      Sep 14, 2025
+                    </span>
+
+                  </div>
+
+                </div>
+
+                {/* ACTIVITY 2 */}
+
+                <div className="activity-history-item">
+
+                  <div className="activity-history-icon">
+                    <BookmarkIcon size={17} />
+                  </div>
+
+                  <div className="activity-history-content">
+
+                    <div>
+                      <strong>
+                        Saved Cedars of God
+                      </strong>
+
+                      <span>
+                        Bsharri, Lebanon
+                      </span>
+                    </div>
+
+                    <span className="activity-history-date">
+                      Sep 10, 2025
+                    </span>
+
+                  </div>
+
+                </div>
+
+                {/* ACTIVITY 3 */}
+
+                <div className="activity-history-item">
+
+                  <div className="activity-history-icon">
+                    <MapIcon size={17} />
+                  </div>
+
+                  <div className="activity-history-content">
+
+                    <div>
+                      <strong>
+                        Completed Historic Byblos
+                      </strong>
+
+                      <span>
+                        Itinerary completed
+                      </span>
+                    </div>
+
+                    <span className="activity-history-date">
+                      Sep 8, 2025
+                    </span>
+
+                  </div>
+
+                </div>
+
+                {/* ACTIVITY 4 */}
+
+                <div className="activity-history-item">
+
+                  <div className="activity-history-icon">
+                    <BookmarkIcon size={17} />
+                  </div>
+
+                  <div className="activity-history-content">
+
+                    <div>
+                      <strong>
+                        Saved Raouché Rock
+                      </strong>
+
+                      <span>
+                        Beirut, Lebanon
+                      </span>
+                    </div>
+
+                    <span className="activity-history-date">
+                      Sep 2, 2025
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </section>
+          )}
+
+          {/* =====================================================
+              PREFERENCES
+          ===================================================== */}
+
+          {activeTab === "Preferences" && (
+            <section className="account-tab-content">
+
+              <div className="account-tab-heading">
+
+                <div>
+
+                  <span className="account-tab-eyebrow">
+                    PERSONALIZE YOUR EXPERIENCE
+                  </span>
+
+                  <h2>Preferences</h2>
+
+                  <p>
+                    Choose what interests you most while exploring Lebanon.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="preferences-tab-card">
+
+                {[
+                  {
+                    key: "natureOutdoors",
+                    title: "Nature & Outdoors",
+                    description:
+                      "Mountains, forests, hiking trails and natural landscapes.",
+                  },
+                  {
+                    key: "culturalHeritage",
+                    title: "Cultural Heritage",
+                    description:
+                      "Historic sites, traditions and Lebanon's cultural heritage.",
+                  },
+                  {
+                    key: "foodGastronomy",
+                    title: "Food & Gastronomy",
+                    description:
+                      "Local cuisine, traditional food and culinary experiences.",
+                  },
+                  {
+                    key: "familyFriendly",
+                    title: "Family Friendly",
+                    description:
+                      "Places and activities suitable for the whole family.",
+                  },
+                  {
+                    key: "adventureActivities",
+                    title: "Adventure Activities",
+                    description:
+                      "Outdoor adventures and exciting experiences.",
+                  },
+                  {
+                    key: "festivalsEvents",
+                    title: "Festivals & Events",
+                    description:
+                      "Local festivals, cultural events and seasonal celebrations.",
+                  },
+                ].map((item) => (
+
+                  <div
+                    className="preferences-tab-row"
+                    key={item.key}
+                  >
+
+                    <div className="preferences-tab-text">
+
+                      <strong>
+                        {item.title}
+                      </strong>
+
+                      <span>
+                        {item.description}
+                      </span>
+
+                    </div>
+
+                    <button
+                      type="button"
+                      className={`account-switch ${
+                        preferences[item.key] ? "on" : ""
+                      }`}
+                      onClick={() =>
+                        togglePreference(item.key)
+                      }
+                      aria-label={`Toggle ${item.title}`}
+                    >
+                      <span />
+                    </button>
+
+                  </div>
+
+                ))}
+
+              </div>
+
+            </section>
+          )}
+
+        </div>
+
       </main>
-    </div>
+    </AppShell>
   );
 }
