@@ -2,19 +2,22 @@ from flask import Flask
 from flask_cors import CORS
 
 from config import Config
-from extensions import db
-
+from extensions import db, migrate
+import models
 
 app = Flask(__name__)
 
-# Load configuration from config.py
+# Load configuration
 app.config.from_object(Config)
 
-# Allow the Next.js frontend to communicate with Flask
+# Allow Next.js frontend to communicate with Flask
 CORS(app)
 
-# Connect SQLAlchemy to the Flask application
+# Initialize database
 db.init_app(app)
+
+# Initialize database migrations
+migrate.init_app(app, db)
 
 
 @app.route("/")
