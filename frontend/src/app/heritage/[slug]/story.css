@@ -1,0 +1,484 @@
+/* =====================================================
+   HERITAGE STORY DETAILS
+===================================================== */
+
+.story-page {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+
+  background: #f7f5ef;
+
+  color: #29251f;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.story-hero {
+  position: relative;
+
+  width: 100%;
+  height: 330px;
+
+  overflow: hidden;
+}
+
+
+.story-hero-image {
+  object-fit: cover;
+}
+
+
+.story-hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(23, 21, 18, 0.67) 0%,
+      rgba(23, 21, 18, 0.38) 48%,
+      rgba(23, 21, 18, 0.08) 100%
+    );
+}
+
+
+/* BACK */
+
+.story-back {
+  position: absolute;
+
+  z-index: 3;
+
+  top: 25px;
+  left: 32px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 7px 13px;
+
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 20px;
+
+  background: rgba(0, 0, 0, 0.13);
+
+  color: #ffffff;
+
+  font-size: 10px;
+
+  text-decoration: none;
+
+  backdrop-filter: blur(4px);
+
+  transition: background 150ms ease;
+}
+
+
+.story-back:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+
+/* HERO CONTENT */
+
+.story-hero-content {
+  position: absolute;
+
+  z-index: 2;
+
+  left: 38px;
+  bottom: 38px;
+
+  max-width: 650px;
+}
+
+
+.story-hero-category {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #eee8dc;
+
+  font-size: 8px;
+  font-weight: 600;
+
+  letter-spacing: 3px;
+}
+
+
+.story-hero-content h1 {
+  margin: 0;
+
+  max-width: 650px;
+
+  color: #ffffff;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 48px;
+  font-weight: 400;
+
+  line-height: 1;
+}
+
+
+.story-location {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 13px;
+
+  color: rgba(255, 255, 255, 0.88);
+
+  font-size: 11px;
+}
+
+
+/* HANDWRITTEN TEXT */
+
+.story-script {
+  position: absolute;
+
+  z-index: 3;
+
+  right: 65px;
+  top: 72px;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  font-family:
+    "Brush Script MT",
+    "Segoe Script",
+    cursive;
+
+  font-size: 26px;
+  font-style: italic;
+
+  line-height: 1.15;
+
+  text-align: center;
+
+  transform: rotate(-7deg);
+}
+
+
+/* =====================================================
+   CONTENT
+===================================================== */
+
+.story-content {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    270px;
+
+  gap: 24px;
+
+  max-width: 1050px;
+
+  margin: 0 auto;
+
+  padding: 35px 30px 55px;
+}
+
+
+/* =====================================================
+   ARTICLE
+===================================================== */
+
+.story-article {
+  padding: 30px 34px;
+
+  border: 1px solid #e4e0d7;
+  border-radius: 9px;
+
+  background: #fbfaf7;
+}
+
+
+.story-small-title {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #687254;
+
+  font-size: 8px;
+  font-weight: 600;
+
+  letter-spacing: 2.5px;
+}
+
+
+.story-article h2 {
+  max-width: 680px;
+
+  margin: 0;
+
+  color: #29251f;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 25px;
+  font-weight: 400;
+
+  line-height: 1.3;
+}
+
+
+.story-gold-line {
+  width: 42px;
+  height: 2px;
+
+  margin: 19px 0;
+
+  background: #b49258;
+}
+
+
+.story-article > p {
+  margin: 0 0 16px;
+
+  color: #666158;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 13px;
+
+  line-height: 1.75;
+}
+
+
+/* QUOTE */
+
+.story-article blockquote {
+  margin: 26px 0 0;
+
+  padding: 19px 23px;
+
+  border-left: 3px solid #687254;
+
+  background: #efede6;
+
+  color: #4d493f;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 17px;
+  font-style: italic;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   SIDE CARD
+===================================================== */
+
+.story-aside {
+  align-self: start;
+
+  padding: 22px;
+
+  border: 1px solid #e2ded5;
+  border-radius: 9px;
+
+  background: #fbfaf7;
+}
+
+
+.story-aside-label {
+  color: #817b70;
+
+  font-size: 7px;
+  font-weight: 600;
+
+  letter-spacing: 2px;
+}
+
+
+.story-aside h3 {
+  margin: 7px 0 20px;
+
+  color: #29251f;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 19px;
+  font-weight: 400;
+
+  line-height: 1.2;
+}
+
+
+.story-aside-row {
+  display: flex;
+
+  gap: 10px;
+
+  padding: 14px 0;
+
+  border-top: 1px solid #e5e1d8;
+  border-bottom: 1px solid #e5e1d8;
+
+  color: #687254;
+}
+
+
+.story-aside-row div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.story-aside small,
+.story-aside-category small {
+  color: #898378;
+
+  font-size: 7px;
+
+  letter-spacing: 1.4px;
+}
+
+
+.story-aside-row span,
+.story-aside-category span {
+  color: #423e37;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 11px;
+}
+
+
+.story-aside-category {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  padding: 14px 0;
+}
+
+
+.story-aside > a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  width: 100%;
+
+  margin-top: 7px;
+
+  padding: 10px;
+
+  border-radius: 20px;
+
+  background: #687254;
+
+  color: #ffffff;
+
+  font-size: 10px;
+
+  text-decoration: none;
+
+  transition: background 150ms ease;
+}
+
+
+.story-aside > a:hover {
+  background: #515b40;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .story-content {
+    grid-template-columns: 1fr;
+  }
+
+
+  .story-aside {
+    width: 100%;
+  }
+
+
+  .story-script {
+    right: 30px;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 650px) {
+
+  .story-hero {
+    height: 300px;
+  }
+
+
+  .story-back {
+    top: 18px;
+    left: 18px;
+  }
+
+
+  .story-hero-content {
+    left: 20px;
+    right: 20px;
+    bottom: 27px;
+  }
+
+
+  .story-hero-content h1 {
+    font-size: 36px;
+  }
+
+
+  .story-script {
+    display: none;
+  }
+
+
+  .story-content {
+    padding: 18px 14px 35px;
+  }
+
+
+  .story-article {
+    padding: 23px 20px;
+  }
+
+
+  .story-article h2 {
+    font-size: 21px;
+  }
+
+
+  .story-article > p {
+    font-size: 12px;
+  }
+
+}
