@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import { redirect } from 'next/navigation';
-
-export default function Home() {
-  redirect('/itineraries');
-=======
 import AppShell from "@/components/AppShell";
 
 export default function Home() {
@@ -46,5 +40,4 @@ export default function Home() {
 
     </AppShell>
   );
->>>>>>> origin/dev
 }
