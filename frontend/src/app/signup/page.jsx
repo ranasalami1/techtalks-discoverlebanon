@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
 /**
  * Sign Up Page — Discover Lebanon
@@ -69,6 +72,9 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const router = useRouter();
 
   const handleChange = (field) => (e) => {
     const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
@@ -82,7 +88,7 @@ export default function SignUpPage() {
     setErrors(validate(values));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate(values);
     setErrors(validationErrors);
@@ -93,9 +99,35 @@ export default function SignUpPage() {
       confirmPassword: true,
       agreeTerms: true,
     });
-    if (Object.keys(validationErrors).length === 0) {
+    if (Object.keys(validationErrors).length > 0 || submitting) return;
+
+    setSubmitting(true);
+    setServerError("");
+    try {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: values.fullName,
+          email: values.email,
+          password: values.password,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setServerError(data.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+
       setSubmitted(true);
-      // TODO: connect to backend here once available
+      setValues(initialForm);
+      setTouched({});
+      setTimeout(() => router.push("/"), 1500);
+    } catch {
+      setServerError("Can't reach the server. Please try again later.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -448,6 +480,21 @@ export default function SignUpPage() {
           margin-bottom: 14px;
         }
 
+        .server-error {
+          background: #FBEDE8;
+          border: 1.5px solid #E2A898;
+          color: #B3492C;
+          padding: 10px 12px;
+          border-radius: 8px;
+          font-size: 13px;
+          margin-bottom: 14px;
+        }
+
+        .btn-pill-primary:disabled {
+          opacity: 0.7;
+          cursor: wait;
+        }
+
         @media (max-width: 640px) {
           .topnav__links { display: none; }
           .hero-tagline { font-size: 24px; padding-left: 24px; }
@@ -497,8 +544,10 @@ export default function SignUpPage() {
         <p>Join Discover Lebanon and start your journey through heritage, culture and unique experiences.</p>
 
         {submitted && (
-          <div className="success-banner">Account details look good — ready to connect to the backend.</div>
+          <div className="success-banner">Account created! Taking you to sign in…</div>
         )}
+
+        {serverError && <div className="server-error">{serverError}</div>}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="field">
@@ -661,8 +710,8 @@ export default function SignUpPage() {
             </label>
           </div>
 
-          <button type="submit" className="btn-pill-primary">
-            Create Account
+          <button type="submit" className="btn-pill-primary" disabled={submitting}>
+            {submitting ? "Creating Account…" : "Create Account"}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>

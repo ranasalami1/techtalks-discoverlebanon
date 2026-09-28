@@ -747,7 +747,7 @@ export default function MyAccountPage() {
                   <h2>Saved Places</h2>
 
                   <p>
-                    Places you've saved to explore later.
+                    Places you&apos;ve saved to explore later.
                   </p>
 
                 </div>
@@ -986,7 +986,7 @@ export default function MyAccountPage() {
 
                   <p>
                     A look back at the places, stories and
-                    experiences you've explored.
+                    experiences you&apos;ve explored.
                   </p>
 
                 </div>

@@ -532,7 +532,7 @@ export default function LoginPage() {
           </div>
 
           <p className="bottom-line">
-            Don&apos;t have an account? <Link href="/signup">Register</Link>
+            Don&apos;t have an account? <Link href="/signup">Sign Up</Link>
           </p>
         </form>
       </div>
