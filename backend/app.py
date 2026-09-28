@@ -5,6 +5,7 @@ from config import Config
 from extensions import db, migrate
 import models
 from routes.auth import auth_bp
+from utils.errors import register_error_handlers
 
 app = Flask(__name__)
 
@@ -19,7 +20,12 @@ db.init_app(app)
 
 # Initialize database migrations
 migrate.init_app(app, db)
+
+# Register routes
 app.register_blueprint(auth_bp)
+
+# Register JSON error handlers (400, 404, 405, 500, ApiError)
+register_error_handlers(app)
 
 
 @app.route("/")
