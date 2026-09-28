@@ -7,6 +7,7 @@ import { ArrowRight, Bookmark, Ellipsis, MapPin } from "lucide-react";
 
 export default function SavedPlaceCard({ place, onRemove }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const detailsHref = `/places/${place.placeId ?? place.id}`;
   const menuRef = useRef(null);
 
   // Close the "..." menu when clicking anywhere else.
@@ -47,7 +48,7 @@ export default function SavedPlaceCard({ place, onRemove }) {
             <ul className="absolute right-0 top-9 z-10 w-40 overflow-hidden rounded-lg border border-border bg-white py-1 shadow-md">
               <li>
                 <Link
-                  href={`/places/${place.id}`}
+                  href={detailsHref}
                   className="block px-3 py-2 text-[13px] text-ink-soft hover:bg-cream-soft hover:text-ink"
                 >
                   View details
@@ -95,7 +96,7 @@ export default function SavedPlaceCard({ place, onRemove }) {
         <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">{place.note}</p>
 
         <Link
-          href={`/places/${place.id}`}
+          href={detailsHref}
           className="mt-auto inline-flex items-center gap-1.5 pt-3 text-[13px] text-ink hover:text-olive"
         >
           View <span className="underline underline-offset-4">Details</span>

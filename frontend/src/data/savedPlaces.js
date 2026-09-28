@@ -1,6 +1,7 @@
 // Placeholder content matching the approved Saved Places mockup (KAN-10).
 // Images are picsum placeholders keyed by seed — swap for real assets later.
 // Replace with data fetched from the backend saved-places API once it's available.
+// `placeId` links a saved item to its full Place Details page (ids in data/places.js).
 const img = (seed) => `https://picsum.photos/seed/${seed}/800/500`;
 
 export const savedFilters = [
@@ -13,6 +14,7 @@ export const savedFilters = [
 export const savedPlaces = [
   {
     id: "byblos-citadel",
+    placeId: "byblos",
     title: "Byblos Citadel",
     location: "Byblos",
     note: "Incredible history and sea views. A must visit again!",
@@ -23,6 +25,7 @@ export const savedPlaces = [
   },
   {
     id: "cedars-of-god",
+    placeId: "cedars",
     title: "Cedars of God",
     location: "Bsharri",
     note: "Breathtaking landscapes. Perfect for a hiking trip.",
@@ -63,6 +66,7 @@ export const savedPlaces = [
   },
   {
     id: "baalbek-temples",
+    placeId: "baalbek",
     title: "Baalbek Temples",
     location: "Baalbek",
     note: "Impressive and unforgettable. Plan a full day visit.",
@@ -73,6 +77,7 @@ export const savedPlaces = [
   },
   {
     id: "qadisha-valley-hike",
+    placeId: "qadisha",
     title: "Qadisha Valley Hike",
     location: "Bsharri",
     note: "Monasteries carved into the cliffs. Bring good shoes.",
