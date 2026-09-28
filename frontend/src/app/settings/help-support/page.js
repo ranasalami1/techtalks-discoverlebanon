@@ -145,7 +145,7 @@ export default function HelpSupportPage() {
               <span>
                 <strong>Email support</strong>
                 <small>
-                  Send us a message and we'll get back to you.
+                  Send us a message and we&apos;ll get back to you.
                 </small>
               </span>
             </div>

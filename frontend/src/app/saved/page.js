@@ -72,6 +72,12 @@ export default function SavedPlacesPage() {
      CLOSE MODAL WITH ESC
   ===================================================== */
 
+  const closeAddModal = () => {
+    setShowAddModal(false);
+    setNewPlace(EMPTY_FORM);
+    setFormError("");
+  };
+
   useEffect(() => {
     if (!showAddModal) return;
 
@@ -169,12 +175,6 @@ export default function SavedPlacesPage() {
     setNewPlace(EMPTY_FORM);
     setFormError("");
     setShowAddModal(true);
-  };
-
-  const closeAddModal = () => {
-    setShowAddModal(false);
-    setNewPlace(EMPTY_FORM);
-    setFormError("");
   };
 
   const handleNewPlaceChange = (event) => {
