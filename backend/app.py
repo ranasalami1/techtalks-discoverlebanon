@@ -4,6 +4,7 @@ from flask_cors import CORS
 from config import Config
 from extensions import db, migrate
 import models
+from routes.heritage_story_routes import heritage_stories_bp
 from routes.place_routes import places_bp
 
 app = Flask(__name__)
@@ -21,6 +22,7 @@ db.init_app(app)
 migrate.init_app(app, db)
 
 # Register API routes
+app.register_blueprint(heritage_stories_bp)
 app.register_blueprint(places_bp)
 
 
