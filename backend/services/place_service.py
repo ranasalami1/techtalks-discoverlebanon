@@ -1,3 +1,4 @@
+from sqlalchemy import case, or_
 from sqlalchemy.orm import selectinload
 
 from extensions import db
@@ -11,17 +12,25 @@ MAX_PER_PAGE = 50
 MAX_ID = 2147483647
 
 
-def get_places(category=None, city=None, region=None, page=1, per_page=DEFAULT_PER_PAGE):
+def get_places(
+    category=None,
+    city=None,
+    region=None,
+    search=None,
+    sort="name_asc",
+    page=1,
+    per_page=DEFAULT_PER_PAGE
+):
     query = (
         db.select(Place)
         .options(selectinload(Place.categories))
-        .order_by(Place.name, Place.place_id)
     )
 
     # Filters are optional and case-insensitive
     category = (category or "").strip()
     city = (city or "").strip()
     region = (region or "").strip()
+    search = (search or "").strip()
 
     if category:
         query = query.where(
@@ -40,6 +49,11 @@ def get_places(category=None, city=None, region=None, page=1, per_page=DEFAULT_P
             db.func.lower(Place.region) == region.lower()
         )
 
+    if search:
+        query = query.where(_matches_search(search))
+
+    query = query.order_by(*_sort_order(sort, search))
+
     # Invalid page values fall back to defaults instead of failing the request
     if page is None or page < 1:
         page = 1
@@ -53,6 +67,37 @@ def get_places(category=None, city=None, region=None, page=1, per_page=DEFAULT_P
         per_page=min(per_page, MAX_PER_PAGE),
         error_out=False
     )
+
+
+def _matches_search(search):
+    # A place matches if the text appears anywhere in one of these fields.
+    # autoescape=True makes % and _ normal characters instead of SQL wildcards.
+    return or_(
+        Place.name.icontains(search, autoescape=True),
+        Place.city.icontains(search, autoescape=True),
+        Place.region.icontains(search, autoescape=True),
+        Place.short_description.icontains(search, autoescape=True),
+        Place.description.icontains(search, autoescape=True),
+        Place.categories.any(Category.name.icontains(search, autoescape=True))
+    )
+
+
+def _sort_order(sort, search):
+    # place_id is the tie-breaker so two places with the same name
+    # always come back in the same order (no repeats across pages)
+    if sort == "name_desc":
+        return [Place.name.desc(), Place.place_id]
+
+    if sort == "relevance" and search:
+        # Places whose name matches come first, then the rest, each group A-Z
+        name_match_first = case(
+            (Place.name.icontains(search, autoescape=True), 0),
+            else_=1
+        )
+        return [name_match_first, Place.name, Place.place_id]
+
+    # "name_asc", unknown values, and relevance with no search text: A-Z
+    return [Place.name, Place.place_id]
 
 
 def get_place_by_id(place_id):
