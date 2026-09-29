@@ -4,6 +4,8 @@ from flask_cors import CORS
 from config import Config
 from extensions import db, migrate
 import models
+from routes.itinerary_routes import itineraries_bp
+from routes.place_routes import places_bp
 
 app = Flask(__name__)
 
@@ -18,6 +20,10 @@ db.init_app(app)
 
 # Initialize database migrations
 migrate.init_app(app, db)
+
+# Register API routes
+app.register_blueprint(itineraries_bp)
+app.register_blueprint(places_bp)
 
 
 @app.route("/")
