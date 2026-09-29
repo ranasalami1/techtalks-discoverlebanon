@@ -7,6 +7,9 @@ from models import Category, Place
 DEFAULT_PER_PAGE = 12
 MAX_PER_PAGE = 50
 
+# Largest value a PostgreSQL integer column can hold
+MAX_ID = 2147483647
+
 
 def get_places(category=None, city=None, region=None, page=1, per_page=DEFAULT_PER_PAGE):
     query = (
@@ -52,6 +55,24 @@ def get_places(category=None, city=None, region=None, page=1, per_page=DEFAULT_P
     )
 
 
+def get_place_by_id(place_id):
+    # The ID comes straight from the URL, so text like "baalbek" or an
+    # out-of-range number simply means "no such place"
+    try:
+        place_id = int(place_id)
+    except ValueError:
+        return None
+
+    if place_id < 1 or place_id > MAX_ID:
+        return None
+
+    return db.session.get(
+        Place,
+        place_id,
+        options=[selectinload(Place.categories), selectinload(Place.images)]
+    )
+
+
 def serialize_place_summary(place):
     # Shape used by place lists (Explore, Search results, Saved Places cards)
     return {
@@ -64,6 +85,25 @@ def serialize_place_summary(place):
         "latitude": _to_float(place.latitude),
         "longitude": _to_float(place.longitude),
         "categories": [category.name for category in place.categories]
+    }
+
+
+def serialize_place_details(place):
+    # Shape used by the Place Details page: the summary plus the full info and gallery
+    images = sorted(place.images, key=lambda image: (image.display_order, image.image_id))
+
+    return {
+        **serialize_place_summary(place),
+        "description": place.description,
+        "address": place.address,
+        "opening_hours": place.opening_hours,
+        "entrance_fee": _to_float(place.entrance_fee),
+        "website": place.website,
+        "phone": place.phone,
+        "images": [
+            {"url": image.image_url, "alt_text": image.alt_text}
+            for image in images
+        ]
     }
 
 

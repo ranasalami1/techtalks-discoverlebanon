@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from extensions import db
-from models import Category, Place
+from models import Category, Place, PlaceImage
 
 
 @pytest.fixture
@@ -118,3 +118,83 @@ def test_empty_database_returns_empty_list(client):
 
     assert names(body) == []
     assert body["data"]["pagination"] == {"page": 1, "per_page": 12, "total": 0, "pages": 0}
+
+
+@pytest.fixture
+def jeita_id(app):
+    jeita = Place(
+        name="Jeita Grotto",
+        short_description="Limestone caves with an underground river.",
+        description="Two connected karstic caves, the upper one visited on foot and the lower one by boat.",
+        city="Jeita",
+        region="Mount Lebanon",
+        address="Jeita, Keserwan",
+        latitude=Decimal("33.943600"),
+        longitude=Decimal("35.641100"),
+        opening_hours="9:00 AM - 6:00 PM",
+        entrance_fee=Decimal("18.50"),
+        website="https://www.jeitagrotto.com",
+        phone="+961 9 220 840",
+        featured_image="/images/jeita.jpg",
+        categories=[Category(name="Nature")],
+        images=[
+            PlaceImage(image_url="/images/jeita-boat.jpg", alt_text="Boat ride", display_order=2),
+            PlaceImage(image_url="/images/jeita-upper.jpg", alt_text="Upper cave", display_order=1)
+        ]
+    )
+
+    db.session.add(jeita)
+    db.session.commit()
+
+    return jeita.place_id
+
+
+def get_place(client, place_id, expected_status=200):
+    response = client.get(f"/api/places/{place_id}")
+    assert response.status_code == expected_status
+    return response.get_json()
+
+
+def test_place_details_shape(client, jeita_id):
+    body = get_place(client, jeita_id)
+
+    assert body["status"] == "success"
+    assert body["message"] == "Place retrieved successfully"
+    assert body["data"]["place"] == {
+        "id": jeita_id,
+        "name": "Jeita Grotto",
+        "short_description": "Limestone caves with an underground river.",
+        "description": "Two connected karstic caves, the upper one visited on foot and the lower one by boat.",
+        "city": "Jeita",
+        "region": "Mount Lebanon",
+        "address": "Jeita, Keserwan",
+        "featured_image": "/images/jeita.jpg",
+        "latitude": 33.9436,
+        "longitude": 35.6411,
+        "opening_hours": "9:00 AM - 6:00 PM",
+        "entrance_fee": 18.5,
+        "website": "https://www.jeitagrotto.com",
+        "phone": "+961 9 220 840",
+        "categories": ["Nature"],
+        "images": [
+            {"url": "/images/jeita-upper.jpg", "alt_text": "Upper cave"},
+            {"url": "/images/jeita-boat.jpg", "alt_text": "Boat ride"}
+        ]
+    }
+
+
+def test_place_details_missing_fields_are_null(client, place_ids):
+    baalbek = get_place(client, place_ids["Baalbek"])["data"]["place"]
+
+    for field in ["description", "address", "opening_hours", "entrance_fee", "website", "phone"]:
+        assert baalbek[field] is None
+
+    assert baalbek["images"] == []
+    assert baalbek["categories"] == ["Heritage"]
+
+
+@pytest.mark.parametrize("place_id", ["999", "0", "-1", "baalbek", "99999999999"])
+def test_unknown_place_returns_json_404(client, place_ids, place_id):
+    body = get_place(client, place_id, expected_status=404)
+
+    assert body == {"status": "error", "message": "Place not found"}
