@@ -4,7 +4,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, current_app,jsonify, request
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -12,7 +12,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from extensions import db
 from models import PasswordResetToken, User, UserSettings
 from services import send_password_reset_email
-
+from services.password_reset import token_digest
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
@@ -253,3 +253,95 @@ def forgot_password():
     return jsonify({
         "message": RESET_REQUEST_MESSAGE
     }), 202
+
+
+
+# =========================================================
+# RESET PASSWORD
+# =========================================================
+
+@auth_bp.post("/reset-password")
+def reset_password():
+    data = request.get_json(silent=True) or {}
+
+    token = data.get("token", "")
+    password = data.get("password", "")
+
+    if (
+        not isinstance(token, str)
+        or not token
+        or not isinstance(password, str)
+    ):
+        return jsonify({
+            "error": "A reset token and new password are required."
+        }), 400
+
+    if len(password) < 8:
+        return jsonify({
+            "error": "Password must be at least 8 characters long."
+        }), 400
+
+    reset_token = PasswordResetToken.query.filter_by(
+        token_hash=token_digest(token)
+    ).first()
+
+    if not reset_token or reset_token.used_at is not None:
+        return jsonify({
+            "error": "This password reset link is invalid or expired."
+        }), 400
+
+    expires_at = reset_token.expires_at
+
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at <= datetime.now(timezone.utc):
+        return jsonify({
+            "error": "This password reset link is invalid or expired."
+        }), 400
+
+    user = db.session.get(
+        User,
+        reset_token.user_id,
+    )
+
+    if not user or not user.is_active:
+        return jsonify({
+            "error": "This password reset link is invalid or expired."
+        }), 400
+
+    used_at = datetime.now(timezone.utc)
+
+    consumed = PasswordResetToken.query.filter_by(
+        reset_id=reset_token.reset_id,
+        used_at=None,
+    ).filter(
+        PasswordResetToken.expires_at > used_at,
+    ).update(
+        {"used_at": used_at},
+        synchronize_session=False,
+    )
+
+    if consumed != 1:
+        db.session.rollback()
+
+        return jsonify({
+            "error": "This password reset link is invalid or expired."
+        }), 400
+
+    user.password_hash = generate_password_hash(password)
+
+    PasswordResetToken.query.filter(
+        PasswordResetToken.user_id == user.user_id,
+        PasswordResetToken.reset_id != reset_token.reset_id,
+        PasswordResetToken.used_at.is_(None),
+    ).update(
+        {"used_at": db.func.now()},
+        synchronize_session=False,
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Your password has been reset successfully."
+    }), 200
