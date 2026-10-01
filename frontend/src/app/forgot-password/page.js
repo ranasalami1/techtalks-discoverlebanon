@@ -12,8 +12,9 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const trimmedEmail = email.trim();
@@ -29,7 +30,29 @@ export default function ForgotPasswordPage() {
     }
 
     setError("");
-    setSubmitted(true);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/auth/forgot-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: trimmedEmail }),
+        },
+      );
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Unable to send reset instructions.");
+      }
+
+      setSubmitted(true);
+    } catch (requestError) {
+      setError(requestError.message || "Unable to connect to the server.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -368,6 +391,7 @@ export default function ForgotPasswordPage() {
 
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     className="
                       mt-5
                       flex
@@ -385,9 +409,11 @@ export default function ForgotPasswordPage() {
                       transition
                       hover:bg-[#505745]
                       active:scale-[0.99]
+                      disabled:cursor-not-allowed
+                      disabled:opacity-65
                     "
                   >
-                    Send Reset Link
+                    {isSubmitting ? "Sending..." : "Send Reset Link"}
                   </button>
                 </form>
 
