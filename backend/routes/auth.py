@@ -4,7 +4,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
-from flask import Blueprint, current_app,jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -14,7 +14,9 @@ from models import PasswordResetToken, User, UserSettings
 from services import send_password_reset_email
 from services.password_reset import token_digest
 
+
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
+
 
 RESET_REQUEST_MESSAGE = (
     "If an account with that email exists, a password reset link has been sent."
@@ -32,12 +34,18 @@ def signup():
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
-        return {"error": "A JSON request body is required"}, 400
+        return {
+            "error": "A JSON request body is required"
+        }, 400
 
-    full_name = data.get("fullName", data.get("full_name"))
+    full_name = data.get(
+        "fullName",
+        data.get("full_name")
+    )
     email = data.get("email")
     password = data.get("password")
 
+    # Validate full name
     if (
         not isinstance(full_name, str)
         or not 2 <= len(full_name.strip()) <= 100
@@ -46,6 +54,7 @@ def signup():
             "error": "Full name must be between 2 and 100 characters"
         }, 400
 
+    # Validate email
     if not isinstance(email, str):
         return {
             "error": "A valid email address is required"
@@ -55,12 +64,13 @@ def signup():
 
     if (
         len(email) > 120
-        or not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email)
+        or not EMAIL_PATTERN.fullmatch(email)
     ):
         return {
             "error": "A valid email address is required"
         }, 400
 
+    # Validate password
     if (
         not isinstance(password, str)
         or len(password) < 8
@@ -73,11 +83,19 @@ def signup():
             )
         }, 400
 
-    if User.query.filter_by(email=email).first() is not None:
+    # Prevent duplicate email case-insensitively
+    existing_user = db.session.query(
+        User.user_id
+    ).filter(
+        db.func.lower(User.email) == email
+    ).first()
+
+    if existing_user:
         return {
             "error": "An account with this email already exists"
         }, 409
 
+    # Create user
     user = User(
         full_name=full_name.strip(),
         email=email,
@@ -93,7 +111,13 @@ def signup():
     except IntegrityError:
         db.session.rollback()
 
-        if User.query.filter_by(email=email).first() is not None:
+        duplicate_user = db.session.query(
+            User.user_id
+        ).filter(
+            db.func.lower(User.email) == email
+        ).first()
+
+        if duplicate_user:
             return {
                 "error": "An account with this email already exists"
             }, 409
@@ -138,16 +162,21 @@ def login():
 
     email = email.strip().lower()
 
-    if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
+    if not EMAIL_PATTERN.fullmatch(email):
         return {
             "error": "Invalid email or password"
         }, 401
 
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(
+        email=email
+    ).first()
 
     if (
         user is None
-        or not check_password_hash(user.password_hash, password)
+        or not check_password_hash(
+            user.password_hash,
+            password,
+        )
     ):
         return {
             "error": "Invalid email or password"
@@ -195,7 +224,10 @@ def forgot_password():
 
     email = email.strip().lower()
 
-    if len(email) > 120 or not EMAIL_PATTERN.fullmatch(email):
+    if (
+        len(email) > 120
+        or not EMAIL_PATTERN.fullmatch(email)
+    ):
         return jsonify({
             "error": "A valid email address is required."
         }), 400
@@ -204,6 +236,7 @@ def forgot_password():
         db.func.lower(User.email) == email
     ).first()
 
+    # Do not reveal whether the email exists
     if user is None or not user.is_active:
         return jsonify({
             "message": RESET_REQUEST_MESSAGE
@@ -255,7 +288,6 @@ def forgot_password():
     }), 202
 
 
-
 # =========================================================
 # RESET PASSWORD
 # =========================================================
@@ -285,7 +317,10 @@ def reset_password():
         token_hash=token_digest(token)
     ).first()
 
-    if not reset_token or reset_token.used_at is not None:
+    if (
+        reset_token is None
+        or reset_token.used_at is not None
+    ):
         return jsonify({
             "error": "This password reset link is invalid or expired."
         }), 400
@@ -293,7 +328,9 @@ def reset_password():
     expires_at = reset_token.expires_at
 
     if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=timezone.utc)
+        expires_at = expires_at.replace(
+            tzinfo=timezone.utc
+        )
 
     if expires_at <= datetime.now(timezone.utc):
         return jsonify({
@@ -305,7 +342,7 @@ def reset_password():
         reset_token.user_id,
     )
 
-    if not user or not user.is_active:
+    if user is None or not user.is_active:
         return jsonify({
             "error": "This password reset link is invalid or expired."
         }), 400
@@ -318,7 +355,9 @@ def reset_password():
     ).filter(
         PasswordResetToken.expires_at > used_at,
     ).update(
-        {"used_at": used_at},
+        {
+            "used_at": used_at
+        },
         synchronize_session=False,
     )
 
@@ -329,14 +368,19 @@ def reset_password():
             "error": "This password reset link is invalid or expired."
         }), 400
 
-    user.password_hash = generate_password_hash(password)
+    user.password_hash = generate_password_hash(
+        password
+    )
 
+    # Invalidate all other unused reset tokens
     PasswordResetToken.query.filter(
         PasswordResetToken.user_id == user.user_id,
         PasswordResetToken.reset_id != reset_token.reset_id,
         PasswordResetToken.used_at.is_(None),
     ).update(
-        {"used_at": db.func.now()},
+        {
+            "used_at": db.func.now()
+        },
         synchronize_session=False,
     )
 

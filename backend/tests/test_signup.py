@@ -27,6 +27,11 @@ class SignupEndpointTests(unittest.TestCase):
             db.drop_all()
 
     def setUp(self):
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()
+            db.create_all()
+
         self.client = app.test_client()
 
     def tearDown(self):
