@@ -10,37 +10,139 @@ from extensions import db
 from models import PasswordResetToken
 
 
+RESET_TOKEN_LIFETIME = timedelta(hours=1)
+
+
+def hash_reset_token(token):
+    return hashlib.sha256(
+        token.encode("utf-8")
+    ).hexdigest()
+
+
+# Keep compatibility with KAN-236
 def token_digest(token):
-    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+    return hash_reset_token(token)
 
 
-def create_reset_token(user_id):
-    token = secrets.token_urlsafe(32)
+def create_reset_token(user_id, now=None):
+    now = _as_utc(
+        now or datetime.now(timezone.utc)
+    )
+
+    raw_token = secrets.token_urlsafe(32)
+
+    # Invalidate previous unused tokens
+    PasswordResetToken.query.filter_by(
+        user_id=user_id,
+        used_at=None,
+    ).update(
+        {"used_at": now},
+        synchronize_session="fetch",
+    )
+
     reset_token = PasswordResetToken(
         user_id=user_id,
-        token_hash=token_digest(token),
-        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        token_hash=hash_reset_token(raw_token),
+        expires_at=now + RESET_TOKEN_LIFETIME,
     )
-    return token, reset_token
+
+    db.session.add(reset_token)
+
+    return raw_token, reset_token
+
+
+def find_valid_reset_token(raw_token, now=None):
+    if not isinstance(raw_token, str) or not raw_token:
+        return None
+
+    now = _as_utc(
+        now or datetime.now(timezone.utc)
+    )
+
+    reset_token = PasswordResetToken.query.filter_by(
+        token_hash=hash_reset_token(raw_token)
+    ).populate_existing().first()
+
+    if (
+        reset_token is None
+        or reset_token.used_at is not None
+    ):
+        return None
+
+    if _as_utc(reset_token.expires_at) <= now:
+        return None
+
+    return reset_token
+
+
+def consume_reset_token(raw_token, now=None):
+    if not isinstance(raw_token, str) or not raw_token:
+        return False
+
+    now = _as_utc(
+        now or datetime.now(timezone.utc)
+    )
+
+    consumed = PasswordResetToken.query.filter_by(
+        token_hash=hash_reset_token(raw_token),
+        used_at=None,
+    ).filter(
+        PasswordResetToken.expires_at > now,
+    ).update(
+        {"used_at": now},
+        synchronize_session="fetch",
+    )
+
+    return consumed == 1
 
 
 def send_password_reset_email(email, reset_url):
     message = EmailMessage()
-    message["Subject"] = "Reset your Discover Lebanon password"
+
+    message["Subject"] = (
+        "Reset your Discover Lebanon password"
+    )
     message["From"] = current_app.config["MAIL_FROM"]
     message["To"] = email
+
     message.set_content(
-        "Use the following link to reset your Discover Lebanon password. "
-        f"This link expires in one hour:\n\n{reset_url}"
+        "Use the following link to reset your "
+        "Discover Lebanon password. "
+        "This link expires in one hour:\n\n"
+        f"{reset_url}"
     )
 
     with smtplib.SMTP(
-        current_app.config["SMTP_HOST"], current_app.config["SMTP_PORT"]
+        current_app.config["SMTP_HOST"],
+        current_app.config["SMTP_PORT"],
     ) as smtp:
-        if current_app.config.get("SMTP_USE_TLS", True):
+
+        if current_app.config.get(
+            "SMTP_USE_TLS",
+            True,
+        ):
             smtp.starttls()
-        username = current_app.config.get("SMTP_USERNAME")
-        password = current_app.config.get("SMTP_PASSWORD")
+
+        username = current_app.config.get(
+            "SMTP_USERNAME"
+        )
+        password = current_app.config.get(
+            "SMTP_PASSWORD"
+        )
+
         if username and password:
-            smtp.login(username, password)
+            smtp.login(
+                username,
+                password,
+            )
+
         smtp.send_message(message)
+
+
+def _as_utc(value):
+    if value.tzinfo is None:
+        return value.replace(
+            tzinfo=timezone.utc
+        )
+
+    return value.astimezone(timezone.utc)
