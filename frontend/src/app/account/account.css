@@ -1,0 +1,1335 @@
+.account-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #f8f6f1;
+  color: #26241f;
+}
+
+/* HERO */
+
+.account-hero {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(23, 34, 34, 0.38),
+      rgba(23, 34, 34, 0.08)
+    ),
+    url("/images/landscapes.jpg") center 48% / cover no-repeat;
+}
+
+.account-hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    90deg,
+    rgba(20, 29, 28, 0.25),
+    transparent 65%
+  );
+}
+
+.account-hero-content {
+  position: absolute;
+  left: 40px;
+  bottom: 28px;
+  z-index: 2;
+
+  color: white;
+}
+
+.account-hero-content h1 {
+  margin: 0 0 5px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 45px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.account-hero-content p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.account-hero-note {
+  position: absolute;
+  z-index: 2;
+
+  top: 34px;
+  right: 75px;
+
+  color: white;
+
+  font-family: var(--font-caveat), cursive;
+  font-size: 27px;
+  line-height: 1.05;
+
+  text-align: center;
+
+  transform: rotate(-7deg);
+}
+
+/* CONTENT */
+
+.account-content {
+  padding: 16px 22px 34px;
+}
+
+/* PROFILE */
+
+.account-profile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(330px, 1fr);
+  gap: 14px;
+}
+
+.account-profile-card,
+.account-stats-card,
+.account-panel,
+.upcoming-itinerary {
+  border: 1px solid #ebe7df;
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.account-profile-card {
+  min-height: 155px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 16px 20px;
+}
+
+.account-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.account-avatar {
+  width: 112px;
+  height: 112px;
+
+  display: block;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+.account-camera {
+  position: absolute;
+
+  right: -2px;
+  bottom: 3px;
+
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  border: 3px solid white;
+  border-radius: 50%;
+
+  background: #657052;
+  color: white;
+
+  cursor: pointer;
+}
+
+.account-profile-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.account-profile-info h2 {
+  margin: 0 0 5px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.account-profile-info > p {
+  margin: 4px 0;
+
+  color: #6f6b63;
+
+  font-size: 12px;
+}
+
+.account-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.account-bio {
+  margin-top: 13px !important;
+}
+
+.account-edit-button {
+  align-self: flex-start;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 7px;
+
+  padding: 8px 16px;
+
+  border: 1px solid #d9d5cc;
+  border-radius: 20px;
+
+  background: white;
+  color: #37342e;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+/* STATS */
+
+.account-stats-card {
+  padding: 18px;
+}
+
+.account-member {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding-bottom: 16px;
+
+  border-bottom: 1px solid #e8e4dc;
+}
+
+.member-leaf {
+  color: #5e684e;
+  font-size: 32px;
+}
+
+.account-member div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.account-member strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.account-member span {
+  color: #777269;
+  font-size: 10px;
+}
+
+.account-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: 16px;
+}
+
+.account-stat {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border-right: 1px solid #e7e3da;
+}
+
+.account-stat:last-child {
+  border-right: 0;
+}
+
+.account-stat strong {
+  margin-top: 3px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.account-stat span {
+  color: #69655e;
+
+  font-size: 9px;
+  text-align: center;
+}
+
+/* TABS */
+
+.account-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+
+  margin-top: 13px;
+
+  border-bottom: 1px solid #dcd8cf;
+}
+
+.account-tabs button {
+  min-height: 47px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  border: 0;
+  border-right: 1px solid #e4e0d8;
+
+  background: transparent;
+  color: #3e3b35;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.account-tabs button:last-child {
+  border-right: 0;
+}
+
+.account-tabs button.active {
+  border-radius: 8px 8px 0 0;
+
+  background: #667052;
+  color: white;
+}
+
+/* OVERVIEW */
+
+.account-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(310px, 1fr);
+
+  gap: 18px;
+
+  margin-top: 17px;
+}
+
+.account-left-column,
+.account-right-column {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+.account-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin: 0 3px 10px;
+}
+
+.account-section-heading h3,
+.account-panel h3 {
+  margin: 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.account-section-heading a {
+  color: #4b4943;
+
+  font-size: 9px;
+  text-decoration: none;
+}
+
+/* SAVED */
+
+.saved-places-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 9px;
+}
+
+.saved-place-card {
+  overflow: hidden;
+
+  border: 1px solid #e5e1d9;
+  border-radius: 7px;
+
+  background: white;
+}
+
+.saved-place-image-wrap {
+  position: relative;
+
+  height: 96px;
+
+  overflow: hidden;
+}
+
+.saved-place-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.saved-place-image-wrap > svg {
+  position: absolute;
+
+  right: 8px;
+  bottom: 7px;
+
+  color: white;
+
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.saved-place-info {
+  padding: 7px 9px 8px;
+}
+
+.saved-place-info strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.saved-place-info span {
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  color: #77736b;
+
+  font-size: 8px;
+}
+
+/* ITINERARY */
+
+.upcoming-itinerary {
+  min-height: 103px;
+
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr) 32px;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 7px;
+}
+
+.upcoming-itinerary > img {
+  width: 128px;
+  height: 88px;
+
+  border-radius: 6px;
+
+  object-fit: cover;
+}
+
+.upcoming-itinerary-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.upcoming-itinerary-info strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.upcoming-itinerary-info span {
+  color: #69655d;
+  font-size: 9px;
+}
+
+.itinerary-arrow {
+  width: 27px;
+  height: 27px;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #667052;
+  color: white;
+
+  cursor: pointer;
+}
+
+/* PANELS */
+
+.account-panel {
+  padding: 15px 17px;
+}
+
+.account-panel > h3 {
+  margin-bottom: 12px;
+}
+
+/* PREFERENCES */
+
+.account-preferences-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  column-gap: 35px;
+}
+
+.account-preference-row {
+  min-height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  font-size: 10px;
+}
+
+.account-switch {
+  position: relative;
+
+  width: 34px;
+  height: 19px;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 20px;
+
+  background: #c9c9c3;
+
+  cursor: pointer;
+}
+
+.account-switch > span {
+  position: absolute;
+
+  top: 3px;
+  left: 3px;
+
+  width: 13px;
+  height: 13px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  transition: transform 0.2s ease;
+}
+
+.account-switch.on {
+  background: #657052;
+}
+
+.account-switch.on > span {
+  transform: translateX(15px);
+}
+
+/* ACCOUNT SETTINGS */
+
+.account-settings-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-settings-list > a,
+.account-settings-list > button {
+  min-height: 37px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 0 4px;
+
+  border: 0;
+  border-bottom: 1px solid #ebe7df;
+
+  background: transparent;
+  color: #393630;
+
+  font-family: inherit;
+  font-size: 10px;
+
+  text-align: left;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.account-settings-list > a > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.setting-value {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  color: #6d6962;
+}
+
+.account-settings-list .account-sign-out {
+  justify-content: flex-start;
+
+  border-bottom: 0;
+
+  color: #a25443;
+}
+
+/* EDIT PROFILE */
+
+.account-success {
+  margin-top: 12px;
+  padding: 10px 13px;
+
+  border: 1px solid #bac8ad;
+  border-radius: 7px;
+
+  background: #edf3e8;
+  color: #405238;
+
+  font-size: 11px;
+}
+
+.account-edit-panel {
+  margin-top: 13px;
+}
+
+.account-field {
+  margin-bottom: 12px;
+}
+
+.account-field label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #666159;
+
+  font-size: 10px;
+}
+
+.account-field input {
+  width: 100%;
+
+  padding: 9px 10px;
+
+  border: 1px solid #dcd8cf;
+  border-radius: 6px;
+
+  outline: none;
+
+  background: white;
+
+  font-family: inherit;
+}
+
+.account-field input:focus {
+  border-color: #657052;
+}
+
+.account-field input.has-error {
+  border-color: #a25443;
+}
+
+.account-error {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #a25443;
+
+  font-size: 9px;
+}
+
+.account-form-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 8px;
+}
+
+.account-secondary-button,
+.account-primary-button {
+  padding: 8px 14px;
+
+  border-radius: 18px;
+
+  font-family: inherit;
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.account-secondary-button {
+  border: 1px solid #d8d4cb;
+
+  background: white;
+  color: #393630;
+}
+
+.account-primary-button {
+  border: 1px solid #657052;
+
+  background: #657052;
+  color: white;
+}
+
+.account-empty-tab {
+  margin-top: 18px;
+}
+
+.account-empty-tab p {
+  margin: 0;
+
+  color: #777269;
+  font-size: 11px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+  .account-profile-grid,
+  .account-overview {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .account-hero {
+    height: 175px;
+  }
+
+  .account-hero-content {
+    left: 20px;
+    bottom: 25px;
+  }
+
+  .account-hero-content h1 {
+    font-size: 37px;
+  }
+
+  .account-hero-note {
+    display: none;
+  }
+
+  .account-content {
+    padding: 14px;
+  }
+
+  .account-profile-card {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .account-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .account-edit-button {
+    margin-left: 100px;
+  }
+
+  .account-tabs {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .account-tabs button {
+    min-width: 145px;
+  }
+
+  .saved-places-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-preferences-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upcoming-itinerary {
+    grid-template-columns: 90px minmax(0, 1fr) 30px;
+  }
+
+  .upcoming-itinerary > img {
+    width: 90px;
+    height: 75px;
+  }
+}
+
+/* SAVED PLACES TAB */
+
+.account-tab-content {
+  padding: 24px 3px 10px;
+}
+
+.account-tab-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.account-tab-eyebrow {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #8d887e;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.account-tab-heading h2 {
+  margin: 0 0 5px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.account-tab-heading p {
+  margin: 0;
+
+  color: #7b766d;
+  font-size: 10px;
+}
+
+.saved-count {
+  padding: 7px 11px;
+
+  border: 1px solid #dedad1;
+  border-radius: 20px;
+
+  background: #fff;
+
+  color: #716d65;
+  font-size: 9px;
+}
+
+/* GRID */
+
+.saved-tab-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.saved-tab-card {
+  overflow: hidden;
+
+  border: 1px solid #e2ded5;
+  border-radius: 9px;
+
+  background: #fff;
+}
+
+.saved-tab-image-wrap {
+  position: relative;
+
+  width: 100%;
+  height: 165px;
+
+  overflow: hidden;
+}
+
+.saved-tab-image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition: transform 0.3s ease;
+}
+
+.saved-tab-card:hover .saved-tab-image {
+  transform: scale(1.025);
+}
+
+.saved-tab-bookmark {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 31px;
+  height: 31px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.92);
+  color: #60694f;
+
+  cursor: pointer;
+}
+
+.saved-tab-card-content {
+  min-height: 74px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 11px 13px;
+}
+
+.saved-tab-card-content h3 {
+  margin: 0 0 5px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.saved-tab-location {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  color: #7c776e;
+  font-size: 9px;
+}
+
+.saved-tab-explore {
+  flex-shrink: 0;
+
+  color: #60694f;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.saved-tab-explore:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1000px) {
+  .saved-tab-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .account-tab-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .saved-tab-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .saved-tab-image-wrap {
+    height: 190px;
+  }
+}
+/* MY ITINERARIES TAB */
+
+.account-create-itinerary {
+  padding: 8px 14px;
+
+  border: 1px solid #687255;
+  border-radius: 20px;
+
+  background: #687255;
+  color: #fff;
+
+  font-size: 9px;
+  text-decoration: none;
+}
+
+.my-itineraries-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.my-itinerary-card {
+  overflow: hidden;
+
+  display: grid;
+  grid-template-columns: 42% 58%;
+
+  min-height: 205px;
+
+  border: 1px solid #e2ded5;
+  border-radius: 9px;
+
+  background: #fff;
+}
+
+.my-itinerary-image {
+  width: 100%;
+  height: 100%;
+
+  min-height: 205px;
+
+  object-fit: cover;
+}
+
+.my-itinerary-content {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 15px;
+}
+
+.my-itinerary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  margin-bottom: 11px;
+}
+
+.itinerary-status {
+  padding: 4px 7px;
+
+  border-radius: 20px;
+
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.itinerary-status.upcoming {
+  background: #e8ecdf;
+  color: #5d684d;
+}
+
+.itinerary-status.completed {
+  background: #eeeae2;
+  color: #716b61;
+}
+
+.itinerary-date {
+  color: #8a857c;
+  font-size: 8px;
+}
+
+.my-itinerary-content h3 {
+  margin: 0 0 6px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.my-itinerary-location {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  margin: 0 0 9px;
+
+  color: #777269;
+
+  font-size: 9px;
+}
+
+.my-itinerary-description {
+  margin: 0 0 11px;
+
+  color: #716c63;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.my-itinerary-tags {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  margin-bottom: 12px;
+}
+
+.my-itinerary-tags span {
+  padding: 4px 7px;
+
+  border-radius: 20px;
+
+  background: #f0eee8;
+  color: #666158;
+
+  font-size: 7px;
+}
+
+.my-itinerary-link {
+  margin-top: auto;
+
+  color: #5e684e;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.my-itinerary-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1050px) {
+  .my-itineraries-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .my-itinerary-card {
+    grid-template-columns: 1fr;
+  }
+
+  .my-itinerary-image {
+    height: 170px;
+    min-height: 170px;
+  }
+}
+
+
+/* =====================================================
+   VIEW ALL BUTTON
+===================================================== */
+
+.account-view-all-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #4b4943;
+  font-family: inherit;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.account-view-all-button:hover {
+  color: #657052;
+}
+
+
+/* =====================================================
+   ACTIVITY HISTORY
+===================================================== */
+
+.activity-history-list {
+  overflow: hidden;
+  border: 1px solid #e3dfd6;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.activity-history-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 15px 17px;
+
+  border-bottom: 1px solid #ebe7df;
+}
+
+.activity-history-item:last-child {
+  border-bottom: 0;
+}
+
+.activity-history-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #edf0e7;
+  color: #657052;
+}
+
+.activity-history-content {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.activity-history-content > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.activity-history-content strong {
+  color: #34312b;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.activity-history-content div > span {
+  color: #827d74;
+  font-size: 9px;
+}
+
+.activity-history-date {
+  flex-shrink: 0;
+
+  color: #8a857c;
+  font-size: 9px;
+}
+
+
+/* =====================================================
+   PREFERENCES TAB
+===================================================== */
+
+.preferences-tab-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  column-gap: 30px;
+
+  padding: 6px 20px;
+
+  border: 1px solid #e3dfd6;
+  border-radius: 9px;
+
+  background: #fff;
+}
+
+.preferences-tab-row {
+  min-height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border-bottom: 1px solid #ebe7df;
+}
+
+.preferences-tab-row:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.preferences-tab-text {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.preferences-tab-text strong {
+  color: #34312b;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.preferences-tab-text span {
+  max-width: 320px;
+
+  color: #817c73;
+
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+  .preferences-tab-card {
+    grid-template-columns: 1fr;
+  }
+
+  .preferences-tab-row:nth-last-child(-n + 2) {
+    border-bottom: 1px solid #ebe7df;
+  }
+
+  .preferences-tab-row:last-child {
+    border-bottom: 0;
+  }
+
+  .activity-history-content {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
