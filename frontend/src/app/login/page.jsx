@@ -36,10 +36,14 @@ export default function LoginPage() {
   const [touched, setTouched] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (field) => (e) => {
     const next = { ...values, [field]: e.target.value };
     setValues(next);
+    setAuthError("");
+    setSubmitted(false);
     if (touched[field]) setErrors(validate(next));
   };
 
@@ -48,14 +52,40 @@ export default function LoginPage() {
     setErrors(validate(values));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate(values);
     setErrors(validationErrors);
     setTouched({ email: true, password: true });
-    if (Object.keys(validationErrors).length === 0) {
+    setAuthError("");
+    setSubmitted(false);
+
+    if (Object.keys(validationErrors).length > 0) return;
+
+    setIsSubmitting(true);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (response.status === 401) {
+        setAuthError("Invalid email or password.");
+        return;
+      }
+
+      if (!response.ok) {
+        setAuthError("Unable to sign in right now. Please try again.");
+        return;
+      }
+
       setSubmitted(true);
-      // TODO: connect to backend here once available
+    } catch {
+      setAuthError("Unable to connect. Check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -388,6 +418,21 @@ export default function LoginPage() {
           margin-bottom: 16px;
         }
 
+        .auth-error-banner {
+          background: #FBECE8;
+          border: 1.5px solid #D99786;
+          color: #8D321F;
+          padding: 10px 12px;
+          border-radius: 8px;
+          font-size: 13px;
+          margin-bottom: 16px;
+        }
+
+        .btn-pill-primary:disabled {
+          cursor: wait;
+          opacity: 0.7;
+        }
+
         @media (max-width: 640px) {
           .topnav__links { display: none; }
           .hero-tagline { font-size: 24px; padding-left: 24px; }
@@ -433,9 +478,8 @@ export default function LoginPage() {
         <h1>Welcome Back</h1>
         <p>Log in to continue your journey with Discover Lebanon.</p>
 
-        {submitted && (
-          <div className="success-banner">Login details look good — ready to connect to the backend.</div>
-        )}
+        {authError && <div className="auth-error-banner" role="alert">{authError}</div>}
+        {submitted && <div className="success-banner" role="status">Credentials verified.</div>}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="field">
@@ -504,8 +548,8 @@ export default function LoginPage() {
             <Link className="forgot-link" href="/forgot-password">Forgot Password?</Link>
           </div>
 
-          <button type="submit" className="btn-pill-primary">
-            Log In
+          <button type="submit" className="btn-pill-primary" disabled={isSubmitting}>
+            {isSubmitting ? "Signing in..." : "Log In"}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
