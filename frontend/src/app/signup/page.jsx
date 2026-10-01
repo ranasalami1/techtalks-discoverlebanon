@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:5000").replace(/\/+$/, "");
+
 /**
  * Sign Up Page — Discover Lebanon
  * Rebuilt to match the provided design: same hero shell as the login
@@ -69,11 +71,14 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState("");
 
   const handleChange = (field) => (e) => {
     const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
     const next = { ...values, [field]: val };
     setValues(next);
+    setServerError("");
     if (touched[field]) setErrors(validate(next));
   };
 
@@ -82,7 +87,7 @@ export default function SignUpPage() {
     setErrors(validate(values));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate(values);
     setErrors(validationErrors);
@@ -93,9 +98,40 @@ export default function SignUpPage() {
       confirmPassword: true,
       agreeTerms: true,
     });
-    if (Object.keys(validationErrors).length === 0) {
-      setSubmitted(true);
-      // TODO: connect to backend here once available
+    if (Object.keys(validationErrors).length > 0 || isSubmitting) {
+      return;
+    }
+
+    setServerError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: values.fullName,
+          email: values.email,
+          password: values.password,
+        }),
+      });
+      const responseBody = await response.json().catch(() => ({}));
+
+      if (response.status === 409) {
+        setErrors((currentErrors) => ({
+          ...currentErrors,
+          email: responseBody.error || "An account with this email already exists.",
+        }));
+        setTouched((currentTouched) => ({ ...currentTouched, email: true }));
+      } else if (!response.ok) {
+        setServerError(responseBody.error || "We couldn't create your account. Please try again.");
+      } else {
+        setSubmitted(true);
+      }
+    } catch {
+      setServerError("Unable to reach the server. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -378,6 +414,11 @@ export default function SignUpPage() {
           background: #4B5A3B;
         }
 
+        .btn-pill-primary:disabled {
+          cursor: wait;
+          opacity: 0.7;
+        }
+
         .divider {
           display: flex;
           align-items: center;
@@ -448,6 +489,12 @@ export default function SignUpPage() {
           margin-bottom: 14px;
         }
 
+        .form-error {
+          margin-bottom: 14px;
+          color: #B3492C;
+          font-size: 12px;
+        }
+
         @media (max-width: 640px) {
           .topnav__links { display: none; }
           .hero-tagline { font-size: 24px; padding-left: 24px; }
@@ -497,10 +544,13 @@ export default function SignUpPage() {
         <p>Join Discover Lebanon and start your journey through heritage, culture and unique experiences.</p>
 
         {submitted && (
-          <div className="success-banner">Account details look good — ready to connect to the backend.</div>
+          <div className="success-banner" role="status">
+            Your account was created successfully. You can now sign in.
+          </div>
         )}
 
         <form onSubmit={handleSubmit} noValidate>
+          {serverError && <div className="form-error" role="alert">{serverError}</div>}
           <div className="field">
             <div className="field-input-wrap">
               <span className="field-icon">
@@ -661,11 +711,13 @@ export default function SignUpPage() {
             </label>
           </div>
 
-          <button type="submit" className="btn-pill-primary">
-            Create Account
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M13 5l7 7-7 7" />
-            </svg>
+          <button type="submit" className="btn-pill-primary" disabled={isSubmitting}>
+            {isSubmitting ? "Creating Account..." : "Create Account"}
+            {!isSubmitting && (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            )}
           </button>
 
           <div className="divider">OR</div>

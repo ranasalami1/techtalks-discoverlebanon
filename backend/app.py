@@ -4,6 +4,7 @@ from flask_cors import CORS
 from config import Config
 from extensions import db, migrate
 import models
+from routes.auth import auth_bp
 
 app = Flask(__name__)
 
@@ -18,6 +19,7 @@ db.init_app(app)
 
 # Initialize database migrations
 migrate.init_app(app, db)
+app.register_blueprint(auth_bp)
 
 
 @app.route("/")
