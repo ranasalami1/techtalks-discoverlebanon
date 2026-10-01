@@ -1,0 +1,1031 @@
+/* =========================================
+   SETTINGS PAGE
+========================================= */
+
+.settings-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #f7f5f0;
+  color: #1d1d1a;
+}
+
+
+/* =========================================
+   HERO
+========================================= */
+
+.settings-hero {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(15, 25, 26, 0.48),
+      rgba(15, 25, 26, 0.08)
+    ),
+    url("/images/settings-hero.jpg");
+
+  background-size: cover;
+  background-position: center 55%;
+}
+
+.settings-hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    90deg,
+    rgba(12, 26, 29, 0.25),
+    transparent 70%
+  );
+}
+
+.settings-hero-content {
+  position: relative;
+  z-index: 1;
+
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 25px 52px;
+
+  color: white;
+}
+
+.settings-hero-content span {
+  margin-bottom: 10px;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: 0.22em;
+}
+
+.settings-hero-content h1 {
+  margin: 0 0 7px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 46px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.settings-hero-content p {
+  max-width: 390px;
+
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.95);
+
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+
+/* =========================================
+   SETTINGS CONTENT
+========================================= */
+
+.settings-container {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 175px minmax(0, 1fr);
+
+  gap: 26px;
+
+  padding: 20px 28px 35px;
+
+  align-items: start;
+}
+
+
+/* =========================================
+   INTERNAL SETTINGS MENU
+========================================= */
+
+.settings-menu {
+  min-height: 530px;
+
+  padding: 8px 0;
+
+  border-right: 1px solid #e3dfd6;
+}
+
+.menu-label {
+  margin: 0 0 13px;
+
+  color: #8c877c;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: 0.2em;
+}
+
+.menu-item {
+  width: calc(100% - 14px);
+  min-height: 43px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 0 13px;
+
+  border-radius: 7px;
+
+  color: #625f57;
+
+  font-size: 12px;
+
+  text-decoration: none;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.menu-item:hover {
+  background: #eeece6;
+}
+
+.menu-item.active {
+  background: #687055;
+
+  color: white;
+}
+
+
+/* =========================================
+   MAIN SETTINGS AREA
+========================================= */
+
+.settings-main {
+  min-width: 0;
+}
+
+.section-header {
+  margin-bottom: 19px;
+}
+
+.section-header > span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #999387;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: 0.2em;
+}
+
+.section-header h2 {
+  margin: 0 0 5px;
+
+  color: #191816;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 29px;
+  font-weight: 400;
+}
+
+.section-header p {
+  margin: 0;
+
+  color: #7a756d;
+
+  font-size: 12px;
+}
+
+
+/* =========================================
+   TWO-COLUMN GRID
+========================================= */
+
+.settings-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+.settings-column {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+
+/* =========================================
+   CARDS
+========================================= */
+
+.settings-card {
+  width: 100%;
+
+  padding: 17px 18px;
+
+  border: 1px solid #e3dfd6;
+  border-radius: 9px;
+
+  background: #fff;
+
+  box-shadow:
+    0 2px 8px rgba(38, 35, 29, 0.025);
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.card-title-row h2 {
+  margin: 0;
+
+  color: #211f1b;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.card-description {
+  margin: 5px 0 13px 28px;
+
+  color: #888279;
+
+  font-size: 10px;
+}
+
+
+/* =========================================
+   ACCOUNT
+========================================= */
+
+.profile {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  margin-top: 8px;
+}
+
+.avatar-wrap {
+  position: relative;
+
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background:
+    url("/images/profile.jpg") center / cover no-repeat;
+
+  color: transparent;
+}
+
+.avatar-camera {
+  position: absolute;
+
+  right: -2px;
+  bottom: -2px;
+
+  width: 20px;
+  height: 20px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 2px solid white;
+  border-radius: 50%;
+
+  background: #687055;
+
+  color: white;
+
+  cursor: pointer;
+}
+
+.profile-info {
+  min-width: 0;
+
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.profile-info strong {
+  color: #25221d;
+
+  font-size: 11px;
+}
+
+.profile-info > span {
+  color: #8a857c;
+
+  font-size: 9px;
+}
+
+.profile-location {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  padding: 7px 11px;
+
+  border: 1px solid #dcd8cf;
+  border-radius: 7px;
+
+  background: white;
+
+  color: #514e47;
+
+  font-size: 9px;
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   TOGGLES / SETTING ROWS
+========================================= */
+
+.setting-row {
+  min-height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  border-bottom: 1px solid #eeece6;
+
+  color: #4e4a43;
+
+  font-size: 10px;
+}
+
+.setting-row:last-child {
+  border-bottom: 0;
+}
+
+.toggle {
+  position: relative;
+
+  width: 31px;
+  height: 18px;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 20px;
+
+  background: #c9c9c3;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.toggle span {
+  position: absolute;
+
+  top: 3px;
+  left: 3px;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  transition: transform 0.2s ease;
+}
+
+.toggle.on {
+  background: #65704f;
+}
+
+.toggle.on span {
+  transform: translateX(13px);
+}
+
+
+/* =========================================
+   RADIO OPTIONS
+========================================= */
+
+.option {
+  width: 100%;
+  min-height: 29px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #555149;
+
+  font-size: 10px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.radio {
+  width: 15px;
+  height: 15px;
+
+  display: inline-block;
+
+  flex-shrink: 0;
+
+  border: 1px solid #9c9a92;
+  border-radius: 50%;
+}
+
+.radio.selected {
+  border: 4px solid #687055;
+}
+
+
+/* =========================================
+   PRIVACY LIST
+========================================= */
+
+.list-row {
+  width: 100%;
+  min-height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 0;
+
+  border: 0;
+  border-bottom: 1px solid #ece9e2;
+
+  background: transparent;
+
+  color: #504c45;
+
+  font-size: 10px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.list-row:last-child {
+  border-bottom: 0;
+}
+
+.list-row-right {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #89847b;
+}
+
+.list-row.danger {
+  color: #4f4a42;
+}
+
+
+/* =========================================
+   LANGUAGE SELECT
+========================================= */
+
+.lang-select-wrap {
+  position: relative;
+
+  width: 100%;
+}
+
+.lang-select {
+  width: 100%;
+  height: 34px;
+
+  appearance: none;
+
+  padding: 0 35px 0 12px;
+
+  border: 1px solid #dedad1;
+  border-radius: 6px;
+
+  outline: none;
+
+  background: #fff;
+
+  color: #49463f;
+
+  font-family: inherit;
+  font-size: 10px;
+}
+
+.lang-select-wrap > svg {
+  position: absolute;
+
+  top: 50%;
+  right: 12px;
+
+  pointer-events: none;
+
+  transform: translateY(-50%);
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1050px) {
+  .settings-container {
+    grid-template-columns: 160px minmax(0, 1fr);
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-hero {
+    height: 190px;
+  }
+
+  .settings-hero-content {
+    padding: 30px 22px;
+  }
+
+  .settings-hero-content h1 {
+    font-size: 39px;
+  }
+
+  .settings-container {
+    display: block;
+
+    padding: 18px 16px 30px;
+  }
+
+  .settings-menu {
+    min-height: 0;
+
+    display: flex;
+
+    gap: 7px;
+
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+
+    overflow-x: auto;
+
+    border-right: 0;
+    border-bottom: 1px solid #e3dfd6;
+  }
+
+  .menu-label {
+    display: none;
+  }
+
+  .menu-item {
+    width: auto;
+    min-width: max-content;
+
+    padding: 0 13px;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile {
+    align-items: flex-start;
+  }
+}
+
+
+/* =========================================
+   NOTIFICATIONS PAGE
+========================================= */
+
+.notification-preference-row {
+  min-height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  padding: 10px 2px;
+
+  border-bottom: 1px solid #ece9e2;
+}
+
+.notification-preference-row:last-child {
+  border-bottom: 0;
+}
+
+.notification-preference-text {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.notification-preference-text strong {
+  color: #312e29;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.notification-preference-text span {
+  color: #8a857c;
+
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+/* =========================================
+   PRIVACY & SECURITY PAGE
+========================================= */
+
+.privacy-setting-row {
+  width: 100%;
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 10px 2px;
+
+  border: 0;
+  border-bottom: 1px solid #ece9e2;
+
+  background: transparent;
+
+  color: #312e29;
+
+  font-family: inherit;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.privacy-setting-row:last-child {
+  border-bottom: 0;
+}
+
+.privacy-setting-row > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.privacy-setting-row strong {
+  color: #312e29;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.privacy-setting-row div > span {
+  color: #8a857c;
+
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.privacy-setting-row > svg {
+  flex-shrink: 0;
+
+  color: #777269;
+}
+
+.privacy-setting-row .toggle {
+  flex-shrink: 0;
+}
+
+.privacy-danger strong {
+  color: #8b4b43;
+}
+
+.privacy-danger:hover {
+  background: rgba(139, 75, 67, 0.035);
+}
+
+/* =========================================
+   DATA & STORAGE PAGE
+========================================= */
+
+.data-storage-grid {
+  max-width: 720px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+.storage-summary {
+  margin: 18px 0 12px;
+}
+
+.storage-bar {
+  width: 100%;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background: #e3e0d8;
+}
+
+.storage-bar span {
+  display: block;
+
+  width: 38%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #687055;
+}
+
+.storage-values {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 7px;
+
+  color: #827d74;
+
+  font-size: 9px;
+}
+
+.storage-values strong {
+  color: #555149;
+
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.storage-action-row {
+  width: 100%;
+  min-height: 57px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 2px;
+
+  border: 0;
+  border-top: 1px solid #ece9e2;
+
+  background: transparent;
+
+  color: #3f3b35;
+
+  font-family: inherit;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.storage-action-row > div {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+}
+
+.storage-action-row div > span {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.storage-action-row strong {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.storage-action-row small {
+  color: #8a857c;
+
+  font-size: 9px;
+}
+
+.storage-action-arrow {
+  color: #777269;
+
+  font-size: 20px;
+}
+
+.data-setting-row {
+  min-height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 10px 2px;
+
+  border-bottom: 1px solid #ece9e2;
+}
+
+.data-setting-row:last-child {
+  border-bottom: 0;
+}
+
+.data-setting-row > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.data-setting-row strong {
+  color: #312e29;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.data-setting-row div > span {
+  color: #8a857c;
+
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.data-setting-row .toggle {
+  flex-shrink: 0;
+}
+
+/* =========================================
+   HELP & SUPPORT PAGE
+========================================= */
+
+.help-support-grid {
+  max-width: 720px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+.support-action-row {
+  width: 100%;
+  min-height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 10px 2px;
+
+  border: 0;
+  border-bottom: 1px solid #ece9e2;
+
+  background: transparent;
+
+  color: #312e29;
+
+  font-family: inherit;
+  text-align: left;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.support-action-row:last-child {
+  border-bottom: 0;
+}
+
+.support-action-row > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.support-action-row strong {
+  color: #312e29;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.support-action-row div > span {
+  color: #8a857c;
+
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.support-action-row > svg {
+  flex-shrink: 0;
+
+  color: #777269;
+}
+
+.support-action-content {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+
+  gap: 11px !important;
+}
+
+.support-action-content > span {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.support-action-content small {
+  color: #8a857c;
+
+  font-size: 9px;
+  line-height: 1.4;
+}
