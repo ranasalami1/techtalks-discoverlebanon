@@ -1,7 +1,7 @@
-from flask import jsonify
 from werkzeug.exceptions import HTTPException
 
 from extensions import db
+from utils.responses import error_response
 
 
 class ApiError(Exception):
@@ -12,13 +12,6 @@ class ApiError(Exception):
         self.message = message
         self.status_code = status_code
         self.errors = errors
-
-
-def error_response(message, status_code, errors=None):
-    body = {"status": "error", "message": message}
-    if errors:
-        body["errors"] = errors
-    return jsonify(body), status_code
 
 
 def register_error_handlers(app):
