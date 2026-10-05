@@ -50,16 +50,31 @@ def forgot_password():
         "message": "If an account exists for that email, password reset instructions have been sent."
     }), 200
 
-
 @auth_bp.post("/reset-password")
 def reset_password():
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({"error": "A JSON object is required."}), 400
+
     token = data.get("token", "")
     password = data.get("password", "")
-    if not isinstance(token, str) or not token or not isinstance(password, str):
-        return jsonify({"error": "A reset token and new password are required."}), 400
-    if len(password) < 8:
-        return jsonify({"error": "Password must be at least 8 characters long."}), 400
+
+    if not isinstance(token, str) or not token:
+        return jsonify({
+            "error": "A reset token and new password are required."
+        }), 400
+
+    if (
+        not isinstance(password, str)
+        or len(password) < 8
+        or not any(char.isdigit() for char in password)
+    ):
+        return jsonify({
+            "error": "Password must be at least 8 characters and include a number."
+        }), 400
+
+
 
     reset_token = PasswordResetToken.query.filter_by(token_hash=token_digest(token)).first()
     if not reset_token or reset_token.used_at is not None:
