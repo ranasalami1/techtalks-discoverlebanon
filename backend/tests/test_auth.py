@@ -73,7 +73,7 @@ class LoginTests(unittest.TestCase):
         )
 
         self.assertEqual(
-            unknown_user.get_json()["message"],
+            unknown_user.get_json()["error"],
             "Invalid email or password",
         )
 
