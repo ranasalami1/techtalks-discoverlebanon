@@ -2,38 +2,51 @@ import hashlib
 import unittest
 from unittest.mock import patch
 
-from app import app
+from flask import Flask
+
 from extensions import db
 from models import PasswordResetToken, User
+from routes.auth import auth_bp
 
 
 class ForgotPasswordEndpointTests(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
-        app.config.update(
+        cls.app = Flask(__name__)
+
+        cls.app.config.update(
             TESTING=True,
             SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
             FRONTEND_URL="http://localhost:3000",
         )
-        with app.app_context():
+
+        db.init_app(cls.app)
+        cls.app.register_blueprint(auth_bp)
+
+        with cls.app.app_context():
             db.create_all()
 
     @classmethod
     def tearDownClass(cls):
-        with app.app_context():
+        with cls.app.app_context():
             db.session.remove()
             db.drop_all()
 
     def setUp(self):
-        self.client = app.test_client()
-        with app.app_context():
+        self.client = self.app.test_client()
+
+        with self.app.app_context():
             db.session.query(PasswordResetToken).delete()
             db.session.query(User).delete()
+
             user = User(
                 full_name="Test User",
                 email="person@example.com",
                 password_hash="existing-hash",
             )
+
             db.session.add(user)
             db.session.commit()
 
@@ -45,21 +58,28 @@ class ForgotPasswordEndpointTests(unittest.TestCase):
             )
 
         self.assertEqual(response.status_code, 202)
+
         self.assertEqual(
             response.json["message"],
             "If an account with that email exists, a password reset link has been sent.",
         )
+
         send_email.assert_called_once()
+
         recipient, reset_url = send_email.call_args.args
+
         self.assertEqual(recipient, "person@example.com")
 
         token = reset_url.split("token=", 1)[1]
-        with app.app_context():
+
+        with self.app.app_context():
             reset_token = PasswordResetToken.query.one()
+
             self.assertEqual(
                 reset_token.token_hash,
                 hashlib.sha256(token.encode("utf-8")).hexdigest(),
             )
+
             self.assertNotIn(token, reset_token.token_hash)
             self.assertIsNone(reset_token.used_at)
 
@@ -71,12 +91,15 @@ class ForgotPasswordEndpointTests(unittest.TestCase):
             )
 
         self.assertEqual(response.status_code, 202)
+
         self.assertEqual(
             response.json["message"],
             "If an account with that email exists, a password reset link has been sent.",
         )
+
         send_email.assert_not_called()
-        with app.app_context():
+
+        with self.app.app_context():
             self.assertEqual(PasswordResetToken.query.count(), 0)
 
     def test_invalid_email_is_rejected(self):
@@ -98,7 +121,8 @@ class ForgotPasswordEndpointTests(unittest.TestCase):
             )
 
         self.assertEqual(response.status_code, 202)
-        with app.app_context():
+
+        with self.app.app_context():
             self.assertEqual(PasswordResetToken.query.count(), 0)
 
 
