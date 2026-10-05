@@ -1,5 +1,5 @@
 import re
-
+from flask_jwt_extended import create_access_token
 from flask import Blueprint, request
 from werkzeug.security import check_password_hash
 
@@ -34,11 +34,15 @@ def login():
     if not user.is_active:
         return {"error": "This account has been deactivated"}, 403
 
+    access_token = create_access_token(identity=str(user.user_id))
+
+
     return {
-        "message": "Logged in successfully",
-        "user": {
-            "id": user.user_id,
-            "fullName": user.full_name,
-            "email": user.email,
-        },
-    }, 200
+    "message": "Logged in successfully",
+    "accessToken": access_token,
+    "user": {
+        "id": user.user_id,
+        "fullName": user.full_name,
+        "email": user.email,
+    },
+}, 200

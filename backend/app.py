@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from config import Config
-from extensions import db, migrate
+from extensions import db, migrate, jwt
 import models
 from routes.auth import auth_bp
 
@@ -19,6 +19,7 @@ db.init_app(app)
 
 # Initialize database migrations
 migrate.init_app(app, db)
+jwt.init_app(app)
 app.register_blueprint(auth_bp)
 
 
