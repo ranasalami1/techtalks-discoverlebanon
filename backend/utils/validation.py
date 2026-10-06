@@ -91,3 +91,84 @@ def validate_password_requirements(password, field="password"):
         )
 
     return password
+
+def validate_account_update(data):
+    allowed_fields = {
+        "full_name",
+        "email",
+        "profile_image",
+    }
+
+    errors = {}
+    cleaned = {}
+
+    # Reject fields the user is not allowed to modify
+    unknown_fields = set(data) - allowed_fields
+
+    if unknown_fields:
+        raise ApiError(
+            "Invalid account fields",
+            400,
+            {
+                field: "This field cannot be updated"
+                for field in unknown_fields
+            },
+        )
+
+    if not data:
+        raise ApiError(
+            "No account fields provided",
+            400,
+        )
+
+    # Full name
+    if "full_name" in data:
+        full_name = data["full_name"]
+
+        if not isinstance(full_name, str):
+            errors["full_name"] = "Full name must be a string"
+        else:
+            full_name = full_name.strip()
+
+            if not 2 <= len(full_name) <= 100:
+                errors["full_name"] = (
+                    "Full name must be between 2 and 100 characters"
+                )
+            else:
+                cleaned["full_name"] = full_name
+
+    # Email
+    if "email" in data:
+        email = data["email"]
+
+        if not isinstance(email, str):
+            errors["email"] = "Email must be a string"
+        else:
+            cleaned["email"] = validate_email_format(email)
+
+    # Profile image
+    if "profile_image" in data:
+        profile_image = data["profile_image"]
+
+        if profile_image is not None:
+            if not isinstance(profile_image, str):
+                errors["profile_image"] = (
+                    "Profile image must be a string or null"
+                )
+            elif len(profile_image.strip()) > 255:
+                errors["profile_image"] = (
+                    "Profile image must be at most 255 characters"
+                )
+            else:
+                cleaned["profile_image"] = profile_image.strip()
+        else:
+            cleaned["profile_image"] = None
+
+    if errors:
+        raise ApiError(
+            "Invalid account data",
+            400,
+            errors,
+        )
+
+    return cleaned
