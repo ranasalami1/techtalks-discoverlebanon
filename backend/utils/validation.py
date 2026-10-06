@@ -172,3 +172,78 @@ def validate_account_update(data):
         )
 
     return cleaned
+
+
+def validate_settings_update(data):
+    allowed_fields = {
+        "language",
+        "email_notifications",
+        "push_notifications",
+    }
+
+    errors = {}
+    cleaned = {}
+
+    unknown_fields = set(data) - allowed_fields
+
+    if unknown_fields:
+        raise ApiError(
+            "Invalid settings fields",
+            400,
+            {
+                field: "This field cannot be updated"
+                for field in unknown_fields
+            },
+        )
+
+    if not data:
+        raise ApiError(
+            "No settings fields provided",
+            400,
+        )
+
+    if "language" in data:
+        language = data["language"]
+
+        if not isinstance(language, str):
+            errors["language"] = "Language must be a string"
+        else:
+            language = language.strip()
+
+            if not language:
+                errors["language"] = "Language cannot be empty"
+            elif len(language) > 20:
+                errors["language"] = (
+                    "Language must be at most 20 characters"
+                )
+            else:
+                cleaned["language"] = language
+
+    if "email_notifications" in data:
+        value = data["email_notifications"]
+
+        if not isinstance(value, bool):
+            errors["email_notifications"] = (
+                "Email notifications must be true or false"
+            )
+        else:
+            cleaned["email_notifications"] = value
+
+    if "push_notifications" in data:
+        value = data["push_notifications"]
+
+        if not isinstance(value, bool):
+            errors["push_notifications"] = (
+                "Push notifications must be true or false"
+            )
+        else:
+            cleaned["push_notifications"] = value
+
+    if errors:
+        raise ApiError(
+            "Invalid settings data",
+            400,
+            errors,
+        )
+
+    return cleaned

@@ -10,7 +10,7 @@ from routes.place_routes import places_bp
 from routes.search_routes import search_bp
 from routes.itinerary_routes import itineraries_bp
 from routes.heritage_story_routes import heritage_stories_bp
-
+from routes.settings_routes import settings_bp
 from utils.errors import register_error_handlers
 
 
@@ -39,7 +39,7 @@ app.register_blueprint(itineraries_bp)
 app.register_blueprint(heritage_stories_bp)
 app.register_blueprint(saved_places_bp)
 app.register_blueprint(account_bp)
-
+app.register_blueprint(settings_bp)
 # Register JSON error handlers
 register_error_handlers(app)
 
