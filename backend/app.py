@@ -4,7 +4,7 @@ from flask_cors import CORS
 from config import Config
 from extensions import db, migrate, jwt
 import models
-
+from routes.saved_place_routes import saved_places_bp
 from routes.auth import auth_bp
 from routes.place_routes import places_bp
 from routes.search_routes import search_bp
@@ -37,7 +37,7 @@ app.register_blueprint(places_bp)
 app.register_blueprint(search_bp)
 app.register_blueprint(itineraries_bp)
 app.register_blueprint(heritage_stories_bp)
-
+app.register_blueprint(saved_places_bp)
 # Register JSON error handlers
 register_error_handlers(app)
 
