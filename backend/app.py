@@ -2,11 +2,17 @@ from flask import Flask
 from flask_cors import CORS
 
 from config import Config
-from extensions import db, migrate
+from extensions import db, migrate, jwt
 import models
+
 from routes.auth import auth_bp
 from routes.place_routes import places_bp
+from routes.search_routes import search_bp
+from routes.itinerary_routes import itineraries_bp
+from routes.heritage_story_routes import heritage_stories_bp
+
 from utils.errors import register_error_handlers
+
 
 app = Flask(__name__)
 
@@ -22,12 +28,19 @@ db.init_app(app)
 # Initialize database migrations
 migrate.init_app(app, db)
 
+# Initialize JWT
+jwt.init_app(app)
+
 # Register API routes
 app.register_blueprint(auth_bp)
 app.register_blueprint(places_bp)
+app.register_blueprint(search_bp)
+app.register_blueprint(itineraries_bp)
+app.register_blueprint(heritage_stories_bp)
 
-# Register JSON error handlers (400, 404, 405, 500, ApiError)
+# Register JSON error handlers
 register_error_handlers(app)
+
 
 @app.route("/")
 def home():
