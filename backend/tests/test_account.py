@@ -3,6 +3,7 @@ import pytest
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash
 
+
 from extensions import db
 from models import User
 
@@ -217,4 +218,28 @@ def test_account_update_requires_authentication(
         },
     )
 
-    assert response.status_code == 401    
+    assert response.status_code == 401  
+
+def test_account_update_rejects_duplicate_email(
+    client,
+    account_data,
+):
+    response = client.put(
+        "/api/account",
+        headers=auth_headers(
+            account_data["token"]
+        ),
+        json={
+            "email": "other@example.com"
+        },
+    )
+
+    assert response.status_code == 409
+
+    body = response.get_json()
+
+    assert body["status"] == "error"
+    assert body["message"] == (
+        "An account with this email already exists"
+    )
+    assert "email" in body["errors"]  

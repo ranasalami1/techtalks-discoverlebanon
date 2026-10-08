@@ -51,16 +51,27 @@ def update_account_details():
 
     cleaned_data = validate_account_update(data)
 
-    account = update_account(
+    
+    account, error = update_account(
         user_id,
         cleaned_data,
     )
 
-    if account is None:
+    if error == "not_found":
         raise ApiError(
             "Account not found",
             404,
         )
+
+    if error == "duplicate_email":
+        raise ApiError(
+            "An account with this email already exists",
+            409,
+            {
+                "email": "This email is already registered"
+            },
+        )
+    
 
     return success_response(
         data={
