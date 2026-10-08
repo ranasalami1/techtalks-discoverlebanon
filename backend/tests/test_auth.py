@@ -41,7 +41,9 @@ class LoginTests(unittest.TestCase):
         self.user = User(
             full_name="Test User",
             email="test@example.com",
-            password_hash=generate_password_hash("correct-password"),
+            password_hash=generate_password_hash(
+                "correct-password"
+            ),
         )
 
         db.session.add(self.user)
@@ -64,16 +66,35 @@ class LoginTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(unknown_user.status_code, 401)
-        self.assertEqual(wrong_password.status_code, 401)
+        self.assertEqual(
+            unknown_user.status_code,
+            401,
+        )
 
+        self.assertEqual(
+            wrong_password.status_code,
+            401,
+        )
+
+        # Unknown email and wrong password must return
+        # the exact same generic response.
         self.assertEqual(
             unknown_user.get_json(),
             wrong_password.get_json(),
         )
 
         self.assertEqual(
-            unknown_user.get_json()["error"],
+            unknown_user.get_json()["status"],
+            "error",
+        )
+
+        self.assertEqual(
+    unknown_user.get_json()["status"],
+    "error",
+)
+
+        self.assertEqual(
+            unknown_user.get_json()["message"],
             "Invalid email or password",
         )
 
@@ -86,7 +107,10 @@ class LoginTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
 
         self.assertEqual(
             response.get_json()["user"]["email"],
@@ -101,10 +125,27 @@ class LoginTests(unittest.TestCase):
     def test_missing_credentials_return_bad_request(self):
         response = self.client.post(
             "/api/auth/login",
-            json={"email": "test@example.com"},
+            json={
+                "email": "test@example.com"
+            },
         )
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.status_code,
+            400,
+        )
+
+        body = response.get_json()
+
+        self.assertEqual(
+            body["status"],
+            "error",
+        )
+
+        self.assertIn(
+            "password",
+            body["errors"],
+        )
 
 
 if __name__ == "__main__":

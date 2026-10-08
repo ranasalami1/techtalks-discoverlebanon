@@ -2,7 +2,7 @@ import unittest
 
 from flask import Flask
 from werkzeug.security import check_password_hash
-
+from utils.errors import register_error_handlers
 from extensions import db
 from models import User
 from routes.auth import auth_bp
@@ -21,6 +21,7 @@ class RegistrationTests(unittest.TestCase):
 
         db.init_app(self.app)
         self.app.register_blueprint(auth_bp)
+        register_error_handlers(self.app)
 
         self.app_context = self.app.app_context()
         self.app_context.push()
@@ -57,13 +58,41 @@ class RegistrationTests(unittest.TestCase):
         self.assertNotEqual(user.password_hash, "securepass1")
 
     def test_duplicate_email_returns_conflict(self):
-        self.client.post("/api/auth/signup", json=self.valid_payload())
+     self.client.post(
+        "/api/auth/signup",
+        json=self.valid_payload(),
+    )
 
-        response = self.client.post("/api/auth/signup", json=self.valid_payload())
+     response = self.client.post(
+        "/api/auth/signup",
+        json=self.valid_payload(),
+    )
 
-        self.assertEqual(response.status_code, 409)
-        self.assertIn("already exists", response.json["error"])
-        self.assertEqual(User.query.count(), 1)
+     self.assertEqual(
+        response.status_code,
+        409,
+    )
+
+     self.assertEqual(
+        response.json["status"],
+        "error",
+    )
+
+     self.assertIn(
+        "already exists",
+        response.json["message"],
+    )
+
+     self.assertIn(
+        "email",
+        response.json["errors"],
+    )
+
+     self.assertEqual(
+        User.query.count(),
+        1,
+    )
+    
 
     def test_duplicate_email_is_case_insensitive(self):
         self.client.post("/api/auth/signup", json=self.valid_payload())
