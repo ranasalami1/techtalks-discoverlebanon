@@ -1,6 +1,6 @@
 from werkzeug.exceptions import HTTPException
 
-from extensions import db
+from extensions import db, jwt
 from utils.responses import error_response
 
 
@@ -23,6 +23,20 @@ def register_error_handlers(app):
     @app.errorhandler(HTTPException)
     def handle_http_error(err):
         return error_response(err.description or err.name, err.code)
+
+    # Protected routes (@jwt_required): Flask-JWT-Extended would otherwise
+    # answer with its own {"msg": ...} body, and 422 for a malformed token
+    @jwt.unauthorized_loader
+    def handle_missing_token(reason):
+        return error_response("Authentication required", 401)
+
+    @jwt.invalid_token_loader
+    def handle_invalid_token(reason):
+        return error_response("Invalid authentication token", 401)
+
+    @jwt.expired_token_loader
+    def handle_expired_token(jwt_header, jwt_payload):
+        return error_response("Authentication token has expired", 401)
 
     # Anything unexpected: never leak internals to the client
     @app.errorhandler(Exception)

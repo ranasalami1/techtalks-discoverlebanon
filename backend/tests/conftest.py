@@ -5,6 +5,10 @@ import os
 # DATABASE_URL (from the shell or .env) so tests never touch PostgreSQL data.
 os.environ["DATABASE_URL"] = "sqlite://"
 
+# Same idea for login tokens: tests sign them with a fixed test-only key, so
+# they pass on a fresh clone with no .env and never use the real secret.
+os.environ["JWT_SECRET_KEY"] = "test-only-jwt-secret-key-not-for-production"
+
 import pytest
 
 from app import app as flask_app
