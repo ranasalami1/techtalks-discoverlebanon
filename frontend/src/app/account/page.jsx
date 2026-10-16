@@ -1,349 +1,3439 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
 import Link from "next/link";
+
+import {
+  ArrowRight,
+  Bookmark,
+  CalendarDays,
+  Camera,
+  Clock3,
+  Grid2X2,
+  Heart,
+  LoaderCircle,
+  LogIn,
+  Map as MapIcon,
+  MapPin,
+  Pencil,
+  Settings,
+  Trash2,
+  User,
+} from "lucide-react";
+
+import {
+  useRouter,
+} from "next/navigation";
+
 import AppShell from "@/components/AppShell";
+
+import {
+  SiteLanguageProvider,
+  useSiteLanguage,
+} from "@/components/SiteLanguage";
+
 import "./account.css";
 
+
 /* =====================================================
-   DATA
+   API
 ===================================================== */
 
-const initialAccount = {
-  fullName: "Lara Khoury",
-  email: "larakhoury@gmail.com",
-  location: "Beirut, Lebanon",
-  bio: "Exploring Lebanon's hidden gems, one story at a time.",
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000";
+
+
+/* =====================================================
+   TRANSLATIONS
+===================================================== */
+
+const pageCopy = {
+  en: {
+    title: "My Account",
+    subtitle:
+      "Manage your profile, preferences and saved experiences.",
+
+    hero1: "Same places,",
+    hero2: "different stories.",
+
+    memberSince:
+      "Member since",
+
+    member:
+      "Discover Lebanon member",
+
+    editProfile:
+      "Edit Profile",
+
+    editTitle:
+      "Edit Profile",
+
+    fullName:
+      "Full name",
+
+    email:
+      "Email",
+
+    profileImage:
+      "Profile image URL",
+
+    profileImageHelp:
+      "Enter an image URL or a public image path, for example /images/profile.jpg.",
+
+    cancel:
+      "Cancel",
+
+    saveChanges:
+      "Save changes",
+
+    saving:
+      "Saving...",
+
+    profileSaved:
+      "Your profile changes have been saved.",
+
+    accountError:
+      "Unable to load your account.",
+
+    updateError:
+      "Unable to update your account.",
+
+    loginTitle:
+      "Sign in to view your account",
+
+    loginText:
+      "Your account information is private and requires you to be signed in.",
+
+    signIn:
+      "Sign In",
+
+    placesVisited:
+      "Places Visited",
+
+    savedPlaces:
+      "Saved Places",
+
+    itinerariesCompleted:
+      "Itineraries Completed",
+
+    notTracked:
+      "Not tracked by the current backend",
+
+    overview:
+      "Overview",
+
+    myItineraries:
+      "My Itineraries",
+
+    activityHistory:
+      "Activity History",
+
+    preferences:
+      "Preferences",
+
+    recentlySaved:
+      "Recently Saved",
+
+    viewAll:
+      "View All",
+
+    noSaved:
+      "You haven't saved any places yet.",
+
+    explorePlaces:
+      "Explore Places",
+
+    curatedItineraries:
+      "Curated Itineraries",
+
+    curatedDescription:
+      "Discover ready-made journeys across Lebanon.",
+
+    noItineraries:
+      "No curated itineraries are available yet.",
+
+    viewItinerary:
+      "View Itinerary",
+
+    accountSettings:
+      "Account Settings",
+
+    personalInformation:
+      "Personal Information",
+
+    changePassword:
+      "Change Password",
+
+    notifications:
+      "Notifications",
+
+    language:
+      "Language",
+
+    signOut:
+      "Sign Out",
+
+    savedEyebrow:
+      "YOUR COLLECTION",
+
+    savedDescription:
+      "Places you've saved to explore later.",
+
+    savedCount:
+      "saved places",
+
+    removeSaved:
+      "Remove from saved places",
+
+    details:
+      "Details",
+
+    journeyEyebrow:
+      "YOUR JOURNEYS",
+
+    personalItineraryTitle:
+      "Personal itinerary tracking isn't stored yet",
+
+    personalItineraryText:
+      "The current backend stores curated itineraries, but it does not yet store which itineraries a specific user has started or completed. You can still browse all curated itineraries here.",
+
+    browseItineraries:
+      "Browse Itineraries",
+
+    activityTitle:
+      "Activity history isn't stored yet",
+
+    activityText:
+      "The current database does not contain a user activity-history table, so this page won't invent visits or activity records.",
+
+    exploreMap:
+      "Explore the Map",
+
+    preferencesTitle:
+      "Account Preferences",
+
+    preferencesText:
+      "Language and notification preferences are managed through your Settings page.",
+
+    generalSettings:
+      "General Settings",
+
+    notificationSettings:
+      "Notification Settings",
+
+    languageSettings:
+      "Language Settings",
+
+    fullNameRequired:
+      "Full name must be between 2 and 100 characters.",
+
+    invalidEmail:
+      "Enter a valid email address.",
+
+    invalidImage:
+      "Profile image must be at most 255 characters.",
+
+    removeError:
+      "Unable to remove this saved place.",
+
+    retry:
+      "Try Again",
+
+    duration:
+      "days",
+
+    difficulty:
+      "Difficulty",
+  },
+
+
+  fr: {
+    title: "Mon compte",
+    subtitle:
+      "Gérez votre profil, vos préférences et vos expériences enregistrées.",
+
+    hero1: "Les mêmes lieux,",
+    hero2: "d'autres histoires.",
+
+    memberSince:
+      "Membre depuis",
+
+    member:
+      "Membre de Discover Lebanon",
+
+    editProfile:
+      "Modifier le profil",
+
+    editTitle:
+      "Modifier le profil",
+
+    fullName:
+      "Nom complet",
+
+    email:
+      "E-mail",
+
+    profileImage:
+      "URL de la photo de profil",
+
+    profileImageHelp:
+      "Entrez une URL ou un chemin public, par exemple /images/profile.jpg.",
+
+    cancel:
+      "Annuler",
+
+    saveChanges:
+      "Enregistrer",
+
+    saving:
+      "Enregistrement...",
+
+    profileSaved:
+      "Les modifications du profil ont été enregistrées.",
+
+    accountError:
+      "Impossible de charger votre compte.",
+
+    updateError:
+      "Impossible de mettre à jour votre compte.",
+
+    loginTitle:
+      "Connectez-vous pour voir votre compte",
+
+    loginText:
+      "Les informations de votre compte sont privées.",
+
+    signIn:
+      "Se connecter",
+
+    placesVisited:
+      "Lieux visités",
+
+    savedPlaces:
+      "Lieux enregistrés",
+
+    itinerariesCompleted:
+      "Itinéraires terminés",
+
+    notTracked:
+      "Non suivi par le backend actuel",
+
+    overview:
+      "Aperçu",
+
+    myItineraries:
+      "Mes itinéraires",
+
+    activityHistory:
+      "Historique d'activité",
+
+    preferences:
+      "Préférences",
+
+    recentlySaved:
+      "Enregistrés récemment",
+
+    viewAll:
+      "Tout voir",
+
+    noSaved:
+      "Vous n'avez encore enregistré aucun lieu.",
+
+    explorePlaces:
+      "Explorer les lieux",
+
+    curatedItineraries:
+      "Itinéraires sélectionnés",
+
+    curatedDescription:
+      "Découvrez des parcours préparés à travers le Liban.",
+
+    noItineraries:
+      "Aucun itinéraire disponible.",
+
+    viewItinerary:
+      "Voir l'itinéraire",
+
+    accountSettings:
+      "Paramètres du compte",
+
+    personalInformation:
+      "Informations personnelles",
+
+    changePassword:
+      "Changer le mot de passe",
+
+    notifications:
+      "Notifications",
+
+    language:
+      "Langue",
+
+    signOut:
+      "Se déconnecter",
+
+    savedEyebrow:
+      "VOTRE COLLECTION",
+
+    savedDescription:
+      "Les lieux que vous souhaitez découvrir plus tard.",
+
+    savedCount:
+      "lieux enregistrés",
+
+    removeSaved:
+      "Retirer des lieux enregistrés",
+
+    details:
+      "Détails",
+
+    journeyEyebrow:
+      "VOS VOYAGES",
+
+    personalItineraryTitle:
+      "Le suivi personnel des itinéraires n'est pas encore enregistré",
+
+    personalItineraryText:
+      "Le backend actuel contient les itinéraires sélectionnés, mais ne stocke pas encore ceux qu'un utilisateur a commencés ou terminés.",
+
+    browseItineraries:
+      "Voir les itinéraires",
+
+    activityTitle:
+      "L'historique d'activité n'est pas encore enregistré",
+
+    activityText:
+      "La base de données actuelle ne contient pas de table d'historique utilisateur. Aucun faux historique n'est donc affiché.",
+
+    exploreMap:
+      "Explorer la carte",
+
+    preferencesTitle:
+      "Préférences du compte",
+
+    preferencesText:
+      "La langue et les notifications sont gérées depuis la page Paramètres.",
+
+    generalSettings:
+      "Paramètres généraux",
+
+    notificationSettings:
+      "Paramètres des notifications",
+
+    languageSettings:
+      "Paramètres de langue",
+
+    fullNameRequired:
+      "Le nom doit contenir entre 2 et 100 caractères.",
+
+    invalidEmail:
+      "Entrez une adresse e-mail valide.",
+
+    invalidImage:
+      "L'image du profil doit contenir au maximum 255 caractères.",
+
+    removeError:
+      "Impossible de retirer ce lieu.",
+
+    retry:
+      "Réessayer",
+
+    duration:
+      "jours",
+
+    difficulty:
+      "Difficulté",
+  },
+
+
+  ar: {
+    title: "حسابي",
+    subtitle:
+      "إدارة ملفك الشخصي وتفضيلاتك والأماكن المحفوظة.",
+
+    hero1: "الأماكن نفسها،",
+    hero2: "حكايات مختلفة.",
+
+    memberSince:
+      "عضو منذ",
+
+    member:
+      "عضو في Discover Lebanon",
+
+    editProfile:
+      "تعديل الملف الشخصي",
+
+    editTitle:
+      "تعديل الملف الشخصي",
+
+    fullName:
+      "الاسم الكامل",
+
+    email:
+      "البريد الإلكتروني",
+
+    profileImage:
+      "رابط صورة الملف الشخصي",
+
+    profileImageHelp:
+      "أدخل رابط صورة أو مسارًا عامًا مثل /images/profile.jpg.",
+
+    cancel:
+      "إلغاء",
+
+    saveChanges:
+      "حفظ التغييرات",
+
+    saving:
+      "جارٍ الحفظ...",
+
+    profileSaved:
+      "تم حفظ تغييرات الملف الشخصي.",
+
+    accountError:
+      "تعذر تحميل حسابك.",
+
+    updateError:
+      "تعذر تحديث حسابك.",
+
+    loginTitle:
+      "سجّل الدخول لعرض حسابك",
+
+    loginText:
+      "معلومات حسابك خاصة وتتطلب تسجيل الدخول.",
+
+    signIn:
+      "تسجيل الدخول",
+
+    placesVisited:
+      "الأماكن التي تمت زيارتها",
+
+    savedPlaces:
+      "الأماكن المحفوظة",
+
+    itinerariesCompleted:
+      "الرحلات المكتملة",
+
+    notTracked:
+      "غير متاح في النظام الحالي",
+
+    overview:
+      "نظرة عامة",
+
+    myItineraries:
+      "رحلاتي",
+
+    activityHistory:
+      "سجل النشاط",
+
+    preferences:
+      "التفضيلات",
+
+    recentlySaved:
+      "المحفوظة مؤخرًا",
+
+    viewAll:
+      "عرض الكل",
+
+    noSaved:
+      "لم تحفظ أي أماكن حتى الآن.",
+
+    explorePlaces:
+      "استكشاف الأماكن",
+
+    curatedItineraries:
+      "المسارات المقترحة",
+
+    curatedDescription:
+      "اكتشف مسارات جاهزة في مختلف أنحاء لبنان.",
+
+    noItineraries:
+      "لا توجد مسارات متاحة حاليًا.",
+
+    viewItinerary:
+      "عرض المسار",
+
+    accountSettings:
+      "إعدادات الحساب",
+
+    personalInformation:
+      "المعلومات الشخصية",
+
+    changePassword:
+      "تغيير كلمة المرور",
+
+    notifications:
+      "الإشعارات",
+
+    language:
+      "اللغة",
+
+    signOut:
+      "تسجيل الخروج",
+
+    savedEyebrow:
+      "مجموعتك",
+
+    savedDescription:
+      "الأماكن التي حفظتها لاكتشافها لاحقًا.",
+
+    savedCount:
+      "أماكن محفوظة",
+
+    removeSaved:
+      "إزالة من الأماكن المحفوظة",
+
+    details:
+      "التفاصيل",
+
+    journeyEyebrow:
+      "رحلاتك",
+
+    personalItineraryTitle:
+      "تتبّع رحلات المستخدم غير محفوظ بعد",
+
+    personalItineraryText:
+      "النظام الحالي يخزن المسارات المقترحة، لكنه لا يخزن بعد المسارات التي بدأها أو أكملها مستخدم معين.",
+
+    browseItineraries:
+      "استعراض المسارات",
+
+    activityTitle:
+      "سجل النشاط غير محفوظ بعد",
+
+    activityText:
+      "قاعدة البيانات الحالية لا تحتوي على سجل نشاط خاص بالمستخدم، لذلك لن يتم عرض بيانات وهمية.",
+
+    exploreMap:
+      "استكشف الخريطة",
+
+    preferencesTitle:
+      "تفضيلات الحساب",
+
+    preferencesText:
+      "يمكن إدارة اللغة والإشعارات من صفحة الإعدادات.",
+
+    generalSettings:
+      "الإعدادات العامة",
+
+    notificationSettings:
+      "إعدادات الإشعارات",
+
+    languageSettings:
+      "إعدادات اللغة",
+
+    fullNameRequired:
+      "يجب أن يكون الاسم بين حرفين و100 حرف.",
+
+    invalidEmail:
+      "أدخل بريدًا إلكترونيًا صالحًا.",
+
+    invalidImage:
+      "يجب ألا يتجاوز رابط الصورة 255 حرفًا.",
+
+    removeError:
+      "تعذر إزالة هذا المكان.",
+
+    retry:
+      "إعادة المحاولة",
+
+    duration:
+      "أيام",
+
+    difficulty:
+      "الصعوبة",
+  },
 };
 
-const savedPlaces = [
+
+/* =====================================================
+   TAB CONFIG
+===================================================== */
+
+const tabConfig = [
   {
-    name: "Byblos Citadel",
-    location: "Byblos",
-    image: "/images/byblos-account.jpg",
+    id: "overview",
+    translation: "overview",
+    icon: Grid2X2,
   },
   {
-    name: "Cedars of God",
-    location: "Bsharri",
-    image: "/images/ceders-account.jpg",
+    id: "saved",
+    translation: "savedPlaces",
+    icon: Bookmark,
   },
   {
-    name: "Raouché Rock",
-    location: "Beirut",
-    image: "/images/raouche.jpg",
+    id: "itineraries",
+    translation: "myItineraries",
+    icon: MapIcon,
+  },
+  {
+    id: "activity",
+    translation: "activityHistory",
+    icon: Clock3,
+  },
+  {
+    id: "preferences",
+    translation: "preferences",
+    icon: Settings,
   },
 ];
 
-const initialPreferences = {
-  natureOutdoors: true,
-  culturalHeritage: true,
-  foodGastronomy: false,
-  familyFriendly: true,
-  adventureActivities: false,
-  festivalsEvents: true,
-};
-
-const tabs = [
-  "Overview",
-  "Saved Places",
-  "My Itineraries",
-  "Activity History",
-  "Preferences",
-];
 
 /* =====================================================
-   VALIDATION
+   TOKEN
 ===================================================== */
 
-function validateProfile(values) {
-  const errors = {};
-
-  if (!values.fullName.trim()) {
-    errors.fullName = "Full name can't be empty";
+function getToken() {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return "";
   }
 
-  if (!values.email.trim()) {
-    errors.email = "Email can't be empty";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-    errors.email = "Enter a valid email address";
+  return (
+    localStorage.getItem(
+      "accessToken"
+    ) ||
+    localStorage.getItem(
+      "access_token"
+    ) ||
+    localStorage.getItem(
+      "token"
+    ) ||
+    ""
+  );
+}
+
+
+/* =====================================================
+   AUTH FETCH
+===================================================== */
+
+async function authFetch(
+  path,
+  options = {}
+) {
+  const token =
+    getToken();
+
+  if (!token) {
+    const error =
+      new Error(
+        "AUTH_REQUIRED"
+      );
+
+    error.code =
+      "AUTH_REQUIRED";
+
+    throw error;
+  }
+
+  return fetch(
+    `${API_URL}${path}`,
+    {
+      ...options,
+
+      headers: {
+        ...(options.headers ||
+          {}),
+
+        Authorization:
+          `Bearer ${token}`,
+      },
+    }
+  );
+}
+
+
+/* =====================================================
+   RESPONSE HELPERS
+===================================================== */
+
+function readAccount(
+  payload
+) {
+  return (
+    payload?.data?.account ||
+    payload?.account ||
+    null
+  );
+}
+
+
+function readSavedPlaces(
+  payload
+) {
+  if (
+    Array.isArray(
+      payload?.data
+    )
+  ) {
+    return payload.data;
+  }
+
+  if (
+    Array.isArray(
+      payload?.data
+        ?.saved_places
+    )
+  ) {
+    return payload.data
+      .saved_places;
+  }
+
+  if (
+    Array.isArray(
+      payload
+    )
+  ) {
+    return payload;
+  }
+
+  return [];
+}
+
+
+function readItineraries(
+  payload
+) {
+  if (
+    Array.isArray(
+      payload?.data
+        ?.itineraries
+    )
+  ) {
+    return payload.data
+      .itineraries;
+  }
+
+  if (
+    Array.isArray(
+      payload?.data?.items
+    )
+  ) {
+    return payload.data.items;
+  }
+
+  if (
+    Array.isArray(
+      payload?.data
+    )
+  ) {
+    return payload.data;
+  }
+
+  if (
+    Array.isArray(
+      payload?.itineraries
+    )
+  ) {
+    return payload.itineraries;
+  }
+
+  if (
+    Array.isArray(
+      payload
+    )
+  ) {
+    return payload;
+  }
+
+  return [];
+}
+
+
+/* =====================================================
+   IMAGE HELPERS
+===================================================== */
+
+function resolveImage(
+  value,
+  fallback =
+    "/images/heritage-hero.jpg"
+) {
+  if (!value) {
+    return fallback;
+  }
+
+  const source =
+    String(value).trim();
+
+  if (!source) {
+    return fallback;
+  }
+
+  if (
+    source.startsWith(
+      "http://"
+    ) ||
+    source.startsWith(
+      "https://"
+    ) ||
+    source.startsWith(
+      "data:"
+    )
+  ) {
+    return source;
+  }
+
+  if (
+    source.startsWith(
+      "/images/"
+    )
+  ) {
+    return source;
+  }
+
+  if (
+    source.startsWith("/")
+  ) {
+    return `${API_URL}${source}`;
+  }
+
+  return `${API_URL}/${source}`;
+}
+
+
+function resolvePlaceImage(
+  place
+) {
+  let image =
+    place?.featured_image ||
+    place?.cover_image ||
+    place?.image_url ||
+    place?.image;
+
+  if (
+    !image &&
+    Array.isArray(
+      place?.images
+    ) &&
+    place.images.length
+  ) {
+    const first =
+      place.images[0];
+
+    image =
+      typeof first ===
+      "string"
+        ? first
+        : first?.image_url ||
+          first?.url;
+  }
+
+  return resolveImage(
+    image
+  );
+}
+
+
+/* =====================================================
+   SAVED PLACE NORMALIZATION
+===================================================== */
+
+function normalizeSavedPlace(
+  row
+) {
+  const place =
+    row?.place ||
+    row ||
+    {};
+
+  const id =
+    place?.id ??
+    place?.place_id;
+
+  const city =
+    place?.city ||
+    "";
+
+  const region =
+    place?.region ||
+    "";
+
+  const location =
+    city &&
+    region &&
+    city
+      .trim()
+      .toLowerCase() !==
+      region
+        .trim()
+        .toLowerCase()
+      ? `${city}, ${region}`
+      : city ||
+        region ||
+        "Lebanon";
+
+  return {
+    id,
+
+    name:
+      place?.name ||
+      "Unnamed place",
+
+    location,
+
+    image:
+      resolvePlaceImage(
+        place
+      ),
+
+    savedAt:
+      row?.saved_at ||
+      null,
+
+    raw:
+      place,
+  };
+}
+
+
+/* =====================================================
+   ITINERARY NORMALIZATION
+===================================================== */
+
+function normalizeItinerary(
+  itinerary
+) {
+  return {
+    id:
+      itinerary?.id ??
+      itinerary
+        ?.itinerary_id,
+
+    title:
+      itinerary?.title ||
+      "Untitled itinerary",
+
+    description:
+      itinerary?.description ||
+      "",
+
+    duration:
+      itinerary
+        ?.duration_days ||
+      null,
+
+    difficulty:
+      itinerary
+        ?.difficulty ||
+      "",
+
+    image:
+      resolveImage(
+        itinerary
+          ?.cover_image,
+        "/images/chouf.jpg"
+      ),
+  };
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function formatDate(
+  value,
+  language
+) {
+  if (!value) {
+    return "—";
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return value;
+  }
+
+  const locale =
+    language === "fr"
+      ? "fr-FR"
+      : language === "ar"
+        ? "ar-LB"
+        : "en-US";
+
+  return date
+    .toLocaleDateString(
+      locale,
+      {
+        year:
+          "numeric",
+
+        month:
+          "long",
+      }
+    );
+}
+
+
+/* =====================================================
+   PROFILE VALIDATION
+===================================================== */
+
+function validateProfile(
+  draft,
+  t
+) {
+  const errors = {};
+
+  const name =
+    draft.full_name
+      .trim();
+
+  const email =
+    draft.email
+      .trim();
+
+  const profileImage =
+    draft.profile_image
+      ?.trim() ||
+    "";
+
+  if (
+    name.length < 2 ||
+    name.length > 100
+  ) {
+    errors.full_name =
+      t.fullNameRequired;
+  }
+
+  if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      email
+    )
+  ) {
+    errors.email =
+      t.invalidEmail;
+  }
+
+  if (
+    profileImage.length >
+    255
+  ) {
+    errors.profile_image =
+      t.invalidImage;
   }
 
   return errors;
 }
 
-/* =====================================================
-   ICONS
-===================================================== */
-
-function Icon({ children, size = 18 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {children}
-    </svg>
-  );
-}
-
-function PinIcon(props) {
-  return (
-    <Icon {...props}>
-      <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
-      <circle cx="12" cy="10" r="2.5" />
-    </Icon>
-  );
-}
-
-function BookmarkIcon(props) {
-  return (
-    <Icon {...props}>
-      <path d="M6 3h12v18l-6-4-6 4Z" />
-    </Icon>
-  );
-}
-
-function HeartIcon(props) {
-  return (
-    <Icon {...props}>
-      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
-    </Icon>
-  );
-}
-
-function UserIcon(props) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21a8 8 0 0 1 16 0" />
-    </Icon>
-  );
-}
-
-function GridIcon(props) {
-  return (
-    <Icon {...props}>
-      <rect x="3" y="3" width="7" height="7" />
-      <rect x="14" y="3" width="7" height="7" />
-      <rect x="3" y="14" width="7" height="7" />
-      <rect x="14" y="14" width="7" height="7" />
-    </Icon>
-  );
-}
-
-function MapIcon(props) {
-  return (
-    <Icon {...props}>
-      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6" />
-      <line x1="9" y1="3" x2="9" y2="18" />
-      <line x1="15" y1="6" x2="15" y2="21" />
-    </Icon>
-  );
-}
-
-function ClockIcon(props) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </Icon>
-  );
-}
-
-function GearIcon(props) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19 13.5v-3l-2-.7a7 7 0 0 0-.7-1.7l.9-1.9-2.1-2.1-1.9.9a7 7 0 0 0-1.7-.7L10.5 2h-3l-.7 2a7 7 0 0 0-1.7.7l-1.9-.9-2.1 2.1.9 1.9a7 7 0 0 0-.7 1.7l-2 .7v3l2 .7a7 7 0 0 0 .7 1.7l-.9 1.9 2.1 2.1 1.9-.9a7 7 0 0 0 1.7.7l.7 2h3l.7-2a7 7 0 0 0 1.7-.7l1.9.9 2.1-2.1-.9-1.9a7 7 0 0 0 .7-1.7Z" />
-    </Icon>
-  );
-}
-
-function CameraIcon(props) {
-  return (
-    <Icon {...props}>
-      <path d="M4 7h3l2-3h6l2 3h3v13H4Z" />
-      <circle cx="12" cy="13" r="4" />
-    </Icon>
-  );
-}
-
-function EditIcon(props) {
-  return (
-    <Icon {...props}>
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-    </Icon>
-  );
-}
 
 /* =====================================================
-   PAGE
+   CONTENT
 ===================================================== */
 
-export default function MyAccountPage() {
-  const [values, setValues] = useState(initialAccount);
-  const [draft, setDraft] = useState(initialAccount);
-  const [errors, setErrors] = useState({});
-  const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("Overview");
-  const [preferences, setPreferences] = useState(initialPreferences);
-  const [saved, setSaved] = useState(false);
+function AccountContent() {
+  const router =
+    useRouter();
 
-  const handleEditClick = () => {
-    setDraft(values);
-    setErrors({});
-    setSaved(false);
+  const {
+    language,
+  } =
+    useSiteLanguage();
+
+  const t =
+    pageCopy[language] ||
+    pageCopy.en;
+
+
+  const [
+    account,
+    setAccount,
+  ] =
+    useState(null);
+
+
+  const [
+    savedPlaces,
+    setSavedPlaces,
+  ] =
+    useState([]);
+
+
+  const [
+    itineraries,
+    setItineraries,
+  ] =
+    useState([]);
+
+
+  const [
+    loading,
+    setLoading,
+  ] =
+    useState(true);
+
+
+  const [
+    authRequired,
+    setAuthRequired,
+  ] =
+    useState(false);
+
+
+  const [
+    error,
+    setError,
+  ] =
+    useState("");
+
+
+  const [
+    success,
+    setSuccess,
+  ] =
+    useState("");
+
+
+  const [
+    activeTab,
+    setActiveTab,
+  ] =
+    useState(
+      "overview"
+    );
+
+
+  const [
+    isEditing,
+    setIsEditing,
+  ] =
+    useState(false);
+
+
+  const [
+    saving,
+    setSaving,
+  ] =
+    useState(false);
+
+
+  const [
+    draft,
+    setDraft,
+  ] =
+    useState({
+      full_name: "",
+      email: "",
+      profile_image: "",
+    });
+
+
+  const [
+    fieldErrors,
+    setFieldErrors,
+  ] =
+    useState({});
+
+
+  const [
+    removingSavedId,
+    setRemovingSavedId,
+  ] =
+    useState(null);
+
+
+  const profileImageRef =
+    useRef(null);
+
+
+  /* =====================================================
+     LOAD DATA
+  ===================================================== */
+
+  async function loadAccountData() {
+    setLoading(true);
+    setError("");
+
+    try {
+      if (!getToken()) {
+        setAuthRequired(true);
+        return;
+      }
+
+      const [
+        accountResponse,
+        savedResponse,
+        itinerariesResponse,
+      ] =
+        await Promise.all([
+          authFetch(
+            "/api/account"
+          ),
+
+          authFetch(
+            "/api/saved-places"
+          ),
+
+          fetch(
+            `${API_URL}/api/itineraries?page=1&per_page=3`
+          ),
+        ]);
+
+
+      if (
+        accountResponse
+          .status === 401 ||
+        savedResponse
+          .status === 401
+      ) {
+        setAuthRequired(true);
+        return;
+      }
+
+
+      const accountPayload =
+        await accountResponse
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      const savedPayload =
+        await savedResponse
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      const itinerariesPayload =
+        await itinerariesResponse
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (
+        !accountResponse.ok
+      ) {
+        throw new Error(
+          accountPayload
+            ?.message ||
+          t.accountError
+        );
+      }
+
+
+      if (
+        !savedResponse.ok
+      ) {
+        throw new Error(
+          savedPayload
+            ?.message ||
+          t.accountError
+        );
+      }
+
+
+      const realAccount =
+        readAccount(
+          accountPayload
+        );
+
+
+      if (!realAccount) {
+        throw new Error(
+          t.accountError
+        );
+      }
+
+
+      setAccount(
+        realAccount
+      );
+
+
+      setDraft({
+        full_name:
+          realAccount
+            .full_name ||
+          "",
+
+        email:
+          realAccount
+            .email ||
+          "",
+
+        profile_image:
+          realAccount
+            .profile_image ||
+          "",
+      });
+
+
+      setSavedPlaces(
+        readSavedPlaces(
+          savedPayload
+        ).map(
+          normalizeSavedPlace
+        )
+      );
+
+
+      if (
+        itinerariesResponse.ok
+      ) {
+        setItineraries(
+          readItineraries(
+            itinerariesPayload
+          )
+            .map(
+              normalizeItinerary
+            )
+            .filter(
+              (item) =>
+                item.id != null
+            )
+        );
+      }
+
+
+      setAuthRequired(
+        false
+      );
+
+    } catch (err) {
+      if (
+        err?.code ===
+        "AUTH_REQUIRED"
+      ) {
+        setAuthRequired(
+          true
+        );
+      } else {
+        setError(
+          err?.message ||
+          t.accountError
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  useEffect(() => {
+    loadAccountData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+  /* =====================================================
+     EDIT PROFILE
+  ===================================================== */
+
+  function startEditing(
+    focusImage = false
+  ) {
+    if (!account) {
+      return;
+    }
+
+    setDraft({
+      full_name:
+        account.full_name ||
+        "",
+
+      email:
+        account.email ||
+        "",
+
+      profile_image:
+        account.profile_image ||
+        "",
+    });
+
+    setFieldErrors({});
+    setSuccess("");
+    setError("");
     setIsEditing(true);
-  };
 
-  const handleCancel = () => {
-    setDraft(values);
-    setErrors({});
+    if (focusImage) {
+      window.setTimeout(
+        () =>
+          profileImageRef
+            .current
+            ?.focus(),
+        50
+      );
+    }
+  }
+
+
+  function cancelEditing() {
     setIsEditing(false);
-  };
+    setFieldErrors({});
+    setError("");
+  }
 
-  const handleChange = (field) => (event) => {
-    setDraft((current) => ({
-      ...current,
-      [field]: event.target.value,
-    }));
-  };
 
-  const handleSave = (event) => {
+  function updateDraft(
+    field,
+    value
+  ) {
+    setDraft(
+      (previous) => ({
+        ...previous,
+        [field]:
+          value,
+      })
+    );
+
+    setFieldErrors(
+      (previous) => ({
+        ...previous,
+        [field]:
+          "",
+      })
+    );
+  }
+
+
+  async function saveProfile(
+    event
+  ) {
     event.preventDefault();
 
-    const validationErrors = validateProfile(draft);
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      setValues(draft);
-      setIsEditing(false);
-      setSaved(true);
+    if (
+      saving ||
+      !account
+    ) {
+      return;
     }
-  };
 
-  const togglePreference = (key) => {
-    setPreferences((current) => ({
-      ...current,
-      [key]: !current[key],
-    }));
-  };
+    const validationErrors =
+      validateProfile(
+        draft,
+        t
+      );
 
-  return (
-    <AppShell>
+    setFieldErrors(
+      validationErrors
+    );
+
+    if (
+      Object.keys(
+        validationErrors
+      ).length
+    ) {
+      return;
+    }
+
+
+    setSaving(true);
+    setError("");
+    setSuccess("");
+
+
+    try {
+      const response =
+        await authFetch(
+          "/api/account",
+          {
+            method:
+              "PUT",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body:
+              JSON.stringify({
+                full_name:
+                  draft
+                    .full_name
+                    .trim(),
+
+                email:
+                  draft
+                    .email
+                    .trim(),
+
+                profile_image:
+                  draft
+                    .profile_image
+                    .trim() ||
+                  null,
+              }),
+          }
+        );
+
+
+      const payload =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (
+        response.status ===
+        401
+      ) {
+        setAuthRequired(
+          true
+        );
+
+        return;
+      }
+
+
+      if (!response.ok) {
+        if (
+          payload?.errors
+        ) {
+          setFieldErrors(
+            payload.errors
+          );
+        }
+
+        throw new Error(
+          payload?.message ||
+          t.updateError
+        );
+      }
+
+
+      const updatedAccount =
+        readAccount(
+          payload
+        );
+
+
+      if (!updatedAccount) {
+        throw new Error(
+          t.updateError
+        );
+      }
+
+
+      setAccount(
+        updatedAccount
+      );
+
+
+      setDraft({
+        full_name:
+          updatedAccount
+            .full_name ||
+          "",
+
+        email:
+          updatedAccount
+            .email ||
+          "",
+
+        profile_image:
+          updatedAccount
+            .profile_image ||
+          "",
+      });
+
+
+      /*
+        Keep browser-side user information
+        in sync with the real account.
+      */
+
+      const storedUser = {
+        id:
+          updatedAccount.id,
+
+        fullName:
+          updatedAccount
+            .full_name,
+
+        email:
+          updatedAccount
+            .email,
+
+        profileImage:
+          updatedAccount
+            .profile_image,
+      };
+
+
+      localStorage.setItem(
+        "discoverLebanonUser",
+        JSON.stringify(
+          storedUser
+        )
+      );
+
+
+      window.dispatchEvent(
+        new Event(
+          "discoverLebanonUserUpdated"
+        )
+      );
+
+
+      setIsEditing(
+        false
+      );
+
+      setSuccess(
+        t.profileSaved
+      );
+
+    } catch (err) {
+      if (
+        err?.code ===
+        "AUTH_REQUIRED"
+      ) {
+        setAuthRequired(
+          true
+        );
+      } else {
+        setError(
+          err?.message ||
+          t.updateError
+        );
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+
+  /* =====================================================
+     REMOVE SAVED PLACE
+  ===================================================== */
+
+  async function removeSavedPlace(
+    id
+  ) {
+    if (
+      removingSavedId != null
+    ) {
+      return;
+    }
+
+    setRemovingSavedId(
+      id
+    );
+
+    setError("");
+
+
+    try {
+      const response =
+        await authFetch(
+          `/api/saved-places/${id}`,
+          {
+            method:
+              "DELETE",
+          }
+        );
+
+
+      const payload =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (!response.ok) {
+        throw new Error(
+          payload?.message ||
+          t.removeError
+        );
+      }
+
+
+      setSavedPlaces(
+        (previous) =>
+          previous.filter(
+            (place) =>
+              Number(
+                place.id
+              ) !==
+              Number(id)
+          )
+      );
+
+    } catch (err) {
+      setError(
+        err?.message ||
+        t.removeError
+      );
+    } finally {
+      setRemovingSavedId(
+        null
+      );
+    }
+  }
+
+
+  /* =====================================================
+     SIGN OUT
+  ===================================================== */
+
+  function signOut() {
+    localStorage.removeItem(
+      "accessToken"
+    );
+
+    localStorage.removeItem(
+      "access_token"
+    );
+
+    localStorage.removeItem(
+      "token"
+    );
+
+    localStorage.removeItem(
+      "discoverLebanonUser"
+    );
+
+    router.push(
+      "/login"
+    );
+
+    router.refresh();
+  }
+
+
+  /* =====================================================
+     DERIVED
+  ===================================================== */
+
+  const recentSaved =
+    useMemo(
+      () =>
+        savedPlaces.slice(
+          0,
+          3
+        ),
+      [savedPlaces]
+    );
+
+
+  const memberSince =
+    formatDate(
+      account
+        ?.created_at,
+      language
+    );
+
+
+  const profileImage =
+    resolveImage(
+      account
+        ?.profile_image,
+      "/images/profile.jpg"
+    );
+
+
+  /* =====================================================
+     LOADING
+  ===================================================== */
+
+  if (loading) {
+    return (
       <main className="account-page">
+        <div
+          style={{
+            minHeight:
+              "600px",
+            display:
+              "flex",
+            alignItems:
+              "center",
+            justifyContent:
+              "center",
+          }}
+        >
+          <div
+            style={{
+              textAlign:
+                "center",
+              color:
+                "#6B6355",
+            }}
+          >
+            <LoaderCircle
+              size={32}
+              className="animate-spin"
+            />
 
-        {/* HERO */}
+            <p
+              style={{
+                marginTop:
+                  "12px",
+              }}
+            >
+              {t.accountError.replace(
+                "Unable to load",
+                "Loading"
+              )}
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+
+  /* =====================================================
+     SIGN IN REQUIRED
+  ===================================================== */
+
+  if (authRequired) {
+    return (
+      <main className="account-page">
 
         <section className="account-hero">
           <div className="account-hero-overlay" />
 
           <div className="account-hero-content">
-            <h1>My Account</h1>
-            <p>
-              Manage your profile, preferences and saved experiences.
-            </p>
-          </div>
+            <h1>
+              {t.title}
+            </h1>
 
-          <div className="account-hero-note">
-            Same places,
-            <br />
-            different stories.
+            <p>
+              {t.subtitle}
+            </p>
           </div>
         </section>
 
+
         <div className="account-content">
+
+          <section
+            className="account-panel"
+            style={{
+              maxWidth:
+                "620px",
+              margin:
+                "40px auto",
+              textAlign:
+                "center",
+              padding:
+                "48px 32px",
+            }}
+          >
+            <LogIn
+              size={32}
+              style={{
+                margin:
+                  "0 auto 16px",
+              }}
+            />
+
+            <h3>
+              {t.loginTitle}
+            </h3>
+
+            <p>
+              {t.loginText}
+            </p>
+
+            <Link
+              href="/login"
+              className="account-primary-button"
+              style={{
+                display:
+                  "inline-flex",
+                marginTop:
+                  "20px",
+                textDecoration:
+                  "none",
+              }}
+            >
+              {t.signIn}
+            </Link>
+          </section>
+
+        </div>
+      </main>
+    );
+  }
+
+
+  /* =====================================================
+     PAGE
+  ===================================================== */
+
+  return (
+    <main
+      className="account-page"
+      lang={language}
+      dir={
+        language === "ar"
+          ? "rtl"
+          : "ltr"
+      }
+    >
+
+      {/* =================================================
+          HERO
+      ================================================= */}
+
+      <section className="account-hero">
+
+        <div className="account-hero-overlay" />
+
+
+        <div className="account-hero-content">
+
+          <h1>
+            {t.title}
+          </h1>
+
+          <p>
+            {t.subtitle}
+          </p>
+
+        </div>
+
+
+        <div className="account-hero-note">
+
+          {t.hero1}
+
+          <br />
+
+          {t.hero2}
+
+        </div>
+
+      </section>
+
+
+      {/* =================================================
+          CONTENT
+      ================================================= */}
+
+      <div className="account-content">
+
+        {/* =================================================
+            ERROR
+        ================================================= */}
+
+        {error && (
+
+          <div
+            className="account-success"
+            style={{
+              background:
+                "#FBEDE8",
+
+              borderColor:
+                "#E2A898",
+
+              color:
+                "#A3402B",
+            }}
+          >
+            {error}
+          </div>
+
+        )}
+
+
+        {/* =================================================
+            SUCCESS
+        ================================================= */}
+
+        {success && (
+
+          <div className="account-success">
+            {success}
+          </div>
+
+        )}
+
+
+        {/* =================================================
+            PROFILE + STATS
+        ================================================= */}
+
+        <section
+          className="account-profile-grid"
+          id="profile"
+        >
 
           {/* PROFILE */}
 
-          <section className="account-profile-grid">
+          <div className="account-profile-card">
 
-            <div className="account-profile-card">
+            <div className="account-avatar-wrap">
 
-              <div className="account-avatar-wrap">
-                <img
-                  src="/images/profile.jpg"
-                  alt="Lara Khoury"
-                  className="account-avatar"
+              <img
+                src={profileImage}
+                alt={
+                  account
+                    ?.full_name ||
+                  "Profile"
+                }
+                className="account-avatar"
+                onError={(event) => {
+                  event.currentTarget.src =
+                    "/images/profile.jpg";
+                }}
+              />
+
+
+              <button
+                type="button"
+                className="account-camera"
+                aria-label={
+                  t.profileImage
+                }
+                title={
+                  t.profileImage
+                }
+                onClick={() =>
+                  startEditing(
+                    true
+                  )
+                }
+              >
+                <Camera
+                  size={15}
                 />
-
-                <button
-                  type="button"
-                  className="account-camera"
-                  aria-label="Change profile photo"
-                >
-                  <CameraIcon size={15} />
-                </button>
-              </div>
-
-              <div className="account-profile-info">
-                <h2>{values.fullName}</h2>
-
-                <p>{values.email}</p>
-
-                <p className="account-location">
-                  <PinIcon size={14} />
-                  {values.location}
-                </p>
-
-                <p className="account-bio">
-                  {values.bio}
-                </p>
-              </div>
-
-              {!isEditing && (
-                <button
-                  type="button"
-                  className="account-edit-button"
-                  onClick={handleEditClick}
-                >
-                  <EditIcon size={14} />
-                  Edit Profile
-                </button>
-              )}
+              </button>
 
             </div>
 
-            {/* STATS */}
 
-            <div className="account-stats-card">
+            <div className="account-profile-info">
 
-              <div className="account-member">
-                <span className="member-leaf">⌁</span>
+              <h2>
+                {
+                  account
+                    ?.full_name
+                }
+              </h2>
 
-                <div>
-                  <strong>Member since</strong>
-                  <span>September 2025</span>
-                </div>
+
+              <p>
+                {
+                  account
+                    ?.email
+                }
+              </p>
+
+
+              <p className="account-location">
+
+                <User size={14} />
+
+                {t.member}
+
+              </p>
+
+            </div>
+
+
+            {!isEditing && (
+
+              <button
+                type="button"
+                className="account-edit-button"
+                onClick={() =>
+                  startEditing(
+                    false
+                  )
+                }
+              >
+                <Pencil
+                  size={14}
+                />
+
+                {t.editProfile}
+              </button>
+
+            )}
+
+          </div>
+
+
+          {/* STATS */}
+
+          <div className="account-stats-card">
+
+            <div className="account-member">
+
+              <span className="member-leaf">
+                ⌁
+              </span>
+
+
+              <div>
+
+                <strong>
+                  {
+                    t.memberSince
+                  }
+                </strong>
+
+                <span>
+                  {memberSince}
+                </span>
+
               </div>
 
-              <div className="account-stats">
+            </div>
 
-                <div className="account-stat">
-                  <PinIcon size={21} />
-                  <strong>12</strong>
-                  <span>Places Visited</span>
+
+            <div className="account-stats">
+
+              {/* NOT TRACKED */}
+
+              <div
+                className="account-stat"
+                title={
+                  t.notTracked
+                }
+              >
+                <MapPin
+                  size={21}
+                />
+
+                <strong>
+                  —
+                </strong>
+
+                <span>
+                  {
+                    t.placesVisited
+                  }
+                </span>
+              </div>
+
+
+              {/* REAL SAVED COUNT */}
+
+              <div className="account-stat">
+
+                <Bookmark
+                  size={21}
+                />
+
+                <strong>
+                  {
+                    savedPlaces
+                      .length
+                  }
+                </strong>
+
+                <span>
+                  {
+                    t.savedPlaces
+                  }
+                </span>
+              </div>
+
+
+              {/* NOT TRACKED */}
+
+              <div
+                className="account-stat"
+                title={
+                  t.notTracked
+                }
+              >
+                <Heart
+                  size={21}
+                />
+
+                <strong>
+                  —
+                </strong>
+
+                <span>
+                  {
+                    t.itinerariesCompleted
+                  }
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* =================================================
+            EDIT PROFILE
+        ================================================= */}
+
+        {isEditing && (
+
+          <section className="account-panel account-edit-panel">
+
+            <h3>
+              {t.editTitle}
+            </h3>
+
+
+            <form
+              onSubmit={
+                saveProfile
+              }
+              noValidate
+            >
+
+              {/* FULL NAME */}
+
+              <div className="account-field">
+
+                <label htmlFor="account-full-name">
+                  {t.fullName}
+                </label>
+
+
+                <input
+                  id="account-full-name"
+                  value={
+                    draft
+                      .full_name
+                  }
+                  onChange={(event) =>
+                    updateDraft(
+                      "full_name",
+                      event.target
+                        .value
+                    )
+                  }
+                  className={
+                    fieldErrors
+                      .full_name
+                      ? "has-error"
+                      : ""
+                  }
+                />
+
+
+                {fieldErrors
+                  .full_name && (
+
+                  <span className="account-error">
+                    {
+                      fieldErrors
+                        .full_name
+                    }
+                  </span>
+
+                )}
+
+              </div>
+
+
+              {/* EMAIL */}
+
+              <div className="account-field">
+
+                <label htmlFor="account-email">
+                  {t.email}
+                </label>
+
+
+                <input
+                  id="account-email"
+                  type="email"
+                  value={
+                    draft.email
+                  }
+                  onChange={(event) =>
+                    updateDraft(
+                      "email",
+                      event.target
+                        .value
+                    )
+                  }
+                  className={
+                    fieldErrors
+                      .email
+                      ? "has-error"
+                      : ""
+                  }
+                />
+
+
+                {fieldErrors
+                  .email && (
+
+                  <span className="account-error">
+                    {
+                      fieldErrors
+                        .email
+                    }
+                  </span>
+
+                )}
+
+              </div>
+
+
+              {/* PROFILE IMAGE */}
+
+              <div className="account-field">
+
+                <label htmlFor="account-profile-image">
+                  {
+                    t.profileImage
+                  }
+                </label>
+
+
+                <input
+                  ref={
+                    profileImageRef
+                  }
+                  id="account-profile-image"
+                  value={
+                    draft
+                      .profile_image
+                  }
+                  placeholder="/images/profile.jpg"
+                  onChange={(event) =>
+                    updateDraft(
+                      "profile_image",
+                      event.target
+                        .value
+                    )
+                  }
+                  className={
+                    fieldErrors
+                      .profile_image
+                      ? "has-error"
+                      : ""
+                  }
+                />
+
+
+                <small
+                  style={{
+                    display:
+                      "block",
+
+                    marginTop:
+                      "6px",
+
+                    color:
+                      "#7A746A",
+
+                    fontSize:
+                      "11px",
+                  }}
+                >
+                  {
+                    t.profileImageHelp
+                  }
+                </small>
+
+
+                {fieldErrors
+                  .profile_image && (
+
+                  <span className="account-error">
+                    {
+                      fieldErrors
+                        .profile_image
+                    }
+                  </span>
+
+                )}
+
+              </div>
+
+
+              {/* ACTIONS */}
+
+              <div className="account-form-actions">
+
+                <button
+                  type="button"
+                  className="account-secondary-button"
+                  onClick={
+                    cancelEditing
+                  }
+                  disabled={
+                    saving
+                  }
+                >
+                  {t.cancel}
+                </button>
+
+
+                <button
+                  type="submit"
+                  className="account-primary-button"
+                  disabled={
+                    saving
+                  }
+                >
+
+                  {saving && (
+                    <LoaderCircle
+                      size={14}
+                      className="animate-spin"
+                    />
+                  )}
+
+                  {saving
+                    ? t.saving
+                    : t.saveChanges}
+
+                </button>
+
+              </div>
+
+            </form>
+
+          </section>
+
+        )}
+
+
+        {/* =================================================
+            TABS
+        ================================================= */}
+
+        <nav className="account-tabs">
+
+          {tabConfig.map(
+            (tab) => {
+
+              const TabIcon =
+                tab.icon;
+
+              return (
+
+                <button
+                  key={
+                    tab.id
+                  }
+                  type="button"
+                  className={
+                    activeTab ===
+                    tab.id
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() => {
+                    setActiveTab(
+                      tab.id
+                    );
+
+                    setSuccess("");
+                  }}
+                >
+                  <TabIcon
+                    size={18}
+                  />
+
+                  <span>
+                    {
+                      t[
+                        tab
+                          .translation
+                      ]
+                    }
+                  </span>
+                </button>
+
+              );
+
+            }
+          )}
+
+        </nav>
+
+
+        {/* =================================================
+            OVERVIEW
+        ================================================= */}
+
+        {activeTab ===
+          "overview" && (
+
+          <div className="account-overview">
+
+            {/* LEFT */}
+
+            <div className="account-left-column">
+
+              {/* RECENTLY SAVED */}
+
+              <section className="account-section">
+
+                <div className="account-section-heading">
+
+                  <h3>
+                    {
+                      t.recentlySaved
+                    }
+                  </h3>
+
+
+                  <Link href="/saved">
+
+                    {t.viewAll}
+
+                    <span>
+                      →
+                    </span>
+
+                  </Link>
+
                 </div>
 
-                <div className="account-stat">
-                  <BookmarkIcon size={21} />
-                  <strong>8</strong>
-                  <span>Saved Places</span>
+
+                {recentSaved.length >
+                0 ? (
+
+                  <div className="saved-places-grid">
+
+                    {recentSaved.map(
+                      (place) => (
+
+                        <Link
+                          href={`/saved/${place.id}`}
+                          className="saved-place-card"
+                          key={
+                            place.id
+                          }
+                          style={{
+                            textDecoration:
+                              "none",
+                          }}
+                        >
+
+                          <div className="saved-place-image-wrap">
+
+                            <img
+                              src={
+                                place.image
+                              }
+                              alt={
+                                place.name
+                              }
+                              className="saved-place-image"
+                              onError={(event) => {
+                                event.currentTarget.src =
+                                  "/images/heritage-hero.jpg";
+                              }}
+                            />
+
+                            <Bookmark
+                              size={16}
+                            />
+
+                          </div>
+
+
+                          <div className="saved-place-info">
+
+                            <strong>
+                              {
+                                place.name
+                              }
+                            </strong>
+
+
+                            <span>
+
+                              <MapPin
+                                size={11}
+                              />
+
+                              {
+                                place.location
+                              }
+
+                            </span>
+
+                          </div>
+
+                        </Link>
+
+                      )
+                    )}
+
+                  </div>
+
+                ) : (
+
+                  <div
+                    className="account-panel"
+                    style={{
+                      textAlign:
+                        "center",
+                    }}
+                  >
+                    <p>
+                      {t.noSaved}
+                    </p>
+
+                    <Link href="/explore">
+                      {
+                        t.explorePlaces
+                      }{" "}
+                      →
+                    </Link>
+                  </div>
+
+                )}
+
+              </section>
+
+            </div>
+
+
+            {/* RIGHT */}
+
+            <div className="account-right-column">
+
+              {/* CURATED ITINERARIES */}
+
+              <section className="account-section">
+
+                <div className="account-section-heading">
+
+                  <h3>
+                    {
+                      t.curatedItineraries
+                    }
+                  </h3>
+
+
+                  <Link href="/itineraries">
+
+                    {t.viewAll}
+
+                    <span>
+                      →
+                    </span>
+
+                  </Link>
+
                 </div>
 
-                <div className="account-stat">
-                  <HeartIcon size={21} />
-                  <strong>4</strong>
-                  <span>Itineraries Completed</span>
+
+                {itineraries.length >
+                0 ? (
+
+                  <article className="upcoming-itinerary">
+
+                    <img
+                      src={
+                        itineraries[0]
+                          .image
+                      }
+                      alt={
+                        itineraries[0]
+                          .title
+                      }
+                      onError={(event) => {
+                        event.currentTarget.src =
+                          "/images/chouf.jpg";
+                      }}
+                    />
+
+
+                    <div className="upcoming-itinerary-info">
+
+                      <strong>
+                        {
+                          itineraries[0]
+                            .title
+                        }
+                      </strong>
+
+
+                      {itineraries[0]
+                        .duration && (
+
+                        <span>
+                          {
+                            itineraries[0]
+                              .duration
+                          }{" "}
+                          {t.duration}
+                        </span>
+
+                      )}
+
+
+                      {itineraries[0]
+                        .difficulty && (
+
+                        <span>
+                          {
+                            itineraries[0]
+                              .difficulty
+                          }
+                        </span>
+
+                      )}
+
+                    </div>
+
+
+                    <Link
+                      href="/itineraries"
+                      className="itinerary-arrow"
+                      aria-label={
+                        t.viewItinerary
+                      }
+                    >
+                      →
+                    </Link>
+
+                  </article>
+
+                ) : (
+
+                  <div className="account-panel">
+                    <p>
+                      {
+                        t.noItineraries
+                      }
+                    </p>
+                  </div>
+
+                )}
+
+              </section>
+
+
+              {/* ACCOUNT SETTINGS */}
+
+              <section className="account-panel account-settings">
+
+                <h3>
+                  {
+                    t.accountSettings
+                  }
+                </h3>
+
+
+                <div className="account-settings-list">
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      startEditing(
+                        false
+                      )
+                    }
+                    style={{
+                      width:
+                        "100%",
+
+                      border:
+                        "none",
+
+                      background:
+                        "transparent",
+
+                      cursor:
+                        "pointer",
+                    }}
+                  >
+                    <span>
+
+                      <User
+                        size={16}
+                      />
+
+                      {
+                        t.personalInformation
+                      }
+
+                    </span>
+
+                    <b>
+                      ›
+                    </b>
+                  </button>
+
+
+                  <Link href="/settings/privacy-security">
+
+                    <span>
+                      {
+                        t.changePassword
+                      }
+                    </span>
+
+                    <b>
+                      ›
+                    </b>
+
+                  </Link>
+
+
+                  <Link href="/settings/notifications">
+
+                    <span>
+                      {
+                        t.notifications
+                      }
+                    </span>
+
+                    <b>
+                      ›
+                    </b>
+
+                  </Link>
+
+
+                  <Link href="/settings/language">
+
+                    <span>
+                      {
+                        t.language
+                      }
+                    </span>
+
+
+                    <span className="setting-value">
+
+                      {
+                        language ===
+                        "fr"
+                          ? "Français"
+                          : language ===
+                              "ar"
+                            ? "العربية"
+                            : "English"
+                      }
+
+                      <b>
+                        ›
+                      </b>
+
+                    </span>
+
+                  </Link>
+
+
+                  <button
+                    type="button"
+                    className="account-sign-out"
+                    onClick={
+                      signOut
+                    }
+                  >
+                    {
+                      t.signOut
+                    }
+                  </button>
+
                 </div>
+
+              </section>
+
+            </div>
+
+          </div>
+
+        )}
+
+
+        {/* =================================================
+            SAVED PLACES TAB
+        ================================================= */}
+
+        {activeTab ===
+          "saved" && (
+
+          <section className="account-tab-content">
+
+            <div className="account-tab-heading">
+
+              <div>
+
+                <span className="account-tab-eyebrow">
+                  {
+                    t.savedEyebrow
+                  }
+                </span>
+
+
+                <h2>
+                  {
+                    t.savedPlaces
+                  }
+                </h2>
+
+
+                <p>
+                  {
+                    t.savedDescription
+                  }
+                </p>
+
+              </div>
+
+
+              <span className="saved-count">
+
+                {
+                  savedPlaces.length
+                }{" "}
+
+                {
+                  t.savedCount
+                }
+
+              </span>
+
+            </div>
+
+
+            {savedPlaces.length >
+            0 ? (
+
+              <div className="saved-tab-grid">
+
+                {savedPlaces.map(
+                  (place) => (
+
+                    <article
+                      className="saved-tab-card"
+                      key={
+                        place.id
+                      }
+                    >
+
+                      <div className="saved-tab-image-wrap">
+
+                        <img
+                          src={
+                            place.image
+                          }
+                          alt={
+                            place.name
+                          }
+                          className="saved-tab-image"
+                          onError={(event) => {
+                            event.currentTarget.src =
+                              "/images/heritage-hero.jpg";
+                          }}
+                        />
+
+
+                        <button
+                          type="button"
+                          className="saved-tab-bookmark"
+                          aria-label={`${t.removeSaved}: ${place.name}`}
+                          disabled={
+                            Number(
+                              removingSavedId
+                            ) ===
+                            Number(
+                              place.id
+                            )
+                          }
+                          onClick={() =>
+                            removeSavedPlace(
+                              place.id
+                            )
+                          }
+                        >
+
+                          {Number(
+                            removingSavedId
+                          ) ===
+                          Number(
+                            place.id
+                          ) ? (
+
+                            <LoaderCircle
+                              size={17}
+                              className="animate-spin"
+                            />
+
+                          ) : (
+
+                            <Trash2
+                              size={17}
+                            />
+
+                          )}
+
+                        </button>
+
+                      </div>
+
+
+                      <div className="saved-tab-card-content">
+
+                        <div>
+
+                          <h3>
+                            {
+                              place.name
+                            }
+                          </h3>
+
+
+                          <span className="saved-tab-location">
+
+                            <MapPin
+                              size={12}
+                            />
+
+                            {
+                              place.location
+                            }
+
+                          </span>
+
+                        </div>
+
+
+                        <Link
+                          href={`/saved/${place.id}`}
+                          className="saved-tab-explore"
+                        >
+                          {
+                            t.details
+                          }{" "}
+                          →
+                        </Link>
+
+                      </div>
+
+                    </article>
+
+                  )
+                )}
+
+              </div>
+
+            ) : (
+
+              <div className="account-panel account-empty-tab">
+
+                <Bookmark
+                  size={28}
+                />
+
+                <h3>
+                  {t.noSaved}
+                </h3>
+
+                <Link href="/explore">
+                  {
+                    t.explorePlaces
+                  }{" "}
+                  →
+                </Link>
+
+              </div>
+
+            )}
+
+          </section>
+
+        )}
+
+
+        {/* =================================================
+            MY ITINERARIES TAB
+        ================================================= */}
+
+        {activeTab ===
+          "itineraries" && (
+
+          <section className="account-tab-content">
+
+            <div className="account-tab-heading">
+
+              <div>
+
+                <span className="account-tab-eyebrow">
+                  {
+                    t.journeyEyebrow
+                  }
+                </span>
+
+
+                <h2>
+                  {
+                    t.myItineraries
+                  }
+                </h2>
+
+              </div>
+
+
+              <Link
+                href="/itineraries"
+                className="account-create-itinerary"
+              >
+                +{" "}
+                {
+                  t.browseItineraries
+                }
+              </Link>
+
+            </div>
+
+
+            {/* IMPORTANT:
+                current backend has no user_itineraries table */}
+
+            <div
+              className="account-panel"
+              style={{
+                marginBottom:
+                  "20px",
+              }}
+            >
+
+              <h3>
+                {
+                  t.personalItineraryTitle
+                }
+              </h3>
+
+
+              <p>
+                {
+                  t.personalItineraryText
+                }
+              </p>
+
+            </div>
+
+
+            {itineraries.length >
+            0 && (
+
+              <div className="my-itineraries-grid">
+
+                {itineraries.map(
+                  (
+                    itinerary
+                  ) => (
+
+                    <article
+                      className="my-itinerary-card"
+                      key={
+                        itinerary.id
+                      }
+                    >
+
+                      <img
+                        src={
+                          itinerary.image
+                        }
+                        alt={
+                          itinerary.title
+                        }
+                        className="my-itinerary-image"
+                        onError={(event) => {
+                          event.currentTarget.src =
+                            "/images/chouf.jpg";
+                        }}
+                      />
+
+
+                      <div className="my-itinerary-content">
+
+                        <div className="my-itinerary-top">
+
+                          <span className="itinerary-status upcoming">
+                            CURATED
+                          </span>
+
+                        </div>
+
+
+                        <h3>
+                          {
+                            itinerary.title
+                          }
+                        </h3>
+
+
+                        {itinerary
+                          .description && (
+
+                          <p className="my-itinerary-description">
+                            {
+                              itinerary.description
+                            }
+                          </p>
+
+                        )}
+
+
+                        <div className="my-itinerary-tags">
+
+                          {itinerary
+                            .duration && (
+
+                            <span>
+                              {
+                                itinerary.duration
+                              }{" "}
+                              {
+                                t.duration
+                              }
+                            </span>
+
+                          )}
+
+
+                          {itinerary
+                            .difficulty && (
+
+                            <span>
+                              {
+                                itinerary.difficulty
+                              }
+                            </span>
+
+                          )}
+
+                        </div>
+
+
+                        <Link
+                          href="/itineraries"
+                          className="my-itinerary-link"
+                        >
+                          {
+                            t.viewItinerary
+                          }{" "}
+                          →
+                        </Link>
+
+                      </div>
+
+                    </article>
+
+                  )
+                )}
+
+              </div>
+
+            )}
+
+          </section>
+
+        )}
+
+
+        {/* =================================================
+            ACTIVITY HISTORY TAB
+        ================================================= */}
+
+        {activeTab ===
+          "activity" && (
+
+          <section className="account-tab-content">
+
+            <div className="account-tab-heading">
+
+              <div>
+
+                <span className="account-tab-eyebrow">
+                  ACTIVITY
+                </span>
+
+                <h2>
+                  {
+                    t.activityHistory
+                  }
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <div className="account-panel account-empty-tab">
+
+              <Clock3
+                size={30}
+              />
+
+
+              <h3>
+                {
+                  t.activityTitle
+                }
+              </h3>
+
+
+              <p>
+                {
+                  t.activityText
+                }
+              </p>
+
+
+              <div
+                style={{
+                  display:
+                    "flex",
+
+                  gap:
+                    "10px",
+
+                  justifyContent:
+                    "center",
+
+                  flexWrap:
+                    "wrap",
+
+                  marginTop:
+                    "18px",
+                }}
+              >
+
+                <Link
+                  href="/explore"
+                  className="account-primary-button"
+                >
+                  {
+                    t.exploreMap
+                  }
+                </Link>
+
+
+                <Link
+                  href="/saved"
+                  className="account-secondary-button"
+                >
+                  {
+                    t.savedPlaces
+                  }
+                </Link>
 
               </div>
 
@@ -351,875 +3441,142 @@ export default function MyAccountPage() {
 
           </section>
 
-          {/* SUCCESS */}
+        )}
 
-          {saved && (
-            <div className="account-success">
-              Your profile changes have been saved.
-            </div>
-          )}
 
-          {/* EDIT PROFILE */}
+        {/* =================================================
+            PREFERENCES TAB
+        ================================================= */}
 
-          {isEditing && (
-            <section className="account-panel account-edit-panel">
+        {activeTab ===
+          "preferences" && (
 
-              <h3>Edit Profile</h3>
+          <section className="account-tab-content">
 
-              <form onSubmit={handleSave} noValidate>
+            <div className="account-tab-heading">
 
-                <div className="account-field">
-                  <label htmlFor="fullName">
-                    Full name
-                  </label>
+              <div>
 
-                  <input
-                    id="fullName"
-                    value={draft.fullName}
-                    onChange={handleChange("fullName")}
-                    className={errors.fullName ? "has-error" : ""}
-                  />
-
-                  {errors.fullName && (
-                    <span className="account-error">
-                      {errors.fullName}
-                    </span>
-                  )}
-                </div>
-
-                <div className="account-field">
-                  <label htmlFor="email">
-                    Email
-                  </label>
-
-                  <input
-                    id="email"
-                    type="email"
-                    value={draft.email}
-                    onChange={handleChange("email")}
-                    className={errors.email ? "has-error" : ""}
-                  />
-
-                  {errors.email && (
-                    <span className="account-error">
-                      {errors.email}
-                    </span>
-                  )}
-                </div>
-
-                <div className="account-field">
-                  <label htmlFor="location">
-                    Location
-                  </label>
-
-                  <input
-                    id="location"
-                    value={draft.location}
-                    onChange={handleChange("location")}
-                  />
-                </div>
-
-                <div className="account-field">
-                  <label htmlFor="bio">
-                    Bio
-                  </label>
-
-                  <input
-                    id="bio"
-                    value={draft.bio}
-                    onChange={handleChange("bio")}
-                  />
-                </div>
-
-                <div className="account-form-actions">
-
-                  <button
-                    type="button"
-                    className="account-secondary-button"
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="account-primary-button"
-                  >
-                    Save changes
-                  </button>
-
-                </div>
-
-              </form>
-
-            </section>
-          )}
-
-          {/* =====================================================
-              TABS
-          ===================================================== */}
-
-          <nav className="account-tabs">
-
-            {tabs.map((tab, index) => {
-              const icons = [
-                GridIcon,
-                BookmarkIcon,
-                MapIcon,
-                ClockIcon,
-                GearIcon,
-              ];
-
-              const TabIcon = icons[index];
-
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  className={activeTab === tab ? "active" : ""}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  <TabIcon size={18} />
-                  <span>{tab}</span>
-                </button>
-              );
-            })}
-
-          </nav>
-
-          {/* =====================================================
-              OVERVIEW
-          ===================================================== */}
-
-          {activeTab === "Overview" && (
-            <div className="account-overview">
-
-              <div className="account-left-column">
-
-                {/* RECENTLY SAVED */}
-
-                <section className="account-section">
-
-                  <div className="account-section-heading">
-
-                    <h3>Recently Saved</h3>
-
-                    <button
-                      type="button"
-                      className="account-view-all-button"
-                      onClick={() => setActiveTab("Saved Places")}
-                    >
-                      View All →
-                    </button>
-
-                  </div>
-
-                  <div className="saved-places-grid">
-
-                    {savedPlaces.map((place) => (
-                      <article
-                        className="saved-place-card"
-                        key={place.name}
-                      >
-
-                        <div className="saved-place-image-wrap">
-
-                          <img
-                            src={place.image}
-                            alt={place.name}
-                            className="saved-place-image"
-                          />
-
-                          <BookmarkIcon size={16} />
-
-                        </div>
-
-                        <div className="saved-place-info">
-
-                          <strong>
-                            {place.name}
-                          </strong>
-
-                          <span>
-                            <PinIcon size={11} />
-                            {place.location}
-                          </span>
-
-                        </div>
-
-                      </article>
-                    ))}
-
-                  </div>
-
-                </section>
-
-                {/* OVERVIEW PREFERENCES */}
-
-                <section className="account-panel account-preferences">
-
-                  <h3>Preferences</h3>
-
-                  <div className="account-preferences-grid">
-
-                    {[
-                      ["natureOutdoors", "Nature & Outdoors"],
-                      ["familyFriendly", "Family Friendly"],
-                      ["culturalHeritage", "Cultural Heritage"],
-                      ["adventureActivities", "Adventure Activities"],
-                      ["foodGastronomy", "Food & Gastronomy"],
-                      ["festivalsEvents", "Festivals & Events"],
-                    ].map(([key, label]) => (
-
-                      <div
-                        className="account-preference-row"
-                        key={key}
-                      >
-
-                        <span>{label}</span>
-
-                        <button
-                          type="button"
-                          className={`account-switch ${
-                            preferences[key] ? "on" : ""
-                          }`}
-                          onClick={() => togglePreference(key)}
-                          aria-label={`Toggle ${label}`}
-                        >
-                          <span />
-                        </button>
-
-                      </div>
-
-                    ))}
-
-                  </div>
-
-                </section>
-
-              </div>
-
-              {/* RIGHT COLUMN */}
-
-              <div className="account-right-column">
-
-                {/* UPCOMING */}
-
-                <section className="account-section">
-
-                  <div className="account-section-heading">
-
-                    <h3>My Upcoming Itineraries</h3>
-
-                    <button
-                      type="button"
-                      className="account-view-all-button"
-                      onClick={() => setActiveTab("My Itineraries")}
-                    >
-                      View All →
-                    </button>
-
-                  </div>
-
-                  <article className="upcoming-itinerary">
-
-                    <img
-                      src="/images/chouf.jpg"
-                      alt="Chouf landscape"
-                    />
-
-                    <div className="upcoming-itinerary-info">
-
-                      <strong>
-                        A Day in the Chouf
-                      </strong>
-
-                      <span>
-                        Sat, Oct 4, 2025
-                      </span>
-
-                      <span>Chouf</span>
-
-                      <span>
-                        Nature, Culture, Food
-                      </span>
-
-                    </div>
-
-                    <button
-                      type="button"
-                      className="itinerary-arrow"
-                      onClick={() =>
-                        setActiveTab("My Itineraries")
-                      }
-                      aria-label="Open itinerary"
-                    >
-                      →
-                    </button>
-
-                  </article>
-
-                </section>
-
-                {/* ACCOUNT SETTINGS */}
-
-                <section className="account-panel account-settings">
-
-                  <h3>Account Settings</h3>
-
-                  <div className="account-settings-list">
-
-                    <Link href="/settings">
-
-                      <span>
-                        <UserIcon size={16} />
-                        Personal Information
-                      </span>
-
-                      <b>›</b>
-
-                    </Link>
-
-                    <Link href="/settings/privacy-security">
-
-                      <span>
-                        Change Password
-                      </span>
-
-                      <b>›</b>
-
-                    </Link>
-
-                    <Link href="/settings/notifications">
-
-                      <span>
-                        Notifications
-                      </span>
-
-                      <b>›</b>
-
-                    </Link>
-
-                    <Link href="/settings/language">
-
-                      <span>
-                        Language
-                      </span>
-
-                      <span className="setting-value">
-                        English
-                        <b>›</b>
-                      </span>
-
-                    </Link>
-
-                    <button
-                      type="button"
-                      className="account-sign-out"
-                    >
-                      Sign Out
-                    </button>
-
-                  </div>
-
-                </section>
-
-              </div>
-
-            </div>
-          )}
-
-          {/* =====================================================
-              SAVED PLACES
-          ===================================================== */}
-
-          {activeTab === "Saved Places" && (
-            <section className="account-tab-content">
-
-              <div className="account-tab-heading">
-
-                <div>
-
-                  <span className="account-tab-eyebrow">
-                    YOUR COLLECTION
-                  </span>
-
-                  <h2>Saved Places</h2>
-
-                  <p>
-                    Places you've saved to explore later.
-                  </p>
-
-                </div>
-
-                <span className="saved-count">
-                  {savedPlaces.length} saved places
+                <span className="account-tab-eyebrow">
+                  SETTINGS
                 </span>
 
-              </div>
 
-              <div className="saved-tab-grid">
+                <h2>
+                  {
+                    t.preferencesTitle
+                  }
+                </h2>
 
-                {savedPlaces.map((place) => (
 
-                  <article
-                    className="saved-tab-card"
-                    key={place.name}
-                  >
-
-                    <div className="saved-tab-image-wrap">
-
-                      <img
-                        src={place.image}
-                        alt={place.name}
-                        className="saved-tab-image"
-                      />
-
-                      <button
-                        type="button"
-                        className="saved-tab-bookmark"
-                        aria-label={`Remove ${place.name} from saved places`}
-                      >
-                        <BookmarkIcon size={17} />
-                      </button>
-
-                    </div>
-
-                    <div className="saved-tab-card-content">
-
-                      <div>
-
-                        <h3>
-                          {place.name}
-                        </h3>
-
-                        <span className="saved-tab-location">
-                          <PinIcon size={12} />
-                          {place.location}
-                        </span>
-
-                      </div>
-
-                      <Link
-                        href="/map"
-                        className="saved-tab-explore"
-                      >
-                        Explore →
-                      </Link>
-
-                    </div>
-
-                  </article>
-
-                ))}
+                <p>
+                  {
+                    t.preferencesText
+                  }
+                </p>
 
               </div>
 
-            </section>
-          )}
+            </div>
 
-          {/* =====================================================
-              MY ITINERARIES
-          ===================================================== */}
 
-          {activeTab === "My Itineraries" && (
-            <section className="account-tab-content">
+            <section className="account-panel account-settings">
 
-              <div className="account-tab-heading">
+              <div className="account-settings-list">
 
-                <div>
+                <Link href="/settings">
 
-                  <span className="account-tab-eyebrow">
-                    YOUR JOURNEYS
+                  <span>
+
+                    <Settings
+                      size={16}
+                    />
+
+                    {
+                      t.generalSettings
+                    }
+
                   </span>
 
-                  <h2>My Itineraries</h2>
+                  <b>
+                    ›
+                  </b>
 
-                  <p>
-                    Keep track of your upcoming and completed adventures.
-                  </p>
+                </Link>
 
-                </div>
 
-                <Link
-                  href="/itineraries"
-                  className="account-create-itinerary"
-                >
-                  + Explore Itineraries
+                <Link href="/settings/notifications">
+
+                  <span>
+                    {
+                      t.notificationSettings
+                    }
+                  </span>
+
+                  <b>
+                    ›
+                  </b>
+
+                </Link>
+
+
+                <Link href="/settings/language">
+
+                  <span>
+                    {
+                      t.languageSettings
+                    }
+                  </span>
+
+                  <span className="setting-value">
+
+                    {
+                      language ===
+                      "fr"
+                        ? "Français"
+                        : language ===
+                            "ar"
+                          ? "العربية"
+                          : "English"
+                    }
+
+                    <b>
+                      ›
+                    </b>
+
+                  </span>
+
                 </Link>
 
               </div>
 
-              <div className="my-itineraries-grid">
-
-                {/* CHOUF */}
-
-                <article className="my-itinerary-card">
-
-                  <img
-                    src="/images/chouf.jpg"
-                    alt="Chouf landscape"
-                    className="my-itinerary-image"
-                  />
-
-                  <div className="my-itinerary-content">
-
-                    <div className="my-itinerary-top">
-
-                      <span className="itinerary-status upcoming">
-                        UPCOMING
-                      </span>
-
-                      <span className="itinerary-date">
-                        Sat, Oct 4, 2025
-                      </span>
-
-                    </div>
-
-                    <h3>
-                      A Day in the Chouf
-                    </h3>
-
-                    <p className="my-itinerary-location">
-                      <PinIcon size={12} />
-                      Chouf, Lebanon
-                    </p>
-
-                    <p className="my-itinerary-description">
-                      A day surrounded by nature, culture and
-                      authentic Lebanese food.
-                    </p>
-
-                    <div className="my-itinerary-tags">
-                      <span>Nature</span>
-                      <span>Culture</span>
-                      <span>Food</span>
-                    </div>
-
-                    <Link
-                      href="/itineraries"
-                      className="my-itinerary-link"
-                    >
-                      View Itinerary →
-                    </Link>
-
-                  </div>
-
-                </article>
-
-                {/* BYBLOS */}
-
-                <article className="my-itinerary-card">
-
-                  <img
-                    src="/images/byblos-account.jpg"
-                    alt="Byblos"
-                    className="my-itinerary-image"
-                  />
-
-                  <div className="my-itinerary-content">
-
-                    <div className="my-itinerary-top">
-
-                      <span className="itinerary-status completed">
-                        COMPLETED
-                      </span>
-
-                      <span className="itinerary-date">
-                        Sun, Sep 14, 2025
-                      </span>
-
-                    </div>
-
-                    <h3>
-                      Historic Byblos
-                    </h3>
-
-                    <p className="my-itinerary-location">
-                      <PinIcon size={12} />
-                      Byblos, Lebanon
-                    </p>
-
-                    <p className="my-itinerary-description">
-                      Discover ancient ruins, traditional streets
-                      and the historic Mediterranean coast.
-                    </p>
-
-                    <div className="my-itinerary-tags">
-                      <span>Heritage</span>
-                      <span>History</span>
-                      <span>Culture</span>
-                    </div>
-
-                    <Link
-                      href="/itineraries"
-                      className="my-itinerary-link"
-                    >
-                      View Itinerary →
-                    </Link>
-
-                  </div>
-
-                </article>
-
-              </div>
-
             </section>
-          )}
 
-          {/* =====================================================
-              ACTIVITY HISTORY
-          ===================================================== */}
+          </section>
 
-          {activeTab === "Activity History" && (
-            <section className="account-tab-content">
+        )}
 
-              <div className="account-tab-heading">
+      </div>
 
-                <div>
+    </main>
+  );
+}
 
-                  <span className="account-tab-eyebrow">
-                    YOUR JOURNEY
-                  </span>
 
-                  <h2>Activity History</h2>
+/* =====================================================
+   PAGE
+===================================================== */
 
-                  <p>
-                    A look back at the places, stories and
-                    experiences you've explored.
-                  </p>
+export default function MyAccountPage() {
+  return (
+    <SiteLanguageProvider>
 
-                </div>
+      <AppShell>
 
-              </div>
+        <AccountContent />
 
-              <div className="activity-history-list">
+      </AppShell>
 
-                {/* ACTIVITY 1 */}
-
-                <div className="activity-history-item">
-
-                  <div className="activity-history-icon">
-                    <PinIcon size={17} />
-                  </div>
-
-                  <div className="activity-history-content">
-
-                    <div>
-                      <strong>
-                        Visited Byblos Citadel
-                      </strong>
-
-                      <span>
-                        Byblos, Lebanon
-                      </span>
-                    </div>
-
-                    <span className="activity-history-date">
-                      Sep 14, 2025
-                    </span>
-
-                  </div>
-
-                </div>
-
-                {/* ACTIVITY 2 */}
-
-                <div className="activity-history-item">
-
-                  <div className="activity-history-icon">
-                    <BookmarkIcon size={17} />
-                  </div>
-
-                  <div className="activity-history-content">
-
-                    <div>
-                      <strong>
-                        Saved Cedars of God
-                      </strong>
-
-                      <span>
-                        Bsharri, Lebanon
-                      </span>
-                    </div>
-
-                    <span className="activity-history-date">
-                      Sep 10, 2025
-                    </span>
-
-                  </div>
-
-                </div>
-
-                {/* ACTIVITY 3 */}
-
-                <div className="activity-history-item">
-
-                  <div className="activity-history-icon">
-                    <MapIcon size={17} />
-                  </div>
-
-                  <div className="activity-history-content">
-
-                    <div>
-                      <strong>
-                        Completed Historic Byblos
-                      </strong>
-
-                      <span>
-                        Itinerary completed
-                      </span>
-                    </div>
-
-                    <span className="activity-history-date">
-                      Sep 8, 2025
-                    </span>
-
-                  </div>
-
-                </div>
-
-                {/* ACTIVITY 4 */}
-
-                <div className="activity-history-item">
-
-                  <div className="activity-history-icon">
-                    <BookmarkIcon size={17} />
-                  </div>
-
-                  <div className="activity-history-content">
-
-                    <div>
-                      <strong>
-                        Saved Raouché Rock
-                      </strong>
-
-                      <span>
-                        Beirut, Lebanon
-                      </span>
-                    </div>
-
-                    <span className="activity-history-date">
-                      Sep 2, 2025
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </section>
-          )}
-
-          {/* =====================================================
-              PREFERENCES
-          ===================================================== */}
-
-          {activeTab === "Preferences" && (
-            <section className="account-tab-content">
-
-              <div className="account-tab-heading">
-
-                <div>
-
-                  <span className="account-tab-eyebrow">
-                    PERSONALIZE YOUR EXPERIENCE
-                  </span>
-
-                  <h2>Preferences</h2>
-
-                  <p>
-                    Choose what interests you most while exploring Lebanon.
-                  </p>
-
-                </div>
-
-              </div>
-
-              <div className="preferences-tab-card">
-
-                {[
-                  {
-                    key: "natureOutdoors",
-                    title: "Nature & Outdoors",
-                    description:
-                      "Mountains, forests, hiking trails and natural landscapes.",
-                  },
-                  {
-                    key: "culturalHeritage",
-                    title: "Cultural Heritage",
-                    description:
-                      "Historic sites, traditions and Lebanon's cultural heritage.",
-                  },
-                  {
-                    key: "foodGastronomy",
-                    title: "Food & Gastronomy",
-                    description:
-                      "Local cuisine, traditional food and culinary experiences.",
-                  },
-                  {
-                    key: "familyFriendly",
-                    title: "Family Friendly",
-                    description:
-                      "Places and activities suitable for the whole family.",
-                  },
-                  {
-                    key: "adventureActivities",
-                    title: "Adventure Activities",
-                    description:
-                      "Outdoor adventures and exciting experiences.",
-                  },
-                  {
-                    key: "festivalsEvents",
-                    title: "Festivals & Events",
-                    description:
-                      "Local festivals, cultural events and seasonal celebrations.",
-                  },
-                ].map((item) => (
-
-                  <div
-                    className="preferences-tab-row"
-                    key={item.key}
-                  >
-
-                    <div className="preferences-tab-text">
-
-                      <strong>
-                        {item.title}
-                      </strong>
-
-                      <span>
-                        {item.description}
-                      </span>
-
-                    </div>
-
-                    <button
-                      type="button"
-                      className={`account-switch ${
-                        preferences[item.key] ? "on" : ""
-                      }`}
-                      onClick={() =>
-                        togglePreference(item.key)
-                      }
-                      aria-label={`Toggle ${item.title}`}
-                    >
-                      <span />
-                    </button>
-
-                  </div>
-
-                ))}
-
-              </div>
-
-            </section>
-          )}
-
-        </div>
-
-      </main>
-    </AppShell>
+    </SiteLanguageProvider>
   );
 }

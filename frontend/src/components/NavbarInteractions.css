@@ -1,0 +1,211 @@
+/* =========================================================
+   NAVBAR INTERACTIONS
+   Works together with the existing Navbar.css
+========================================================= */
+
+.navbar-actions .navbar-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+/* =========================================================
+   PROFILE / LARA DROPDOWN
+========================================================= */
+
+.navbar-profile-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 1700;
+}
+
+.navbar-profile-button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.navbar-profile-button:hover,
+.navbar-profile-button:focus-visible,
+.navbar-profile-button.is-open {
+  opacity: 0.84;
+}
+
+.navbar-dropdown-chevron {
+  transition: transform 160ms ease;
+}
+
+.navbar-dropdown-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.navbar-profile-menu {
+  position: absolute;
+  z-index: 1701;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 220px;
+  overflow: hidden;
+  border: 1px solid #e2ddd1;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 7px;
+  box-shadow: 0 18px 45px rgba(29, 31, 24, 0.16);
+  animation: navbarMenuIn 150ms ease-out;
+}
+
+.navbar-profile-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 9px 10px;
+}
+
+.navbar-profile-menu-avatar {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #e7dfcf;
+  color: #34372f;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.navbar-profile-menu-name {
+  margin: 0;
+  color: #292e27;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.navbar-profile-menu-caption {
+  margin: 3px 0 0;
+  color: #8a8c85;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.navbar-profile-menu-divider {
+  height: 1px;
+  margin: 3px 5px 5px;
+  background: #ece8df;
+}
+
+.navbar-profile-menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  border-radius: 9px;
+  padding: 10px 11px;
+  color: #34372f;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    background 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+
+.navbar-profile-menu-item:hover,
+.navbar-profile-menu-item:focus-visible {
+  background: #f1f2eb;
+  color: #4d5d43;
+  outline: none;
+}
+
+.navbar-profile-menu-item:hover {
+  transform: translateX(2px);
+}
+
+.navbar-profile-menu-item.is-active {
+  background: #e7ebde;
+  color: #4c5b41;
+  font-weight: 600;
+}
+
+/* =========================================================
+   LANGUAGE DROPDOWN
+========================================================= */
+
+.navbar-language-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 1600;
+}
+
+.navbar-language-menu {
+  position: absolute;
+  z-index: 1601;
+  right: 0;
+  top: calc(100% + 12px);
+  min-width: 178px;
+  border: 1px solid #e2ddd1;
+  border-radius: 12px;
+  padding: 6px;
+  background: #fff;
+  box-shadow: 0 14px 38px rgba(29, 31, 24, 0.15);
+  animation: navbarMenuIn 150ms ease-out;
+}
+
+.navbar-language-option {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: #292e27;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 11px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.navbar-language-option:hover,
+.navbar-language-option:focus-visible {
+  background: #f1f2eb;
+}
+
+.navbar-language-option.is-selected {
+  background: #e7ebde;
+  color: #4c5b41;
+  font-weight: 600;
+}
+
+.navbar-language:focus-visible,
+.navbar-profile:focus-visible {
+  outline: 2px solid #6b735c;
+  outline-offset: 4px;
+}
+
+@keyframes navbarMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .navbar-profile-menu {
+    right: -6px;
+    width: 210px;
+  }
+}
