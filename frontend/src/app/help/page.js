@@ -1,440 +1,1257 @@
+"use client";
+
+import {
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import Link from "next/link";
 import AppShell from "@/components/AppShell";
+
+import {
+  Bookmark,
+  Mail,
+  Map,
+  MapPin,
+  MessageCircle,
+  Smartphone,
+  User,
+  X,
+} from "lucide-react";
+
 import "./help.css";
 
-/* ---------- SIMPLE LINE ICONS ---------- */
 
-function Icon({ type, size = 26 }) {
-  const common = {
-    width: size,
-    height: size,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.7",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    "aria-hidden": "true",
-  };
+/* =====================================================
+   HELP TOPICS
+===================================================== */
 
-  if (type === "map") {
-    return (
-      <svg {...common}>
-        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6" />
-        <line x1="9" y1="3" x2="9" y2="18" />
-        <line x1="15" y1="6" x2="15" y2="21" />
-      </svg>
-    );
+const topics = [
+  {
+    id: "getting-started",
+    title: "Getting Started",
+    description:
+      "Learn the basics and start exploring.",
+    icon: Map,
+    route: "/explore",
+    article:
+      "Start with Explore the Map to browse destinations across Lebanon. You can search, filter places and open a destination for more information.",
+  },
+
+  {
+    id: "explore-map",
+    title: "Explore the Map",
+    description:
+      "Find places, filters and map features.",
+    icon: MapPin,
+    route: "/explore",
+    article:
+      "Use Explore the Map to browse real places from the database. Search for a city or destination, choose a category, then select a place.",
+  },
+
+  {
+    id: "itineraries",
+    title: "Itineraries",
+    description:
+      "Browse curated journeys.",
+    icon: Map,
+    route: "/itineraries",
+    article:
+      "Curated Itineraries contains ready-made journeys with real itinerary stops. Select an itinerary to see its route and details.",
+  },
+
+  {
+    id: "saved-places",
+    title: "Saved Places",
+    description:
+      "Manage your favorites.",
+    icon: Bookmark,
+    route: "/saved",
+    article:
+      "When signed in, you can save places to your personal collection. Open Saved Places to view, remove or restore saved destinations.",
+  },
+
+  {
+    id: "account-settings",
+    title: "Account & Settings",
+    description:
+      "Profile, preferences and privacy.",
+    icon: User,
+    route: "/account",
+    article:
+      "Use My Account to manage your personal information. Settings lets you manage language, notifications, display preferences and other options.",
+  },
+
+  {
+    id: "technical",
+    title: "Technical Support",
+    description:
+      "Troubleshooting and app issues.",
+    icon: Smartphone,
+    route: null,
+    article:
+      "If something is not loading, refresh the page, confirm that the Flask backend and Next.js frontend are running, and sign in again if an authenticated page reports that your session is missing.",
+  },
+];
+
+
+/* =====================================================
+   FAQ
+===================================================== */
+
+const faqs = [
+  {
+    id: 1,
+    question:
+      "How do I save a place?",
+    answer:
+      "Open Saved Places and choose Add Place, or use the bookmark option on a place. You must be signed in because saved places belong to your account.",
+  },
+
+  {
+    id: 2,
+    question:
+      "Can I use the app offline?",
+    answer:
+      "Some app preferences can be stored on your device. Full offline maps are not currently implemented.",
+  },
+
+  {
+    id: 3,
+    question:
+      "How do I plan an itinerary?",
+    answer:
+      "Open Curated Itineraries to browse available journeys and see their ordered stops.",
+  },
+
+  {
+    id: 4,
+    question:
+      "How do I change my language settings?",
+    answer:
+      "Open Settings and choose Language. You can select English, French or Arabic.",
+  },
+
+  {
+    id: 5,
+    question:
+      "How do I edit my profile?",
+    answer:
+      "Open My Account and choose Edit Profile. You can update the information supported by your account.",
+  },
+
+  {
+    id: 6,
+    question:
+      "Why do I need to sign in for Saved Places?",
+    answer:
+      "Saved Places is connected to your account so every user has their own saved collection.",
+  },
+
+  {
+    id: 7,
+    question:
+      "How do I change my password?",
+    answer:
+      "Open Settings, then Privacy & Security, and choose Change Password.",
+  },
+];
+
+
+/* =====================================================
+   ARTICLE MODAL
+===================================================== */
+
+function ArticleModal({
+  topic,
+  onClose,
+}) {
+  if (!topic) {
+    return null;
   }
 
-  if (type === "list") {
-    return (
-      <svg {...common}>
-        <rect x="3" y="3" width="18" height="18" rx="1" />
-        <line x1="8" y1="8" x2="17" y2="8" />
-        <line x1="8" y1="12" x2="17" y2="12" />
-        <line x1="8" y1="16" x2="17" y2="16" />
-        <circle cx="5.5" cy="8" r=".5" fill="currentColor" />
-        <circle cx="5.5" cy="12" r=".5" fill="currentColor" />
-        <circle cx="5.5" cy="16" r=".5" fill="currentColor" />
-      </svg>
-    );
-  }
+  const TopicIcon =
+    topic.icon;
 
-  if (type === "bookmark") {
-    return (
-      <svg {...common}>
-        <path d="M6 3h12v18l-6-4-6 4V3z" />
-      </svg>
-    );
-  }
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 5000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+        background:
+          "rgba(0, 0, 0, 0.45)",
+      }}
+      onMouseDown={(event) => {
+        if (
+          event.target ===
+          event.currentTarget
+        ) {
+          onClose();
+        }
+      }}
+    >
+      <article
+        style={{
+          width: "100%",
+          maxWidth: "560px",
+          padding: "28px",
+          border:
+            "1px solid #ded8cb",
+          borderRadius: "16px",
+          background: "#faf8f2",
+          boxShadow:
+            "0 20px 50px rgba(0,0,0,.2)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems:
+              "flex-start",
+            justifyContent:
+              "space-between",
+            gap: "20px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <div
+              style={{
+                width: "42px",
+                height: "42px",
+                display: "flex",
+                alignItems:
+                  "center",
+                justifyContent:
+                  "center",
+                borderRadius:
+                  "50%",
+                background:
+                  "#e5eadb",
+                color: "#61704f",
+              }}
+            >
+              <TopicIcon
+                size={20}
+              />
+            </div>
 
-  if (type === "user") {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="8" r="3" />
-        <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
-      </svg>
-    );
-  }
+            <h2
+              style={{
+                margin: 0,
+                fontFamily:
+                  "Georgia, serif",
+                fontSize: "25px",
+                fontWeight: 400,
+              }}
+            >
+              {topic.title}
+            </h2>
+          </div>
 
-  if (type === "pin") {
-    return (
-      <svg {...common}>
-        <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0z" />
-        <circle cx="12" cy="10" r="2.5" />
-      </svg>
-    );
-  }
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              border: 0,
+              background:
+                "transparent",
+              cursor: "pointer",
+            }}
+          >
+            <X size={20} />
+          </button>
+        </div>
 
-  if (type === "phone") {
-    return (
-      <svg {...common}>
-        <rect x="7" y="2" width="10" height="20" rx="1.5" />
-        <line x1="10" y1="18" x2="14" y2="18" />
-      </svg>
-    );
-  }
+        <p
+          style={{
+            margin:
+              "24px 0 0",
+            color: "#615d55",
+            fontSize: "14px",
+            lineHeight: 1.7,
+          }}
+        >
+          {topic.article}
+        </p>
 
-  if (type === "mail") {
-    return (
-      <svg {...common}>
-        <rect x="3" y="5" width="18" height="14" rx="1" />
-        <path d="m3 7 9 6 9-6" />
-      </svg>
-    );
-  }
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "12px",
+            marginTop: "24px",
+          }}
+        >
+          {topic.route && (
+            <Link
+              href={topic.route}
+              style={{
+                padding:
+                  "10px 20px",
+                borderRadius:
+                  "999px",
+                background:
+                  "#657044",
+                color: "white",
+                textDecoration:
+                  "none",
+                fontSize: "13px",
+              }}
+            >
+              Open page →
+            </Link>
+          )}
 
-  if (type === "chat") {
-    return (
-      <svg {...common}>
-        <path d="M21 11a8 8 0 0 1-8 8H8l-5 3 1.5-5A8 8 0 1 1 21 11z" />
-        <circle cx="9" cy="11" r=".5" fill="currentColor" />
-        <circle cx="12" cy="11" r=".5" fill="currentColor" />
-        <circle cx="15" cy="11" r=".5" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (type === "search") {
-    return (
-      <svg {...common}>
-        <circle cx="11" cy="11" r="6.5" />
-        <line x1="16" y1="16" x2="21" y2="21" />
-      </svg>
-    );
-  }
-
-  return null;
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding:
+                "10px 20px",
+              border:
+                "1px solid #d8d1c4",
+              borderRadius:
+                "999px",
+              background:
+                "transparent",
+              cursor: "pointer",
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </article>
+    </div>
+  );
 }
+
+
+/* =====================================================
+   SUPPORT MODAL
+===================================================== */
+
+function SupportModal({
+  mode,
+  onClose,
+}) {
+  const [
+    message,
+    setMessage,
+  ] =
+    useState("");
+
+  const [
+    sent,
+    setSent,
+  ] =
+    useState(false);
+
+
+  if (!mode) {
+    return null;
+  }
+
+
+  function handleSubmit(
+    event
+  ) {
+    event.preventDefault();
+
+    if (!message.trim()) {
+      return;
+    }
+
+    try {
+      const previous =
+        JSON.parse(
+          localStorage.getItem(
+            "discover-support-drafts"
+          ) || "[]"
+        );
+
+      previous.push({
+        message:
+          message.trim(),
+
+        createdAt:
+          new Date()
+            .toISOString(),
+      });
+
+      localStorage.setItem(
+        "discover-support-drafts",
+        JSON.stringify(
+          previous
+        )
+      );
+    } catch {
+      // The UI can still show
+      // the confirmation.
+    }
+
+    setSent(true);
+  }
+
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 5000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+        background:
+          "rgba(0,0,0,.45)",
+      }}
+      onMouseDown={(event) => {
+        if (
+          event.target ===
+          event.currentTarget
+        ) {
+          onClose();
+        }
+      }}
+    >
+      <section
+        style={{
+          width: "100%",
+          maxWidth: "500px",
+          padding: "26px",
+          borderRadius: "16px",
+          background: "#faf8f2",
+          boxShadow:
+            "0 20px 50px rgba(0,0,0,.2)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+            alignItems:
+              "flex-start",
+          }}
+        >
+          <h2
+            style={{
+              margin: 0,
+              fontFamily:
+                "Georgia, serif",
+              fontSize: "25px",
+              fontWeight: 400,
+            }}
+          >
+            {mode === "chat"
+              ? "Support Chat"
+              : "Contact Support"}
+          </h2>
+
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={onClose}
+            style={{
+              border: 0,
+              background:
+                "transparent",
+              cursor: "pointer",
+            }}
+          >
+            <X size={19} />
+          </button>
+        </div>
+
+        {sent ? (
+          <>
+            <div
+              style={{
+                marginTop:
+                  "20px",
+                padding: "16px",
+                border:
+                  "1px solid #cbd8be",
+                borderRadius:
+                  "10px",
+                background:
+                  "#eef4e9",
+                color:
+                  "#495c3c",
+                fontSize:
+                  "13px",
+                lineHeight: 1.6,
+              }}
+            >
+              Your support request
+              has been saved.
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                marginTop:
+                  "18px",
+                padding:
+                  "10px 20px",
+                border: 0,
+                borderRadius:
+                  "999px",
+                background:
+                  "#657044",
+                color: "white",
+                cursor:
+                  "pointer",
+              }}
+            >
+              Close
+            </button>
+          </>
+        ) : (
+          <form
+            onSubmit={
+              handleSubmit
+            }
+          >
+            {mode ===
+              "chat" && (
+              <div
+                style={{
+                  marginTop:
+                    "18px",
+                  padding:
+                    "14px",
+                  borderRadius:
+                    "10px",
+                  background:
+                    "#efede6",
+                  color:
+                    "#625e55",
+                  fontSize:
+                    "13px",
+                  lineHeight:
+                    1.6,
+                }}
+              >
+                Tell us what
+                problem you are
+                having.
+              </div>
+            )}
+
+            <textarea
+              value={message}
+              onChange={(
+                event
+              ) =>
+                setMessage(
+                  event
+                    .target
+                    .value
+                )
+              }
+              placeholder="Describe your problem..."
+              required
+              rows={5}
+              style={{
+                width: "100%",
+                marginTop:
+                  "16px",
+                padding: "12px",
+                resize:
+                  "vertical",
+                border:
+                  "1px solid #d9d2c5",
+                borderRadius:
+                  "10px",
+                background:
+                  "white",
+                outline: 0,
+                fontFamily:
+                  "inherit",
+              }}
+            />
+
+            <button
+              type="submit"
+              style={{
+                marginTop:
+                  "14px",
+                padding:
+                  "10px 20px",
+                border: 0,
+                borderRadius:
+                  "999px",
+                background:
+                  "#657044",
+                color: "white",
+                cursor:
+                  "pointer",
+              }}
+            >
+              Save Support Request
+            </button>
+          </form>
+        )}
+      </section>
+    </div>
+  );
+}
+
+
+/* =====================================================
+   HELP CONTENT
+===================================================== */
+
+function HelpContent() {
+  const [
+    query,
+    setQuery,
+  ] =
+    useState("");
+
+  const [
+    submittedQuery,
+    setSubmittedQuery,
+  ] =
+    useState("");
+
+  const [
+    showAllFaqs,
+    setShowAllFaqs,
+  ] =
+    useState(false);
+
+  const [
+    selectedTopic,
+    setSelectedTopic,
+  ] =
+    useState(null);
+
+  const [
+    supportMode,
+    setSupportMode,
+  ] =
+    useState("");
+
+  const topicsRef =
+    useRef(null);
+
+
+  const normalizedQuery =
+    submittedQuery
+      .trim()
+      .toLowerCase();
+
+
+  const visibleTopics =
+    useMemo(() => {
+      if (!normalizedQuery) {
+        return topics;
+      }
+
+      return topics.filter(
+        (topic) =>
+          `${topic.title} ${topic.description} ${topic.article}`
+            .toLowerCase()
+            .includes(
+              normalizedQuery
+            )
+      );
+    }, [normalizedQuery]);
+
+
+  const visibleFaqs =
+    useMemo(() => {
+      if (normalizedQuery) {
+        return faqs.filter(
+          (faq) =>
+            `${faq.question} ${faq.answer}`
+              .toLowerCase()
+              .includes(
+                normalizedQuery
+              )
+        );
+      }
+
+      return showAllFaqs
+        ? faqs
+        : faqs.slice(
+            0,
+            3
+          );
+    }, [
+      normalizedQuery,
+      showAllFaqs,
+    ]);
+
+
+  function handleSearch(
+    event
+  ) {
+    event.preventDefault();
+
+    setSubmittedQuery(
+      query
+    );
+
+    window.setTimeout(
+      () => {
+        topicsRef.current
+          ?.scrollIntoView({
+            behavior:
+              "smooth",
+            block:
+              "start",
+          });
+      },
+      0
+    );
+  }
+
+
+  return (
+    <div className="help-page">
+
+      {/* =================================================
+          HERO
+      ================================================= */}
+
+      <section className="help-hero">
+
+        <div className="hero-shade" />
+
+        <div className="hero-content">
+
+          <div className="hero-label">
+            SUPPORT
+          </div>
+
+          <h1>
+            How can we help?
+          </h1>
+
+          <p>
+            Find answers, get guidance, and make the most
+            <br />
+            of your Discover Lebanon experience.
+          </p>
+
+        </div>
+
+
+        <div className="hero-handwriting">
+          Same places,
+          <br />
+          different stories.
+          <span />
+        </div>
+
+      </section>
+
+
+      {/* =================================================
+          CONTENT
+      ================================================= */}
+
+      <div className="help-body">
+
+        <div className="help-content">
+
+          {/* SEARCH */}
+
+          <form
+            className="help-search"
+            onSubmit={
+              handleSearch
+            }
+          >
+            <div className="help-search-icon">
+              <svg
+                width="25"
+                height="25"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="6.5"
+                />
+
+                <line
+                  x1="16"
+                  y1="16"
+                  x2="21"
+                  y2="21"
+                />
+              </svg>
+            </div>
+
+            <input
+              type="search"
+              value={query}
+              onChange={(
+                event
+              ) =>
+                setQuery(
+                  event
+                    .target
+                    .value
+                )
+              }
+              placeholder='Search for help (e.g. “how to save a place”, “language”, “itineraries”)'
+            />
+
+            <button
+              type="submit"
+            >
+              Search
+            </button>
+          </form>
+
+
+          {/* =================================================
+              HELP TOPICS
+          ================================================= */}
+
+          <section
+            className="topics-section"
+            ref={topicsRef}
+          >
+            <h2>
+              Help Topics
+            </h2>
+
+            <p className="section-subtitle">
+              Browse support articles by category.
+            </p>
+
+
+            <div className="topics-grid">
+
+              {visibleTopics.map(
+                (topic) => {
+                  const TopicIcon =
+                    topic.icon;
+
+                  return (
+                    <button
+                      key={
+                        topic.id
+                      }
+                      type="button"
+                      className="topic-card"
+                      onClick={() =>
+                        setSelectedTopic(
+                          topic
+                        )
+                      }
+                      style={{
+                        width:
+                          "100%",
+                        textAlign:
+                          "left",
+                        cursor:
+                          "pointer",
+                      }}
+                    >
+                      <div className="topic-icon">
+                        <TopicIcon
+                          size={31}
+                          strokeWidth={
+                            1.7
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <h3>
+                          {
+                            topic.title
+                          }
+                        </h3>
+
+                        <p>
+                          {
+                            topic.description
+                          }
+                        </p>
+                      </div>
+
+                      <span className="topic-arrow">
+                        →
+                      </span>
+                    </button>
+                  );
+                }
+              )}
+
+            </div>
+
+
+            {normalizedQuery &&
+              visibleTopics.length ===
+                0 &&
+              visibleFaqs.length ===
+                0 && (
+                <p
+                  style={{
+                    marginTop:
+                      "20px",
+                    color:
+                      "#746e63",
+                  }}
+                >
+                  No help result found for “{submittedQuery}”.
+                </p>
+              )}
+
+          </section>
+
+
+          {/* =================================================
+              FAQ
+          ================================================= */}
+
+          <section className="faq-section">
+
+            <div className="faq-heading">
+
+              <h2>
+                Frequently Asked Questions
+              </h2>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowAllFaqs(
+                    (
+                      previous
+                    ) =>
+                      !previous
+                  )
+                }
+              >
+                {showAllFaqs
+                  ? "Show Less"
+                  : "View All"}{" "}
+                →
+              </button>
+
+            </div>
+
+
+            <div className="faq-list">
+
+              {visibleFaqs.map(
+                (faq) => (
+                  <details
+                    key={
+                      faq.id
+                    }
+                  >
+                    <summary>
+                      {
+                        faq.question
+                      }
+                    </summary>
+
+                    <p>
+                      {
+                        faq.answer
+                      }
+                    </p>
+                  </details>
+                )
+              )}
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        {/* =================================================
+            RIGHT SUPPORT COLUMN
+        ================================================= */}
+
+        <aside className="support-column">
+
+          <section className="support-card">
+
+            <h3>
+              Still need help?
+            </h3>
+
+            <p className="support-intro">
+              Our support tools are here for you.
+            </p>
+
+
+            {/* CONTACT SUPPORT */}
+
+            <button
+              type="button"
+              className="support-row"
+              onClick={() =>
+                setSupportMode(
+                  "contact"
+                )
+              }
+              style={{
+                width: "100%",
+                border: 0,
+                padding: 0,
+                background:
+                  "transparent",
+                textAlign:
+                  "left",
+                cursor:
+                  "pointer",
+              }}
+            >
+              <div className="support-row-icon">
+                <Mail
+                  size={25}
+                  strokeWidth={
+                    1.7
+                  }
+                />
+              </div>
+
+              <div className="support-row-text">
+                <strong>
+                  Contact Support
+                </strong>
+
+                <small>
+                  Create a support request
+                </small>
+              </div>
+
+              <span className="support-chevron">
+                ›
+              </span>
+            </button>
+
+
+            {/* SUPPORT CHAT */}
+
+            <button
+              type="button"
+              className="support-row"
+              onClick={() =>
+                setSupportMode(
+                  "chat"
+                )
+              }
+              style={{
+                width: "100%",
+                border: 0,
+                padding: 0,
+                background:
+                  "transparent",
+                textAlign:
+                  "left",
+                cursor:
+                  "pointer",
+              }}
+            >
+              <div className="support-row-icon">
+                <MessageCircle
+                  size={25}
+                  strokeWidth={
+                    1.7
+                  }
+                />
+              </div>
+
+              <div className="support-row-text">
+                <strong>
+                  Support Chat
+                </strong>
+
+                <small>
+                  Describe a technical issue
+                </small>
+              </div>
+
+              <span className="support-chevron">
+                ›
+              </span>
+            </button>
+
+
+            {/* HELP CENTER */}
+
+            <button
+              type="button"
+              className="support-row"
+              onClick={() =>
+                topicsRef.current
+                  ?.scrollIntoView({
+                    behavior:
+                      "smooth",
+                    block:
+                      "start",
+                  })
+              }
+              style={{
+                width: "100%",
+                border: 0,
+                padding: 0,
+                background:
+                  "transparent",
+                textAlign:
+                  "left",
+                cursor:
+                  "pointer",
+              }}
+            >
+              <div className="support-row-icon">
+                <Map
+                  size={25}
+                  strokeWidth={
+                    1.7
+                  }
+                />
+              </div>
+
+              <div className="support-row-text">
+                <strong>
+                  Visit our Help Center
+                </strong>
+
+                <small>
+                  Browse all articles
+                </small>
+              </div>
+
+              <span className="support-chevron">
+                ›
+              </span>
+            </button>
+
+          </section>
+
+
+          {/* QUOTE */}
+
+          <section className="quote-card">
+
+            <div className="quote-leaf">
+              ❧
+            </div>
+
+            <blockquote>
+              “Questions lead
+              <br />
+              to deeper journeys.”
+            </blockquote>
+
+            <div className="quote-line" />
+
+            <div className="quote-words">
+              <span>
+                DISCOVER
+              </span>
+
+              <span>
+                LEARN
+              </span>
+
+              <span>
+                EXPLORE
+              </span>
+            </div>
+
+          </section>
+
+
+          {/* EXPLORE */}
+
+          <Link
+            href="/explore"
+            className="explore-support-card"
+          >
+            <div className="explore-support-shade" />
+
+            <div className="explore-support-text">
+              <h3>
+                Explore more.
+                <br />
+                We&apos;re here to help.
+              </h3>
+
+              <span />
+            </div>
+          </Link>
+
+        </aside>
+
+      </div>
+
+
+      {/* =================================================
+          MODALS
+      ================================================= */}
+
+      <ArticleModal
+        topic={
+          selectedTopic
+        }
+        onClose={() =>
+          setSelectedTopic(
+            null
+          )
+        }
+      />
+
+
+      <SupportModal
+        mode={
+          supportMode
+        }
+        onClose={() =>
+          setSupportMode("")
+        }
+      />
+
+    </div>
+  );
+}
+
+
+/* =====================================================
+   PAGE
+===================================================== */
 
 export default function HelpPage() {
   return (
     <AppShell>
-      <main className="help-page">
-
-        {/* ================= HERO ================= */}
-
-        <section className="help-hero">
-          <div className="hero-shade" />
-
-          <div className="hero-content">
-            <div className="hero-label">SUPPORT</div>
-
-            <h1>How can we help?</h1>
-
-            <p>
-              Find answers, get guidance, and make the most
-              <br />
-              of your Discover Lebanon experience.
-            </p>
-          </div>
-
-          <div className="hero-handwriting">
-            Same places,
-            <br />
-            different stories.
-            <span />
-          </div>
-        </section>
-
-        {/* ================= MAIN CONTENT ================= */}
-
-        <div className="help-body">
-
-          <div className="help-content">
-
-            {/* SEARCH */}
-
-            <div className="help-search">
-              <div className="help-search-icon">
-                <Icon type="search" size={25} />
-              </div>
-
-              <input
-                type="text"
-                placeholder='Search for help (e.g. "how to save a place", "offline maps", "itineraries")'
-              />
-
-              <button type="button">
-                Search
-              </button>
-            </div>
-
-            {/* ================= HELP TOPICS ================= */}
-
-            <section className="topics-section">
-
-              <h2>Help Topics</h2>
-
-              <p className="section-subtitle">
-                Browse support articles by category.
-              </p>
-
-              <div className="topics-grid">
-
-                <article className="topic-card">
-                  <div className="topic-icon">
-                    <Icon type="map" size={31} />
-                  </div>
-
-                  <div>
-                    <h3>Getting Started</h3>
-                    <p>
-                      Learn the basics and
-                      <br />
-                      start exploring.
-                    </p>
-                  </div>
-
-                  <span className="topic-arrow">→</span>
-                </article>
-
-                <article className="topic-card">
-                  <div className="topic-icon">
-                    <Icon type="pin" size={31} />
-                  </div>
-
-                  <div>
-                    <h3>Explore the Map</h3>
-                    <p>
-                      Find places, filters
-                      <br />
-                      and offline access.
-                    </p>
-                  </div>
-
-                  <span className="topic-arrow">→</span>
-                </article>
-
-                <article className="topic-card">
-                  <div className="topic-icon">
-                    <Icon type="list" size={31} />
-                  </div>
-
-                  <div>
-                    <h3>Itineraries</h3>
-                    <p>
-                      How to use and
-                      <br />
-                      create itineraries.
-                    </p>
-                  </div>
-
-                  <span className="topic-arrow">→</span>
-                </article>
-
-                <article className="topic-card">
-                  <div className="topic-icon">
-                    <Icon type="bookmark" size={31} />
-                  </div>
-
-                  <div>
-                    <h3>Saved Places</h3>
-                    <p>
-                      Manage your
-                      <br />
-                      favorites.
-                    </p>
-                  </div>
-
-                  <span className="topic-arrow">→</span>
-                </article>
-
-                <article className="topic-card">
-                  <div className="topic-icon">
-                    <Icon type="user" size={31} />
-                  </div>
-
-                  <div>
-                    <h3>Account &amp; Settings</h3>
-                    <p>
-                      Profile, preferences
-                      <br />
-                      and privacy.
-                    </p>
-                  </div>
-
-                  <span className="topic-arrow">→</span>
-                </article>
-
-                <article className="topic-card">
-                  <div className="topic-icon">
-                    <Icon type="phone" size={31} />
-                  </div>
-
-                  <div>
-                    <h3>Technical Support</h3>
-                    <p>
-                      Troubleshooting
-                      <br />
-                      and app issues.
-                    </p>
-                  </div>
-
-                  <span className="topic-arrow">→</span>
-                </article>
-
-              </div>
-            </section>
-
-            {/* ================= FAQ ================= */}
-
-            <section className="faq-section">
-
-              <div className="faq-heading">
-                <h2>Frequently Asked Questions</h2>
-
-                <button type="button">
-                  View All&nbsp; →
-                </button>
-              </div>
-
-              <div className="faq-list">
-
-                <details>
-                  <summary>How do I save a place?</summary>
-                  <p>
-                    Open the place you want to save and select the
-                    bookmark option to add it to Saved Places.
-                  </p>
-                </details>
-
-                <details>
-                  <summary>Can I use the app offline?</summary>
-                  <p>
-                    Saved content and selected map information can be
-                    accessed offline when available.
-                  </p>
-                </details>
-
-                <details>
-                  <summary>How do I plan an itinerary?</summary>
-                  <p>
-                    Open Curated Itineraries to discover routes,
-                    destinations and activities.
-                  </p>
-                </details>
-
-                <details>
-                  <summary>
-                    How do I change my language settings?
-                  </summary>
-                  <p>
-                    Open Settings and choose your preferred language.
-                  </p>
-                </details>
-
-                <details>
-                  <summary>How can I contact support?</summary>
-                  <p>
-                    Use Contact Support or Live Chat from the support
-                    panel on the right.
-                  </p>
-                </details>
-
-              </div>
-            </section>
-
-          </div>
-
-          {/* ================= SUPPORT COLUMN ================= */}
-
-          <aside className="support-column">
-
-            <section className="support-card">
-
-              <h3>Still need help?</h3>
-
-              <p className="support-intro">
-                Our team is here for you.
-              </p>
-
-              <div className="support-row">
-                <div className="support-row-icon">
-                  <Icon type="mail" size={25} />
-                </div>
-
-                <div className="support-row-text">
-                  <strong>Contact Support</strong>
-                  <small>Send us a message</small>
-                </div>
-
-                <span className="support-chevron">›</span>
-              </div>
-
-              <div className="support-row">
-                <div className="support-row-icon">
-                  <Icon type="chat" size={25} />
-                </div>
-
-                <div className="support-row-text">
-                  <strong>Live Chat</strong>
-                  <small>Chat with our support team</small>
-                </div>
-
-                <span className="support-chevron">›</span>
-              </div>
-
-              <div className="support-row">
-                <div className="support-row-icon">
-                  <Icon type="map" size={25} />
-                </div>
-
-                <div className="support-row-text">
-                  <strong>Visit our Help Center</strong>
-                  <small>Browse all articles</small>
-                </div>
-
-                <span className="support-chevron">›</span>
-              </div>
-
-            </section>
-
-            {/* QUOTE */}
-
-            <section className="quote-card">
-
-              <div className="quote-leaf">❧</div>
-
-              <blockquote>
-                “Questions lead
-                <br />
-                to deeper journeys.”
-              </blockquote>
-
-              <div className="quote-line" />
-
-              <div className="quote-words">
-                <span>DISCOVER</span>
-                <span>LEARN</span>
-                <span>EXPLORE</span>
-              </div>
-
-            </section>
-
-            {/* IMAGE CARD */}
-
-            <section className="explore-support-card">
-
-              <div className="explore-support-shade" />
-
-              <div className="explore-support-text">
-                <h3>
-                  Explore more.
-                  <br />
-                  We&apos;re here to help.
-                </h3>
-
-                <span />
-              </div>
-
-            </section>
-
-          </aside>
-
-        </div>
-
-      </main>
+      <HelpContent />
     </AppShell>
   );
 }

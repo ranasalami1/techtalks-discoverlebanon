@@ -1,265 +1,2370 @@
-import Image from "next/image";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
+"use client";
+
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import AppShell from "@/components/AppShell";
-import "./story.css";
+import { useSiteLanguage } from "@/components/SiteLanguage";
 
-const stories = [
+import {
+  CalendarDays,
+  LoaderCircle,
+  Search,
+  UserRound,
+  X,
+} from "lucide-react";
+
+import "./heritage.css";
+
+
+/* =====================================================
+   API
+===================================================== */
+
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000";
+
+
+/* =====================================================
+   TRANSLATIONS
+===================================================== */
+
+const pageCopy = {
+  en: {
+    heroLabel: "PEOPLE   PLACES   TRADITIONS",
+
+    title: "Heritage Stories",
+
+    subtitle:
+      "Real stories. Lasting heritage.",
+
+    description:
+      "Discover the rich history, vibrant traditions and inspiring people that make Lebanon unique.",
+
+    script1: "More",
+    script2: "than places.",
+    script3: "They are stories.",
+
+    all: "All Stories",
+    ancientHistory: "Ancient History",
+    traditionalLife: "Traditional Life",
+    artsCrafts: "Arts & Crafts",
+    architecture: "Architecture",
+    cuisine: "Cuisine",
+    people: "People",
+    festivals: "Festivals",
+
+    searchPlaceholder:
+      "Search heritage stories...",
+
+    readMore: "Read More",
+
+    loading:
+      "Loading heritage stories...",
+
+    error:
+      "Heritage stories are unavailable right now.",
+
+    noStories:
+      "No stories found",
+
+    noStoriesDescription:
+      "There are no heritage stories in this category yet.",
+
+    viewAll:
+      "View All Stories",
+
+    storyDetails:
+      "Heritage Story",
+
+    author:
+      "Author",
+
+    published:
+      "Published",
+
+    gallery:
+      "Gallery",
+
+    close:
+      "Close",
+
+    quote1:
+      "Every place in Lebanon has a story,",
+
+    quote2:
+      "and every story keeps a piece of us alive.",
+
+    story:
+      "story",
+
+    stories:
+      "stories",
+  },
+
+
+  fr: {
+    heroLabel:
+      "PEUPLES   LIEUX   TRADITIONS",
+
+    title:
+      "Histoires du patrimoine",
+
+    subtitle:
+      "Des histoires réelles. Un patrimoine vivant.",
+
+    description:
+      "Découvrez la riche histoire, les traditions vivantes et les personnes qui rendent le Liban unique.",
+
+    script1:
+      "Plus que",
+
+    script2:
+      "des lieux.",
+
+    script3:
+      "Ce sont des histoires.",
+
+    all:
+      "Toutes les histoires",
+
+    ancientHistory:
+      "Histoire ancienne",
+
+    traditionalLife:
+      "Vie traditionnelle",
+
+    artsCrafts:
+      "Arts et artisanat",
+
+    architecture:
+      "Architecture",
+
+    cuisine:
+      "Cuisine",
+
+    people:
+      "Personnes",
+
+    festivals:
+      "Festivals",
+
+    searchPlaceholder:
+      "Rechercher une histoire du patrimoine...",
+
+    readMore:
+      "Lire la suite",
+
+    loading:
+      "Chargement des histoires...",
+
+    error:
+      "Les histoires du patrimoine sont momentanément indisponibles.",
+
+    noStories:
+      "Aucune histoire trouvée",
+
+    noStoriesDescription:
+      "Aucune histoire n'est encore disponible dans cette catégorie.",
+
+    viewAll:
+      "Voir toutes les histoires",
+
+    storyDetails:
+      "Histoire du patrimoine",
+
+    author:
+      "Auteur",
+
+    published:
+      "Publié",
+
+    gallery:
+      "Galerie",
+
+    close:
+      "Fermer",
+
+    quote1:
+      "Chaque lieu au Liban possède une histoire,",
+
+    quote2:
+      "et chaque histoire garde une part de nous vivante.",
+
+    story:
+      "histoire",
+
+    stories:
+      "histoires",
+  },
+
+
+  ar: {
+    heroLabel:
+      "الناس   الأماكن   التقاليد",
+
+    title:
+      "حكايات التراث",
+
+    subtitle:
+      "حكايات حقيقية. تراث باقٍ.",
+
+    description:
+      "اكتشف تاريخ لبنان الغني وتقاليده المتنوعة والأشخاص الذين يجعلونه فريدًا.",
+
+    script1:
+      "أكثر",
+
+    script2:
+      "من أماكن.",
+
+    script3:
+      "إنها حكايات.",
+
+    all:
+      "كل الحكايات",
+
+    ancientHistory:
+      "التاريخ القديم",
+
+    traditionalLife:
+      "الحياة التقليدية",
+
+    artsCrafts:
+      "الفنون والحرف",
+
+    architecture:
+      "العمارة",
+
+    cuisine:
+      "المطبخ",
+
+    people:
+      "الناس",
+
+    festivals:
+      "المهرجانات",
+
+    searchPlaceholder:
+      "ابحث في حكايات التراث...",
+
+    readMore:
+      "اقرأ المزيد",
+
+    loading:
+      "جارٍ تحميل حكايات التراث...",
+
+    error:
+      "حكايات التراث غير متاحة حاليًا.",
+
+    noStories:
+      "لم يتم العثور على حكايات",
+
+    noStoriesDescription:
+      "لا توجد حكايات في هذه الفئة حتى الآن.",
+
+    viewAll:
+      "عرض كل الحكايات",
+
+    storyDetails:
+      "حكاية تراثية",
+
+    author:
+      "الكاتب",
+
+    published:
+      "نُشر",
+
+    gallery:
+      "الصور",
+
+    close:
+      "إغلاق",
+
+    quote1:
+      "لكل مكان في لبنان حكاية،",
+
+    quote2:
+      "وكل حكاية تُبقي جزءًا منا حيًا.",
+
+    story:
+      "حكاية",
+
+    stories:
+      "حكايات",
+  },
+};
+
+
+/* =====================================================
+   FILTERS
+===================================================== */
+
+const filters = [
   {
-    slug: "byblos",
-    image: "/images/byblos.jpg",
-    category: "ANCIENT HISTORY",
-    title: "Byblos: A Journey Through Time",
-    location: "Byblos, Lebanon",
-    intro:
-      "One of the world's oldest continuously inhabited cities, where civilizations left their mark.",
-    paragraphs: [
-      "For thousands of years, Byblos has stood along Lebanon's Mediterranean coast as a meeting point between cultures, travelers and civilizations.",
-      "Walking through its historic streets reveals layers of the past. Ancient ruins, stone walls, traditional houses and views of the old harbor all tell different chapters of the city's long story.",
-      "Byblos is more than an archaeological destination. It is a living city where history continues alongside everyday life, connecting Lebanon's past with the present.",
-    ],
-    quote:
-      "In Byblos, history is not hidden behind walls. It lives beside the sea.",
+    id: "all",
+    translation: "all",
   },
 
   {
-    slug: "keepers-of-tradition",
-    image: "/images/keepers.jpg",
-    category: "PEOPLE",
-    title: "The Keepers of Tradition",
-    location: "Lebanon",
-    intro:
-      "Meet the artisans, farmers and locals who keep Lebanon's heritage alive, generation after generation.",
-    paragraphs: [
-      "Across Lebanon, traditions survive because people continue to practice, teach and share them.",
-      "Artisans work with skills learned from previous generations, while farmers preserve knowledge connected to the land, seasons and local communities.",
-      "These traditions are not simply memories of the past. Through the people who continue them, they remain part of Lebanon's living heritage.",
-    ],
-    quote:
-      "Heritage survives when knowledge passes from one pair of hands to another.",
+    id: "ancient-history",
+    translation: "ancientHistory",
   },
 
   {
-    slug: "villages-on-the-mountain",
-    image: "/images/villages.jpg",
-    category: "ARCHITECTURE",
-    title: "The Villages on the Mountain",
-    location: "Mount Lebanon",
-    intro:
-      "Stone houses, narrow streets and timeless landscapes that tell stories of resilience and belonging.",
-    paragraphs: [
-      "Lebanon's mountain villages have developed around landscapes that shaped how communities lived, worked and built their homes.",
-      "Stone houses, tiled roofs, arches and narrow streets became characteristic features of many villages across the mountains.",
-      "Today these villages preserve architectural details and community traditions that connect modern Lebanon with generations that came before.",
-    ],
-    quote:
-      "Every stone house carries traces of the people who once called it home.",
+    id: "traditional-life",
+    translation: "traditionalLife",
   },
 
   {
-    slug: "taste-of-heritage",
-    image: "/images/cuisine.jpg",
-    category: "CUISINE",
-    title: "A Taste of Heritage",
-    location: "Lebanon",
-    intro:
-      "From traditional recipes to local ingredients, Lebanese cuisine is a story of land, people and culture.",
-    paragraphs: [
-      "Lebanese cuisine has developed through generations of family cooking, regional ingredients and traditions centered around sharing food.",
-      "Recipes often reflect the landscapes where communities live, from mountain villages and fertile valleys to towns along the Mediterranean coast.",
-      "More than a meal, food brings families and communities together. Recipes passed from one generation to another preserve memories as well as flavors.",
-    ],
-    quote:
-      "A recipe can carry the memory of a family for generations.",
+    id: "arts-crafts",
+    translation: "artsCrafts",
   },
 
   {
-    slug: "festivals-that-unite",
-    image: "/images/festivals.jpg",
-    category: "TRADITIONS",
-    title: "Festivals That Unite",
-    location: "Lebanon",
-    intro:
-      "Celebrations, music and rituals that reflect the spirit and diversity of Lebanon.",
-    paragraphs: [
-      "Throughout Lebanon, festivals and local celebrations bring communities together through music, dance, food and shared traditions.",
-      "Some celebrations have deep historical roots, while others have developed into modern cultural events that welcome visitors from across the country.",
-      "Together they create spaces where traditions can be celebrated, remembered and shared with younger generations.",
-    ],
-    quote:
-      "A celebration becomes heritage when a community continues to share it.",
+    id: "architecture",
+    translation: "architecture",
   },
 
   {
-    slug: "sacred-landscapes",
-    image: "/images/landscapes.jpg",
-    category: "NATURE & HERITAGE",
-    title: "Sacred Landscapes",
-    location: "Lebanon",
-    intro:
-      "Forests, valleys and natural wonders that have inspired generations and shaped our history.",
-    paragraphs: [
-      "Lebanon's natural landscapes have always influenced the communities that developed around them.",
-      "Mountains, cedar forests, valleys and rivers provided resources, shaped travel routes and became part of local stories and traditions.",
-      "Protecting these landscapes means preserving not only nature, but also the cultural memories and identities connected to them.",
-    ],
-    quote:
-      "The landscape remembers the generations that learned to live within it.",
+    id: "cuisine",
+    translation: "cuisine",
   },
 
   {
-    slug: "hands-that-create",
-    image: "/images/crafts.jpg",
-    category: "ARTS & CRAFTS",
-    title: "Hands That Create",
-    location: "Lebanon",
-    intro:
-      "The story behind Lebanon's traditional crafts — from pottery to weaving, a legacy of skill and soul.",
-    paragraphs: [
-      "Traditional craftsmanship reflects generations of knowledge, patience and creativity.",
-      "Pottery, weaving, woodwork and other crafts developed through techniques learned through practice and passed between generations.",
-      "Every handmade object carries something beyond its practical purpose: the knowledge of the artisan and a connection to the community where it was created.",
-    ],
-    quote:
-      "What the hands remember can keep centuries of knowledge alive.",
+    id: "people",
+    translation: "people",
   },
 
   {
-    slug: "stories-from-the-land",
-    image: "/images/stories-land.jpg",
-    category: "PEOPLE",
-    title: "Stories from the Land",
-    location: "Lebanon",
-    intro:
-      "Personal stories of courage, belonging and love for a homeland that never stops inspiring.",
-    paragraphs: [
-      "Lebanon's heritage is not found only in monuments, landscapes or historic buildings. It also lives in people's memories.",
-      "Stories shared by families and communities preserve experiences of villages, neighborhoods, traditions and everyday life.",
-      "Together, these personal memories create a human record of Lebanon and help future generations understand their connection to the land.",
-    ],
-    quote:
-      "Places become part of us through the stories we carry from them.",
+    id: "festivals",
+    translation: "festivals",
   },
 ];
 
-export default async function HeritageStoryPage({ params }) {
-  const { slug } = await params;
 
-  const story = stories.find(
-    (item) => item.slug === slug
-  );
+/* =====================================================
+   READ API LIST
+===================================================== */
 
-  if (!story) {
-    notFound();
+function readStories(payload) {
+  if (
+    Array.isArray(payload)
+  ) {
+    return payload;
   }
 
+  if (
+    Array.isArray(
+      payload?.data?.stories
+    )
+  ) {
+    return payload.data.stories;
+  }
+
+  if (
+    Array.isArray(
+      payload?.data?.items
+    )
+  ) {
+    return payload.data.items;
+  }
+
+  if (
+    Array.isArray(
+      payload?.stories
+    )
+  ) {
+    return payload.stories;
+  }
+
+  if (
+    Array.isArray(
+      payload?.items
+    )
+  ) {
+    return payload.items;
+  }
+
+  if (
+    Array.isArray(
+      payload?.data
+    )
+  ) {
+    return payload.data;
+  }
+
+  return [];
+}
+
+
+/* =====================================================
+   READ STORY DETAILS
+===================================================== */
+
+function readStory(payload) {
+  if (
+    payload?.data?.story
+  ) {
+    return payload.data.story;
+  }
+
+  if (
+    payload?.story
+  ) {
+    return payload.story;
+  }
+
+  if (
+    payload?.data
+  ) {
+    return payload.data;
+  }
+
+  return payload;
+}
+
+
+/* =====================================================
+   IMAGE
+===================================================== */
+
+function resolveImage(value) {
+  if (!value) {
+    return "/images/heritage-hero.jpg";
+  }
+
+  if (
+    value.startsWith("http://") ||
+    value.startsWith("https://") ||
+    value.startsWith("/")
+  ) {
+    return value;
+  }
+
+  return `${API_URL}/${value}`;
+}
+
+
+/* =====================================================
+   CATEGORY
+
+   Category comes directly from PostgreSQL.
+===================================================== */
+
+function getStoryCategories(story) {
+  const category =
+    String(
+      story?.category || ""
+    )
+      .trim()
+      .toLowerCase();
+
+  if (!category) {
+    return [];
+  }
+
+  return [category];
+}
+
+
+/* =====================================================
+   DISPLAY CATEGORY LABEL
+===================================================== */
+
+function displayCategory(
+  categories,
+  t
+) {
+  const category =
+    categories[0];
+
+  const labels = {
+    "ancient-history":
+      t.ancientHistory,
+
+    "traditional-life":
+      t.traditionalLife,
+
+    "arts-crafts":
+      t.artsCrafts,
+
+    architecture:
+      t.architecture,
+
+    cuisine:
+      t.cuisine,
+
+    people:
+      t.people,
+
+    festivals:
+      t.festivals,
+  };
+
+
   return (
-    <AppShell>
-      <main className="story-page">
+    labels[category] ||
+    t.storyDetails
+  );
+}
 
-        {/* HERO */}
 
-        <section className="story-hero">
-          <Image
-            src={story.image}
-            alt={story.title}
-            fill
-            priority
-            sizes="100vw"
-            className="story-hero-image"
+/* =====================================================
+   GALLERY IMAGES
+===================================================== */
+
+function normalizeImages(story) {
+  if (
+    !Array.isArray(
+      story?.images
+    )
+  ) {
+    return [];
+  }
+
+
+  return story.images
+    .map(
+      (
+        image,
+        index
+      ) => {
+
+        if (
+          typeof image ===
+          "string"
+        ) {
+          return {
+            id: index,
+
+            url:
+              resolveImage(
+                image
+              ),
+
+            caption:
+              "",
+          };
+        }
+
+
+        return {
+          id:
+            image?.image_id ??
+            image?.id ??
+            index,
+
+          url:
+            resolveImage(
+              image?.image_url ??
+              image?.url
+            ),
+
+          caption:
+            image?.caption ??
+            image?.alt_text ??
+            "",
+        };
+      }
+    )
+
+    .filter(
+      (image) =>
+        Boolean(
+          image.url
+        )
+    );
+}
+
+
+/* =====================================================
+   NORMALIZE STORY
+===================================================== */
+
+function normalizeStory(story) {
+  const id =
+    story?.story_id ??
+    story?.id;
+
+
+  const categories =
+    getStoryCategories(
+      story
+    );
+
+
+  const searchText = [
+    story?.title,
+    story?.summary,
+    story?.content,
+    story?.author_name,
+    story?.category,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+
+  return {
+    id,
+
+    title:
+      story?.title ||
+      "Untitled Story",
+
+    summary:
+      story?.summary ||
+      "",
+
+    content:
+      story?.content ||
+      "",
+
+    author:
+      story?.author_name ||
+      "",
+
+    coverImage:
+      resolveImage(
+        story?.cover_image
+      ),
+
+    publishedAt:
+      story?.published_at ||
+      null,
+
+    categories,
+
+    images:
+      normalizeImages(
+        story
+      ),
+
+    searchText,
+
+    raw:
+      story,
+  };
+}
+
+
+/* =====================================================
+   FETCH ALL STORIES
+===================================================== */
+
+async function fetchAllStories(
+  signal
+) {
+  const stories = [];
+
+  const seen =
+    new Set();
+
+
+  for (
+    let page = 1;
+    page <= 100;
+    page += 1
+  ) {
+
+    const response =
+      await fetch(
+        `${API_URL}/api/heritage-stories?page=${page}&per_page=50`,
+        {
+          signal,
+        }
+      );
+
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+    }
+
+
+    const payload =
+      await response.json();
+
+
+    const rows =
+      readStories(
+        payload
+      );
+
+
+    for (
+      const story of rows
+    ) {
+
+      const id =
+        story?.story_id ??
+        story?.id ??
+        story?.title;
+
+
+      if (
+        !seen.has(id)
+      ) {
+        seen.add(id);
+
+        stories.push(
+          story
+        );
+      }
+    }
+
+
+    if (
+      rows.length < 50
+    ) {
+      break;
+    }
+  }
+
+
+  return stories;
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function formatDate(
+  value,
+  language
+) {
+  if (!value) {
+    return "";
+  }
+
+
+  const date =
+    new Date(value);
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return value;
+  }
+
+
+  const locales = {
+    en: "en-US",
+    fr: "fr-FR",
+    ar: "ar-LB",
+  };
+
+
+  return date.toLocaleDateString(
+    locales[language] ||
+    "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
+}
+
+
+/* =====================================================
+   STORY CARD
+===================================================== */
+
+function StoryCard({
+  story,
+  onOpen,
+  t,
+}) {
+  const [
+    imageError,
+    setImageError,
+  ] =
+    useState(false);
+
+
+  const image =
+    imageError
+      ? "/images/heritage-hero.jpg"
+      : story.coverImage;
+
+
+  return (
+    <article
+      className="heritage-card"
+    >
+
+      {/* IMAGE */}
+
+      <div
+        className="heritage-card-image"
+
+        style={{
+          backgroundImage:
+            `url("${image}")`,
+        }}
+      >
+
+        <img
+          src={image}
+
+          alt=""
+
+          aria-hidden="true"
+
+          onError={() =>
+            setImageError(
+              true
+            )
+          }
+
+          style={{
+            display: "none",
+          }}
+        />
+
+      </div>
+
+
+      {/* BODY */}
+
+      <div
+        className="heritage-card-body"
+      >
+
+        <span
+          className="story-category"
+        >
+          {
+            displayCategory(
+              story.categories,
+              t
+            )
+          }
+        </span>
+
+
+        <h2>
+          {
+            story.title
+          }
+        </h2>
+
+
+        <p>
+          {
+            story.summary
+          }
+        </p>
+
+
+        <button
+          type="button"
+
+          onClick={() =>
+            onOpen(
+              story
+            )
+          }
+
+          className="
+            inline-flex
+            items-center
+            gap-2
+            border-b
+            border-[#8b795a]
+            bg-transparent
+            text-[11px]
+            text-[#493f32]
+            transition
+
+            hover:text-[#776247]
+          "
+        >
+          {
+            t.readMore
+          }
+
+          <span>
+            →
+          </span>
+        </button>
+
+      </div>
+
+    </article>
+  );
+}
+
+
+/* =====================================================
+   PAGE CONTENT
+===================================================== */
+
+function HeritageContent() {
+  const {
+    language,
+  } =
+    useSiteLanguage();
+
+
+  const t =
+    pageCopy[language] ||
+    pageCopy.en;
+
+
+  const [
+    stories,
+    setStories,
+  ] =
+    useState([]);
+
+
+  const [
+    activeFilter,
+    setActiveFilter,
+  ] =
+    useState("all");
+
+
+  const [
+    query,
+    setQuery,
+  ] =
+    useState("");
+
+
+  const [
+    loading,
+    setLoading,
+  ] =
+    useState(true);
+
+
+  const [
+    error,
+    setError,
+  ] =
+    useState("");
+
+
+  const [
+    selectedStory,
+    setSelectedStory,
+  ] =
+    useState(null);
+
+
+  const [
+    loadingDetails,
+    setLoadingDetails,
+  ] =
+    useState(false);
+
+
+  /* =====================================================
+     LOAD STORIES
+  ===================================================== */
+
+  useEffect(() => {
+
+    const controller =
+      new AbortController();
+
+
+    let mounted =
+      true;
+
+
+    async function loadStories() {
+
+      setLoading(
+        true
+      );
+
+      setError(
+        ""
+      );
+
+
+      try {
+
+        const rows =
+          await fetchAllStories(
+            controller.signal
+          );
+
+
+        if (
+          !mounted
+        ) {
+          return;
+        }
+
+
+        setStories(
+          rows.map(
+            normalizeStory
+          )
+        );
+
+      }
+
+      catch (err) {
+
+        if (
+          err?.name ===
+          "AbortError"
+        ) {
+          return;
+        }
+
+
+        if (
+          mounted
+        ) {
+
+          setError(
+            err?.message ||
+            "Unable to load stories."
+          );
+
+        }
+
+      }
+
+      finally {
+
+        if (
+          mounted
+        ) {
+          setLoading(
+            false
+          );
+        }
+
+      }
+
+    }
+
+
+    loadStories();
+
+
+    return () => {
+
+      mounted =
+        false;
+
+      controller.abort();
+
+    };
+
+  }, []);
+
+
+  /* =====================================================
+     ESCAPE CLOSE MODAL
+  ===================================================== */
+
+  useEffect(() => {
+
+    if (
+      !selectedStory
+    ) {
+      return;
+    }
+
+
+    const handleKeyDown =
+      (event) => {
+
+        if (
+          event.key ===
+          "Escape"
+        ) {
+          setSelectedStory(
+            null
+          );
+        }
+
+      };
+
+
+    document.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+
+    return () => {
+
+      document.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+
+    };
+
+  }, [
+    selectedStory,
+  ]);
+
+
+  /* =====================================================
+     FILTER + SEARCH
+  ===================================================== */
+
+  const normalizedQuery =
+    query
+      .trim()
+      .toLowerCase();
+
+
+  const filteredStories =
+    useMemo(() => {
+
+      return stories.filter(
+        (story) => {
+
+          const categoryMatch =
+            activeFilter ===
+              "all" ||
+            story.categories.includes(
+              activeFilter
+            );
+
+
+          const searchMatch =
+            !normalizedQuery ||
+            story.searchText.includes(
+              normalizedQuery
+            );
+
+
+          return (
+            categoryMatch &&
+            searchMatch
+          );
+
+        }
+      );
+
+    }, [
+      stories,
+      activeFilter,
+      normalizedQuery,
+    ]);
+
+
+  /* =====================================================
+     OPEN STORY
+  ===================================================== */
+
+  async function openStory(
+    story
+  ) {
+
+    setSelectedStory(
+      story
+    );
+
+
+    if (
+      !story.id
+    ) {
+      return;
+    }
+
+
+    setLoadingDetails(
+      true
+    );
+
+
+    try {
+
+      const response =
+        await fetch(
+          `${API_URL}/api/heritage-stories/${story.id}`
+        );
+
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          `HTTP ${response.status}`
+        );
+      }
+
+
+      const payload =
+        await response.json();
+
+
+      const detailedStory =
+        normalizeStory(
+          readStory(
+            payload
+          )
+        );
+
+
+      setSelectedStory(
+        detailedStory
+      );
+
+    }
+
+    catch {
+
+      /*
+        Keep the story card data
+        visible if detail loading fails.
+      */
+
+    }
+
+    finally {
+
+      setLoadingDetails(
+        false
+      );
+
+    }
+
+  }
+
+
+  /* =====================================================
+     RENDER
+  ===================================================== */
+
+  return (
+
+    <main
+      className="heritage-page"
+
+      lang={
+        language
+      }
+
+      dir={
+        language === "ar"
+          ? "rtl"
+          : "ltr"
+      }
+    >
+
+      {/* =================================================
+          HERO
+      ================================================= */}
+
+      <section
+        className="heritage-hero"
+      >
+
+        <div
+          className="heritage-hero-overlay"
+        />
+
+
+        <div
+          className="heritage-hero-content"
+        >
+
+          <span
+            className="heritage-label"
+          >
+            {
+              t.heroLabel
+            }
+          </span>
+
+
+          <h1>
+            {
+              t.title
+            }
+          </h1>
+
+
+          <h3>
+            {
+              t.subtitle
+            }
+          </h3>
+
+
+          <p>
+            {
+              t.description
+            }
+          </p>
+
+        </div>
+
+
+        {/* SCRIPT */}
+
+        <div
+          className="heritage-script"
+        >
+
+          {
+            t.script1
+          }
+
+          <br />
+
+          {
+            t.script2
+          }
+
+          <br />
+
+          <span>
+            {
+              t.script3
+            }
+          </span>
+
+        </div>
+
+      </section>
+
+
+      {/* =================================================
+          CONTENT
+      ================================================= */}
+
+      <section
+        className="heritage-content"
+      >
+
+        {/* =================================================
+            FILTERS
+        ================================================= */}
+
+        <div
+          className="heritage-filters"
+
+          role="tablist"
+
+          aria-label={
+            t.title
+          }
+        >
+
+          {
+            filters.map(
+              (filter) => {
+
+                const active =
+                  activeFilter ===
+                  filter.id;
+
+
+                return (
+
+                  <button
+                    key={
+                      filter.id
+                    }
+
+                    type="button"
+
+                    role="tab"
+
+                    aria-selected={
+                      active
+                    }
+
+                    className={
+                      active
+                        ? "filter-active"
+                        : ""
+                    }
+
+                    onClick={() =>
+                      setActiveFilter(
+                        filter.id
+                      )
+                    }
+                  >
+
+                    {
+                      t[
+                        filter.translation
+                      ]
+                    }
+
+                  </button>
+
+                );
+
+              }
+            )
+          }
+
+        </div>
+
+
+        {/* =================================================
+            SEARCH
+        ================================================= */}
+
+        <div
+          className="
+            relative
+            mx-auto
+            mb-4
+            mt-3
+            max-w-[620px]
+          "
+        >
+
+          <Search
+            size={17}
+
+            className={`
+              absolute
+              top-1/2
+              -translate-y-1/2
+              text-[#7a766d]
+
+              ${
+                language === "ar"
+                  ? "right-4"
+                  : "left-4"
+              }
+            `}
           />
 
-          <div className="story-hero-overlay" />
 
-          <Link
-            href="/heritage"
-            className="story-back"
-          >
-            <ArrowLeft size={14} />
-            Heritage Stories
-          </Link>
+          <input
+            type="search"
 
-          <div className="story-hero-content">
-            <span className="story-hero-category">
-              {story.category}
-            </span>
+            value={
+              query
+            }
 
-            <h1>{story.title}</h1>
+            placeholder={
+              t.searchPlaceholder
+            }
 
-            <div className="story-location">
-              <MapPin size={13} />
-              {story.location}
-            </div>
-          </div>
+            onChange={(
+              event
+            ) => {
 
-          <div className="story-script">
-            Every place
-            <br />
-            has a story.
-          </div>
-        </section>
+              setQuery(
+                event.target.value
+              );
 
-        {/* ARTICLE */}
+            }}
 
-        <section className="story-content">
+            className={`
+              h-11
+              w-full
+              rounded-xl
+              border
+              border-[#ded9d0]
+              bg-white
+              text-sm
+              outline-none
+              transition
 
-          <article className="story-article">
+              focus:border-[#7a8266]
+              focus:ring-2
+              focus:ring-[#7a8266]/20
 
-            <span className="story-small-title">
-              DISCOVER THE STORY
-            </span>
+              ${
+                language === "ar"
+                  ? "pr-11 pl-11"
+                  : "pl-11 pr-11"
+              }
+            `}
+          />
 
-            <h2>{story.intro}</h2>
 
-            <div className="story-gold-line" />
+          {
+            query && (
 
-            {story.paragraphs.map((paragraph) => (
-              <p key={paragraph}>
-                {paragraph}
-              </p>
-            ))}
+              <button
+                type="button"
 
-            <blockquote>
-              “{story.quote}”
-            </blockquote>
+                aria-label={
+                  t.close
+                }
 
-          </article>
+                onClick={() =>
+                  setQuery("")
+                }
 
-          {/* SIDE CARD */}
+                className={`
+                  absolute
+                  top-1/2
+                  -translate-y-1/2
+                  rounded-full
+                  p-1
+                  text-[#777]
 
-          <aside className="story-aside">
+                  hover:bg-[#eee]
 
-            <span className="story-aside-label">
-              HERITAGE STORY
-            </span>
+                  ${
+                    language === "ar"
+                      ? "left-4"
+                      : "right-4"
+                  }
+                `}
+              >
+                <X
+                  size={15}
+                />
+              </button>
 
-            <h3>{story.title}</h3>
+            )
+          }
 
-            <div className="story-aside-row">
-              <MapPin size={15} />
-              <div>
-                <small>LOCATION</small>
-                <span>{story.location}</span>
+        </div>
+
+
+        {/* =================================================
+            RESULT COUNT
+        ================================================= */}
+
+        {
+          !loading &&
+          !error && (
+
+            <p
+              className="
+                mb-3
+                text-xs
+                text-[#777168]
+              "
+            >
+
+              {
+                filteredStories.length
+              }
+
+              {" "}
+
+              {
+                filteredStories.length ===
+                1
+
+                  ? t.story
+
+                  : t.stories
+              }
+
+            </p>
+
+          )
+        }
+
+
+        {/* =================================================
+            LOADING
+        ================================================= */}
+
+        {
+          loading && (
+
+            <div
+              className="
+                flex
+                min-h-[300px]
+                items-center
+                justify-center
+              "
+            >
+
+              <div
+                className="
+                  text-center
+                  text-[#68675f]
+                "
+              >
+
+                <LoaderCircle
+                  size={30}
+
+                  className="
+                    mx-auto
+                    animate-spin
+                  "
+                />
+
+
+                <p
+                  className="
+                    mt-3
+                    text-sm
+                  "
+                >
+                  {
+                    t.loading
+                  }
+                </p>
+
               </div>
+
             </div>
 
-            <div className="story-aside-category">
-              <small>CATEGORY</small>
-              <span>{story.category}</span>
+          )
+        }
+
+
+        {/* =================================================
+            ERROR
+        ================================================= */}
+
+        {
+          !loading &&
+          error && (
+
+            <div
+              className="
+                rounded-xl
+                border
+                border-red-200
+                bg-red-50
+                px-6
+                py-12
+                text-center
+                text-sm
+                text-red-700
+              "
+            >
+
+              {
+                t.error
+              }
+
+
+              <div
+                className="
+                  mt-2
+                  text-xs
+                  opacity-70
+                "
+              >
+                {
+                  error
+                }
+              </div>
+
             </div>
 
-            <Link href="/heritage">
-              Explore More Stories
-              <ArrowRight size={14} />
-            </Link>
+          )
+        }
 
-          </aside>
+
+        {/* =================================================
+            STORY GRID
+        ================================================= */}
+
+        {
+          !loading &&
+          !error &&
+          filteredStories.length >
+          0 && (
+
+            <div
+              className="heritage-grid"
+            >
+
+              {
+                filteredStories.map(
+                  (story) => (
+
+                    <StoryCard
+                      key={
+                        story.id ||
+                        story.title
+                      }
+
+                      story={
+                        story
+                      }
+
+                      onOpen={
+                        openStory
+                      }
+
+                      t={
+                        t
+                      }
+                    />
+
+                  )
+                )
+              }
+
+            </div>
+
+          )
+        }
+
+
+        {/* =================================================
+            EMPTY
+        ================================================= */}
+
+        {
+          !loading &&
+          !error &&
+          filteredStories.length ===
+          0 && (
+
+            <div
+              className="heritage-empty"
+            >
+
+              <h2>
+                {
+                  t.noStories
+                }
+              </h2>
+
+
+              <p>
+                {
+                  t.noStoriesDescription
+                }
+              </p>
+
+
+              <button
+                type="button"
+
+                onClick={() => {
+
+                  setActiveFilter(
+                    "all"
+                  );
+
+                  setQuery(
+                    ""
+                  );
+
+                }}
+              >
+                {
+                  t.viewAll
+                }
+              </button>
+
+            </div>
+
+          )
+        }
+
+
+        {/* =================================================
+            BOTTOM BANNER
+        ================================================= */}
+
+        <section
+          className="heritage-bottom-banner"
+        >
+
+          {/* LEAVES */}
+
+          <div
+            className="heritage-leaves"
+
+            aria-hidden="true"
+          >
+
+            <span
+              className="leaf-stem"
+            />
+
+            <span
+              className="leaf leaf-1"
+            />
+
+            <span
+              className="leaf leaf-2"
+            />
+
+            <span
+              className="leaf leaf-3"
+            />
+
+            <span
+              className="leaf leaf-4"
+            />
+
+          </div>
+
+
+          {/* QUOTE */}
+
+          <div
+            className="heritage-bottom-quote"
+          >
+
+            <p>
+
+              “
+              {
+                t.quote1
+              }
+
+              <br />
+
+              {
+                t.quote2
+              }
+              ”
+
+            </p>
+
+            <span />
+
+          </div>
+
+
+          {/* WORDS */}
+
+          <div
+            className="heritage-bottom-art"
+          >
+
+            <div
+              className="heritage-bottom-words"
+            >
+
+              <span>
+                PLACES
+              </span>
+
+              <span>
+                PEOPLE
+              </span>
+
+              <span>
+                STORIES
+              </span>
+
+              <span>
+                LEBANON
+              </span>
+
+            </div>
+
+          </div>
 
         </section>
 
-      </main>
+      </section>
+
+
+      {/* =================================================
+          STORY DETAILS MODAL
+      ================================================= */}
+
+      {
+        selectedStory && (
+
+          <div
+            className="
+              fixed
+              inset-0
+              z-[2500]
+              flex
+              items-center
+              justify-center
+              bg-[#24231f]/60
+              p-3
+              backdrop-blur-[2px]
+
+              sm:p-5
+            "
+
+            onClick={() =>
+              setSelectedStory(
+                null
+              )
+            }
+          >
+
+            <article
+              role="dialog"
+
+              aria-modal="true"
+
+              aria-labelledby="heritage-story-title"
+
+              onClick={(
+                event
+              ) =>
+                event.stopPropagation()
+              }
+
+              className="
+                flex
+                max-h-[92vh]
+                w-full
+                max-w-[760px]
+                flex-col
+                overflow-hidden
+                rounded-2xl
+                border
+                border-[#ddd6ca]
+                bg-[#fbf8f2]
+                shadow-2xl
+              "
+            >
+
+              {/* MODAL HEADER */}
+
+              <div
+                className="
+                  flex
+                  shrink-0
+                  items-start
+                  justify-between
+                  gap-4
+                  border-b
+                  border-[#e2ddd3]
+                  p-5
+                "
+              >
+
+                <div>
+
+                  <p
+                    className="
+                      text-[10px]
+                      uppercase
+                      tracking-[0.2em]
+                      text-[#987e54]
+                    "
+                  >
+
+                    {
+                      displayCategory(
+                        selectedStory.categories,
+                        t
+                      )
+                    }
+
+                  </p>
+
+
+                  <h2
+                    id="heritage-story-title"
+
+                    className="
+                      mt-1
+                      font-serif
+                      text-3xl
+                      leading-tight
+                      text-[#292720]
+                    "
+                  >
+
+                    {
+                      selectedStory.title
+                    }
+
+                  </h2>
+
+                </div>
+
+
+                <button
+                  type="button"
+
+                  aria-label={
+                    t.close
+                  }
+
+                  onClick={() =>
+                    setSelectedStory(
+                      null
+                    )
+                  }
+
+                  className="
+                    flex
+                    h-8
+                    w-8
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-[#eee8df]
+                    text-[#5d5951]
+
+                    hover:bg-[#dfd8cd]
+                  "
+                >
+                  <X
+                    size={17}
+                  />
+                </button>
+
+              </div>
+
+
+              {/* MODAL CONTENT */}
+
+              <div
+                className="
+                  min-h-0
+                  flex-1
+                  overflow-y-auto
+                "
+              >
+
+                {/* COVER IMAGE */}
+
+                <img
+                  src={
+                    selectedStory.coverImage
+                  }
+
+                  alt={
+                    selectedStory.title
+                  }
+
+                  className="
+                    h-[250px]
+                    w-full
+                    object-cover
+
+                    sm:h-[320px]
+                  "
+
+                  onError={(
+                    event
+                  ) => {
+
+                    event.currentTarget.src =
+                      "/images/heritage-hero.jpg";
+
+                  }}
+                />
+
+
+                <div
+                  className="
+                    p-5
+
+                    sm:p-6
+                  "
+                >
+
+                  {/* DETAIL LOADING */}
+
+                  {
+                    loadingDetails && (
+
+                      <div
+                        className="
+                          mb-4
+                          flex
+                          items-center
+                          gap-2
+                          text-xs
+                          text-[#777]
+                        "
+                      >
+
+                        <LoaderCircle
+                          size={14}
+
+                          className="
+                            animate-spin
+                          "
+                        />
+
+                        {
+                          t.loading
+                        }
+
+                      </div>
+
+                    )
+                  }
+
+
+                  {/* META */}
+
+                  <div
+                    className="
+                      flex
+                      flex-wrap
+                      gap-2
+                    "
+                  >
+
+                    {
+                      selectedStory.author && (
+
+                        <span
+                          className="
+                            inline-flex
+                            items-center
+                            gap-1.5
+                            rounded-full
+                            bg-[#ece8df]
+                            px-3
+                            py-1.5
+                            text-xs
+                            text-[#645f55]
+                          "
+                        >
+
+                          <UserRound
+                            size={13}
+                          />
+
+                          {
+                            selectedStory.author
+                          }
+
+                        </span>
+
+                      )
+                    }
+
+
+                    {
+                      selectedStory.publishedAt && (
+
+                        <span
+                          className="
+                            inline-flex
+                            items-center
+                            gap-1.5
+                            rounded-full
+                            bg-[#e8ebdf]
+                            px-3
+                            py-1.5
+                            text-xs
+                            text-[#5c654d]
+                          "
+                        >
+
+                          <CalendarDays
+                            size={13}
+                          />
+
+                          {
+                            formatDate(
+                              selectedStory.publishedAt,
+                              language
+                            )
+                          }
+
+                        </span>
+
+                      )
+                    }
+
+                  </div>
+
+
+                  {/* SUMMARY */}
+
+                  {
+                    selectedStory.summary && (
+
+                      <p
+                        className="
+                          mt-5
+                          font-serif
+                          text-lg
+                          italic
+                          leading-7
+                          text-[#575248]
+                        "
+                      >
+                        {
+                          selectedStory.summary
+                        }
+                      </p>
+
+                    )
+                  }
+
+
+                  {/* FULL CONTENT */}
+
+                  {
+                    selectedStory.content && (
+
+                      <div
+                        className="
+                          mt-5
+                          whitespace-pre-line
+                          text-sm
+                          leading-7
+                          text-[#504e48]
+                        "
+                      >
+                        {
+                          selectedStory.content
+                        }
+                      </div>
+
+                    )
+                  }
+
+
+                  {/* =================================================
+                      GALLERY
+                  ================================================= */}
+
+                  {
+                    selectedStory.images.length >
+                    0 && (
+
+                      <section
+                        className="
+                          mt-7
+                          border-t
+                          border-[#e1dcd2]
+                          pt-5
+                        "
+                      >
+
+                        <h3
+                          className="
+                            font-serif
+                            text-xl
+                            text-[#332f29]
+                          "
+                        >
+                          {
+                            t.gallery
+                          }
+                        </h3>
+
+
+                        <div
+                          className="
+                            mt-3
+                            grid
+                            gap-3
+
+                            sm:grid-cols-2
+                          "
+                        >
+
+                          {
+                            selectedStory.images.map(
+                              (image) => (
+
+                                <figure
+                                  key={
+                                    image.id
+                                  }
+
+                                  className="
+                                    overflow-hidden
+                                    rounded-xl
+                                    border
+                                    border-[#ddd8ce]
+                                    bg-white
+                                  "
+                                >
+
+                                  <img
+                                    src={
+                                      image.url
+                                    }
+
+                                    alt={
+                                      image.caption ||
+                                      selectedStory.title
+                                    }
+
+                                    className="
+                                      h-[190px]
+                                      w-full
+                                      object-cover
+                                    "
+                                  />
+
+
+                                  {
+                                    image.caption && (
+
+                                      <figcaption
+                                        className="
+                                          px-3
+                                          py-2
+                                          text-xs
+                                          text-[#716c63]
+                                        "
+                                      >
+                                        {
+                                          image.caption
+                                        }
+                                      </figcaption>
+
+                                    )
+                                  }
+
+                                </figure>
+
+                              )
+                            )
+                          }
+
+                        </div>
+
+                      </section>
+
+                    )
+                  }
+
+                </div>
+
+              </div>
+
+            </article>
+
+          </div>
+
+        )
+      }
+
+    </main>
+  );
+}
+
+
+/* =====================================================
+   EXPORT
+===================================================== */
+
+export default function HeritagePage() {
+  return (
+    <AppShell>
+
+      <HeritageContent />
+
     </AppShell>
   );
 }

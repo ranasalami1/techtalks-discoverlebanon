@@ -24,6 +24,15 @@ class HeritageStory(db.Model):
         nullable=False
     )
 
+    # =====================================================
+    # STORY CATEGORY
+    # =====================================================
+
+    category = db.Column(
+        db.String(50),
+        nullable=True
+    )
+
     author_name = db.Column(
         db.String(100),
         nullable=True
@@ -52,7 +61,9 @@ class HeritageStory(db.Model):
         nullable=False
     )
 
-    # Relationships
+    # =====================================================
+    # RELATIONSHIPS
+    # =====================================================
 
     images = db.relationship(
         "HeritageStoryImage",

@@ -134,22 +134,64 @@ def serialize_place_summary(place):
 
 
 def serialize_place_details(place):
-    # Shape used by the Place Details page: the summary plus the full info and gallery
-    images = sorted(place.images, key=lambda image: (image.display_order, image.image_id))
+    # Shape used by the Place Details page:
+    # summary + full information + research data + gallery
+
+    images = sorted(
+        place.images,
+        key=lambda image: (
+            image.display_order,
+            image.image_id
+        )
+    )
 
     return {
         **serialize_place_summary(place),
+
+        # Basic details
         "description": place.description,
         "address": place.address,
         "opening_hours": place.opening_hours,
         "entrance_fee": _to_float(place.entrance_fee),
         "website": place.website,
         "phone": place.phone,
+
+        # Research fields
+        "venue_type": place.venue_type,
+        "category_group": place.category_group,
+        "status": place.status,
+
+        "rating": _to_float(place.rating),
+        "review_count": place.review_count,
+
+        "public_access": place.public_access,
+        "confidence": place.confidence,
+        "locality_match": place.locality_match,
+
+        "evidence_source": place.evidence_source,
+        "source_url": place.source_url,
+        "map_url": place.map_url,
+
+        "notes": place.notes,
+
+        "last_checked": (
+            place.last_checked.isoformat()
+            if place.last_checked is not None
+            else None
+        ),
+
+        # Gallery
         "images": [
-            {"url": image.image_url, "alt_text": image.alt_text}
+            {
+                "url": image.image_url,
+                "alt_text": image.alt_text
+            }
             for image in images
         ]
     }
+  
+
+
 
 
 def _to_float(value):
