@@ -1,646 +1,2623 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
 import AppShell from "@/components/AppShell";
+import { useSiteLanguage } from "@/components/SiteLanguage";
+
+import {
+  ArrowRight,
+  CalendarDays,
+  Gauge,
+  Grid2X2,
+  Landmark,
+  LoaderCircle,
+  MapPin,
+  Search,
+  Trees,
+  UsersRound,
+  UtensilsCrossed,
+  Waves,
+  X,
+} from "lucide-react";
+
 
 /* =====================================================
-   CATEGORIES
+   API
 ===================================================== */
 
-const categories = [
-  ["All Itineraries", "⊞"],
-  ["Cultural Heritage", "♜"],
-  ["Nature & Outdoors", "♠"],
-  ["Coastal Escapes", "≋"],
-  ["Food & Gastronomy", "♜"],
-  ["Family Friendly", "♧"],
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000";
+
+
+/* =====================================================
+   TRANSLATIONS
+===================================================== */
+
+const pageCopy = {
+  en: {
+    eyebrow: "JOURNEYS WITH MEANING",
+
+    title: "Curated Itineraries",
+
+    subtitle:
+      "Handpicked journeys to help you discover the real Lebanon — its history, nature, culture and people.",
+
+    quoteTop1: "Same places,",
+    quoteTop2: "different stories.",
+
+    all: "All Itineraries",
+    cultural: "Cultural Heritage",
+    nature: "Nature & Outdoors",
+    coastal: "Coastal Escapes",
+    food: "Food & Gastronomy",
+    family: "Family Friendly",
+
+    search: "Search",
+
+    searchPlaceholder:
+      "Search itineraries, places or themes...",
+
+    loading: "Loading itineraries...",
+
+    error:
+      "Unable to load itineraries from the server.",
+
+    noResults:
+      "No itineraries match your search or selected category.",
+
+    day: "Day",
+    days: "Days",
+
+    route: "Route",
+
+    difficulty: "Difficulty",
+
+    easy: "Easy",
+    moderate: "Moderate",
+    hard: "Hard",
+
+    viewDetails: "View itinerary",
+
+    itineraryDetails:
+      "Itinerary Details",
+
+    stops: "Stops",
+    stop: "Stop",
+
+    dayLabel: "Day",
+
+    back: "Back to itineraries",
+
+    close: "Close",
+
+    noStops:
+      "No itinerary stops are available yet.",
+
+    quoteBottom1:
+      "More than a destination,",
+
+    quoteBottom2:
+      "a journey through time, people and places.",
+
+    resultOne: "itinerary",
+    results: "itineraries",
+  },
+
+
+  fr: {
+    eyebrow:
+      "DES VOYAGES QUI ONT DU SENS",
+
+    title:
+      "Itinéraires sélectionnés",
+
+    subtitle:
+      "Des voyages soigneusement conçus pour découvrir le vrai Liban — son histoire, sa nature, sa culture et ses habitants.",
+
+    quoteTop1:
+      "Mêmes lieux,",
+
+    quoteTop2:
+      "histoires différentes.",
+
+    all:
+      "Tous les itinéraires",
+
+    cultural:
+      "Patrimoine culturel",
+
+    nature:
+      "Nature et plein air",
+
+    coastal:
+      "Escapades côtières",
+
+    food:
+      "Cuisine et gastronomie",
+
+    family:
+      "En famille",
+
+    search:
+      "Rechercher",
+
+    searchPlaceholder:
+      "Rechercher un itinéraire, un lieu ou un thème...",
+
+    loading:
+      "Chargement des itinéraires...",
+
+    error:
+      "Impossible de charger les itinéraires depuis le serveur.",
+
+    noResults:
+      "Aucun itinéraire ne correspond à votre recherche ou catégorie.",
+
+    day:
+      "Jour",
+
+    days:
+      "Jours",
+
+    route:
+      "Parcours",
+
+    difficulty:
+      "Difficulté",
+
+    easy:
+      "Facile",
+
+    moderate:
+      "Modéré",
+
+    hard:
+      "Difficile",
+
+    viewDetails:
+      "Voir l’itinéraire",
+
+    itineraryDetails:
+      "Détails de l’itinéraire",
+
+    stops:
+      "Étapes",
+
+    stop:
+      "Étape",
+
+    dayLabel:
+      "Jour",
+
+    back:
+      "Retour aux itinéraires",
+
+    close:
+      "Fermer",
+
+    noStops:
+      "Aucune étape n’est encore disponible pour cet itinéraire.",
+
+    quoteBottom1:
+      "Plus qu’une destination,",
+
+    quoteBottom2:
+      "un voyage à travers le temps, les personnes et les lieux.",
+
+    resultOne:
+      "itinéraire",
+
+    results:
+      "itinéraires",
+  },
+
+
+  ar: {
+    eyebrow:
+      "رحلات تحمل معنى",
+
+    title:
+      "مسارات مختارة",
+
+    subtitle:
+      "رحلات مختارة بعناية لاكتشاف لبنان الحقيقي — تاريخه وطبيعته وثقافته وأهله.",
+
+    quoteTop1:
+      "الأماكن نفسها،",
+
+    quoteTop2:
+      "حكايات مختلفة.",
+
+    all:
+      "كل المسارات",
+
+    cultural:
+      "التراث الثقافي",
+
+    nature:
+      "الطبيعة والهواء الطلق",
+
+    coastal:
+      "رحلات ساحلية",
+
+    food:
+      "الطعام والمأكولات",
+
+    family:
+      "مناسب للعائلة",
+
+    search:
+      "بحث",
+
+    searchPlaceholder:
+      "ابحث عن مسار أو مكان أو موضوع...",
+
+    loading:
+      "جارٍ تحميل المسارات...",
+
+    error:
+      "تعذر تحميل المسارات من الخادم.",
+
+    noResults:
+      "لا توجد مسارات مطابقة للبحث أو الفئة المختارة.",
+
+    day:
+      "يوم",
+
+    days:
+      "أيام",
+
+    route:
+      "المسار",
+
+    difficulty:
+      "الصعوبة",
+
+    easy:
+      "سهل",
+
+    moderate:
+      "متوسط",
+
+    hard:
+      "صعب",
+
+    viewDetails:
+      "عرض المسار",
+
+    itineraryDetails:
+      "تفاصيل المسار",
+
+    stops:
+      "المحطات",
+
+    stop:
+      "محطة",
+
+    dayLabel:
+      "اليوم",
+
+    back:
+      "العودة إلى المسارات",
+
+    close:
+      "إغلاق",
+
+    noStops:
+      "لا توجد محطات متاحة لهذا المسار حالياً.",
+
+    quoteBottom1:
+      "أكثر من مجرد وجهة،",
+
+    quoteBottom2:
+      "رحلة عبر الزمن والناس والأماكن.",
+
+    resultOne:
+      "مسار",
+
+    results:
+      "مسارات",
+  },
+};
+
+
+/* =====================================================
+   FILTERS
+===================================================== */
+
+const filters = [
+  {
+    id: "all",
+    icon: Grid2X2,
+  },
+
+  {
+    id: "cultural",
+    icon: Landmark,
+  },
+
+  {
+    id: "nature",
+    icon: Trees,
+  },
+
+  {
+    id: "coastal",
+    icon: Waves,
+  },
+
+  {
+    id: "food",
+    icon: UtensilsCrossed,
+  },
+
+  {
+    id: "family",
+    icon: UsersRound,
+  },
 ];
 
-/* =====================================================
-   ITINERARIES DATA
-===================================================== */
-
-const itineraries = [
-  [
-    "Echoes of Empires",
-    "Baalbek – Anjar – Ksara",
-    "Cultural Heritage",
-    "Historical Sites",
-    "Moderate",
-    "1 Day",
-    "Explore Lebanon’s Roman legacy, from monumental temples to the vineyards of the Bekaa Valley.",
-    "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=900&q=85",
-  ],
-  [
-    "Coastal Heritage",
-    "Byblos – Batroun – Chekka",
-    "Coastal Escapes",
-    "Culture & Sea",
-    "Easy",
-    "1 Day",
-    "Follow the northern coast through ancient ports, lively souks and clear Mediterranean water.",
-    "https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=900&q=85",
-  ],
-  [
-    "Into the Cedars",
-    "Bsharri – Cedars – Qadisha Valley",
-    "Nature & Outdoors",
-    "Nature & Hiking",
-    "Moderate",
-    "2 Days",
-    "Walk among Lebanon’s ancient cedars and descend into the dramatic Qadisha Valley.",
-    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=85",
-  ],
-  [
-    "Village Life",
-    "Beit Mery – Deir el Qamar – Barouk",
-    "Family Friendly",
-    "Traditions & People",
-    "Easy",
-    "1 Day",
-    "Meet the villages, kitchens and welcoming traditions that shape Lebanon’s mountain life.",
-    "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=900&q=85",
-  ],
-  [
-    "Lebanon by the Sea",
-    "Beirut – Raouché – Jounieh",
-    "Coastal Escapes",
-    "Coastal Experience",
-    "Easy",
-    "1 Day",
-    "A relaxed coastal day from Beirut’s shore to the blue horizons of Jounieh.",
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=85",
-  ],
-  [
-    "Faith & Heritage",
-    "Harissa – Bkerke – Ehden",
-    "Cultural Heritage",
-    "Religious & Cultural",
-    "Moderate",
-    "2 Days",
-    "Discover sacred landmarks, mountain monasteries and stories of faith across Lebanon.",
-    "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=900&q=85",
-  ],
-  [
-    "Hidden Villages",
-    "Jezzine – Niha – Barouk",
-    "Nature & Outdoors",
-    "Nature & Tradition",
-    "Moderate",
-    "1 Day",
-    "Take the quieter road through waterfalls, pine forests and stone villages in the south.",
-    "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=85",
-  ],
-  [
-    "A Taste of Lebanon",
-    "Bekaa Valley – Wineries – Local Cuisine",
-    "Food & Gastronomy",
-    "Food & Wine",
-    "Easy",
-    "1 Day",
-    "Taste the Bekaa through family-run wineries, generous tables and local recipes.",
-    "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85",
-  ],
-];
 
 /* =====================================================
-   SMALL META ICON
+   EXACT ITINERARY CATEGORIES
 ===================================================== */
 
-function MetaIcon({ children }) {
+const itineraryCategories = {
+  "echoes of empires": [
+    "cultural",
+  ],
+
+  "into the cedars": [
+    "nature",
+  ],
+
+  "batroun by the sea": [
+    "coastal",
+  ],
+
+  "a taste of chouf": [
+    "food",
+  ],
+
+  "family day in chouf": [
+    "family",
+  ],
+
+  "stories of old sidon": [
+    "cultural",
+  ],
+
+  "tyre through time": [
+    "cultural",
+    "coastal",
+  ],
+};
+
+
+function getThemes(
+  itinerary
+) {
+  const title =
+    String(
+      itinerary?.title ?? ""
+    )
+      .trim()
+      .toLowerCase();
+
   return (
-    <span className="mr-1 text-[0.75rem] text-[#74776e]">
-      {children}
-    </span>
+    itineraryCategories[
+      title
+    ] ?? []
   );
 }
+
+
+/* =====================================================
+   API RESPONSE HELPERS
+===================================================== */
+
+function readItineraries(
+  payload
+) {
+  if (
+    Array.isArray(payload)
+  ) {
+    return payload;
+  }
+
+  if (
+    Array.isArray(
+      payload?.data
+        ?.itineraries
+    )
+  ) {
+    return (
+      payload.data
+        .itineraries
+    );
+  }
+
+  if (
+    Array.isArray(
+      payload?.data?.items
+    )
+  ) {
+    return (
+      payload.data.items
+    );
+  }
+
+  if (
+    Array.isArray(
+      payload?.itineraries
+    )
+  ) {
+    return payload.itineraries;
+  }
+
+  if (
+    Array.isArray(
+      payload?.items
+    )
+  ) {
+    return payload.items;
+  }
+
+  if (
+    Array.isArray(
+      payload?.data
+    )
+  ) {
+    return payload.data;
+  }
+
+  return [];
+}
+
+
+function readItinerary(
+  payload
+) {
+  if (
+    payload?.data
+      ?.itinerary
+  ) {
+    return (
+      payload.data
+        .itinerary
+    );
+  }
+
+  if (
+    payload?.itinerary
+  ) {
+    return payload.itinerary;
+  }
+
+  if (
+    payload?.data
+  ) {
+    return payload.data;
+  }
+
+  return payload;
+}
+
+
+/* =====================================================
+   CATEGORY NAMES
+===================================================== */
+
+function getCategoryNames(
+  place
+) {
+  if (
+    !Array.isArray(
+      place?.categories
+    )
+  ) {
+    return [];
+  }
+
+  return place.categories
+    .map((category) => {
+
+      if (
+        typeof category ===
+        "string"
+      ) {
+        return category;
+      }
+
+      return (
+        category?.name ??
+        category?.category_name ??
+        ""
+      );
+    })
+
+    .filter(Boolean);
+}
+
+
+/* =====================================================
+   ROUTE
+===================================================== */
+
+function rawRoute(
+  itinerary
+) {
+
+  /*
+    Detail API:
+    itinerary.stops contains
+    complete place objects.
+  */
+
+  if (
+    Array.isArray(
+      itinerary?.stops
+    ) &&
+    itinerary.stops.length >
+      0
+  ) {
+    return itinerary.stops;
+  }
+
+
+  if (
+    Array.isArray(
+      itinerary?.places
+    ) &&
+    itinerary.places.length >
+      0
+  ) {
+    return itinerary.places;
+  }
+
+
+  /*
+    List API:
+    route is an array of
+    place-name strings.
+  */
+
+  if (
+    Array.isArray(
+      itinerary?.route
+    )
+  ) {
+    return itinerary.route;
+  }
+
+
+  return [];
+}
+
+
+/* =====================================================
+   NORMALIZE STOPS
+===================================================== */
+
+function normalizeStops(
+  itinerary
+) {
+  return rawRoute(
+    itinerary
+  )
+
+    .map(
+      (
+        stop,
+        index
+      ) => {
+
+        /*
+          LIST API:
+
+          route:
+          [
+            "Place A",
+            "Place B"
+          ]
+        */
+
+        if (
+          typeof stop ===
+          "string"
+        ) {
+          return {
+            id:
+              `route-${index}-${stop}`,
+
+            placeId:
+              null,
+
+            name:
+              stop,
+
+            city:
+              "",
+
+            region:
+              "",
+
+            categories:
+              [],
+
+            visitOrder:
+              index + 1,
+
+            dayNumber:
+              null,
+
+            notes:
+              "",
+          };
+        }
+
+
+        /*
+          DETAIL API:
+
+          {
+            day_number: 1,
+            notes: "...",
+            place: {...},
+            visit_order: 1
+          }
+        */
+
+        const place =
+          stop?.place ??
+          stop;
+
+
+        return {
+          id:
+            place?.place_id ??
+            place?.id ??
+            `stop-${index}`,
+
+          placeId:
+            place?.place_id ??
+            place?.id ??
+            null,
+
+          name:
+            place?.name ??
+            `Stop ${
+              index + 1
+            }`,
+
+          city:
+            place?.city ??
+            "",
+
+          region:
+            place?.region ??
+            "",
+
+          categories:
+            getCategoryNames(
+              place
+            ),
+
+          visitOrder:
+            stop?.visit_order ??
+            stop?.visitOrder ??
+            index + 1,
+
+          dayNumber:
+            stop?.day_number ??
+            stop?.dayNumber ??
+            null,
+
+          notes:
+            stop?.notes ??
+            "",
+        };
+      }
+    )
+
+    .sort(
+      (a, b) =>
+        Number(
+          a.visitOrder
+        ) -
+        Number(
+          b.visitOrder
+        )
+    );
+}
+
+
+/* =====================================================
+   IMAGE
+===================================================== */
+
+function resolveImage(
+  value
+) {
+  if (!value) {
+    return (
+      "/images/heritage-hero.jpg"
+    );
+  }
+
+  if (
+    value.startsWith(
+      "http://"
+    ) ||
+    value.startsWith(
+      "https://"
+    ) ||
+    value.startsWith(
+      "/"
+    )
+  ) {
+    return value;
+  }
+
+  return (
+    `${API_URL}/${value}`
+  );
+}
+
+
+/* =====================================================
+   NORMALIZE ITINERARY
+===================================================== */
+
+function normalizeItinerary(
+  itinerary
+) {
+  const id =
+    itinerary?.itinerary_id ??
+    itinerary?.id;
+
+  const stops =
+    normalizeStops(
+      itinerary
+    );
+
+
+  const routeLabel =
+    stops
+      .map(
+        (stop) =>
+          stop.name
+      )
+      .filter(Boolean)
+      .join(" – ");
+
+
+  const searchText = [
+    itinerary?.title,
+    itinerary?.description,
+    itinerary?.difficulty,
+    routeLabel,
+
+    ...stops.flatMap(
+      (stop) => [
+        stop.name,
+        stop.city,
+        stop.region,
+        stop.notes,
+        ...stop.categories,
+      ]
+    ),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+
+  return {
+    id,
+
+    title:
+      itinerary?.title ??
+      "Untitled itinerary",
+
+    description:
+      itinerary
+        ?.description ??
+      "",
+
+    durationDays:
+      itinerary
+        ?.duration_days ??
+      itinerary
+        ?.durationDays ??
+      null,
+
+    difficulty:
+      itinerary
+        ?.difficulty ??
+      "",
+
+    image:
+      resolveImage(
+        itinerary
+          ?.cover_image ??
+        itinerary
+          ?.coverImage
+      ),
+
+    stops,
+
+    routeLabel,
+
+    themes:
+      getThemes(
+        itinerary
+      ),
+
+    searchText,
+
+    raw:
+      itinerary,
+  };
+}
+
+
+/* =====================================================
+   FETCH ALL ITINERARIES
+===================================================== */
+
+async function fetchAllItineraries(
+  signal
+) {
+  const all = [];
+
+  const seen =
+    new Set();
+
+
+  for (
+    let page = 1;
+    page <= 100;
+    page += 1
+  ) {
+
+    const response =
+      await fetch(
+        `${API_URL}/api/itineraries?page=${page}&per_page=50`,
+        {
+          signal,
+        }
+      );
+
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+    }
+
+
+    const payload =
+      await response.json();
+
+
+    const rows =
+      readItineraries(
+        payload
+      );
+
+
+    for (
+      const itinerary
+      of rows
+    ) {
+
+      const id =
+        itinerary
+          ?.itinerary_id ??
+        itinerary?.id ??
+        itinerary?.title;
+
+
+      if (
+        !seen.has(id)
+      ) {
+        seen.add(id);
+
+        all.push(
+          itinerary
+        );
+      }
+    }
+
+
+    if (
+      rows.length < 50
+    ) {
+      break;
+    }
+  }
+
+
+  return all;
+}
+
+
+/* =====================================================
+   DURATION
+===================================================== */
+
+function durationText(
+  days,
+  t
+) {
+  const number =
+    Number(days);
+
+
+  if (
+    !Number.isFinite(
+      number
+    ) ||
+    number <= 0
+  ) {
+    return "";
+  }
+
+
+  return (
+    `${number} ${
+      number === 1
+        ? t.day
+        : t.days
+    }`
+  );
+}
+
+
+/* =====================================================
+   DIFFICULTY
+===================================================== */
+
+function translatedDifficulty(
+  difficulty,
+  t
+) {
+  const value =
+    String(
+      difficulty ?? ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    value === "easy"
+  ) {
+    return t.easy;
+  }
+
+
+  if (
+    value ===
+    "moderate"
+  ) {
+    return t.moderate;
+  }
+
+
+  if (
+    value === "hard" ||
+    value ===
+      "difficult"
+  ) {
+    return t.hard;
+  }
+
+
+  return difficulty;
+}
+
+
+/* =====================================================
+   ITINERARY CARD
+===================================================== */
+
+function ItineraryCard({
+  itinerary,
+  onOpen,
+  t,
+}) {
+  const [
+    imageError,
+    setImageError,
+  ] =
+    useState(false);
+
+
+  const imageSource =
+    imageError
+      ? "/images/heritage-hero.jpg"
+      : itinerary.image;
+
+
+  return (
+
+    <article
+      className="
+        group
+        flex
+        h-full
+        min-h-[300px]
+        flex-col
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#ddd9d2]
+        bg-[#fbf9f6]
+        shadow-[0_2px_7px_rgba(39,36,31,0.07)]
+        transition
+        duration-300
+
+        hover:-translate-y-1
+        hover:shadow-xl
+      "
+    >
+
+      {/* IMAGE */}
+
+      <div
+        className="
+          relative
+          h-[155px]
+          shrink-0
+          overflow-hidden
+          bg-[#e5e0d7]
+        "
+      >
+
+        <img
+          src={
+            imageSource
+          }
+
+          alt={
+            itinerary.title
+          }
+
+          onError={() =>
+            setImageError(
+              true
+            )
+          }
+
+          className="
+            h-full
+            w-full
+            object-cover
+            transition
+            duration-500
+
+            group-hover:scale-105
+          "
+        />
+
+
+        {
+          itinerary
+            .durationDays !=
+          null && (
+
+            <span
+              className="
+                absolute
+                right-3
+                top-3
+                rounded-full
+                bg-[#f7f4ed]/95
+                px-3
+                py-1.5
+                text-[0.65rem]
+                font-medium
+                text-[#343430]
+                shadow-sm
+                backdrop-blur-sm
+              "
+            >
+              {
+                durationText(
+                  itinerary
+                    .durationDays,
+                  t
+                )
+              }
+            </span>
+
+          )
+        }
+
+      </div>
+
+
+      {/* BODY */}
+
+      <div
+        className="
+          relative
+          flex
+          flex-1
+          flex-col
+          p-4
+        "
+      >
+
+        <h2
+          className="
+            font-serif
+            text-[1.15rem]
+            font-semibold
+            leading-tight
+            text-[#2d2c29]
+          "
+        >
+          {
+            itinerary.title
+          }
+        </h2>
+
+
+        {
+          itinerary
+            .routeLabel && (
+
+            <p
+              title={
+                itinerary
+                  .routeLabel
+              }
+
+              className="
+                mt-2
+                line-clamp-2
+                min-h-[34px]
+                text-[0.67rem]
+                leading-4
+                text-[#74736e]
+              "
+            >
+              {
+                itinerary
+                  .routeLabel
+              }
+            </p>
+
+          )
+        }
+
+
+        <div
+          className="
+            mt-auto
+            flex
+            flex-wrap
+            items-center
+            gap-x-3
+            gap-y-2
+            pt-4
+            pr-9
+            text-[0.63rem]
+            text-[#5e605b]
+          "
+        >
+
+          {
+            itinerary
+              .stops.length >
+              0 && (
+
+              <span
+                className="
+                  inline-flex
+                  items-center
+                  gap-1
+                "
+              >
+                <MapPin
+                  size={12}
+                  strokeWidth={
+                    1.7
+                  }
+                />
+
+                {
+                  itinerary
+                    .stops
+                    .length
+                }
+
+                {" "}
+
+                {
+                  itinerary
+                    .stops
+                    .length ===
+                  1
+                    ? t.stop
+                    : t.stops
+                }
+              </span>
+
+            )
+          }
+
+
+          {
+            itinerary
+              .difficulty && (
+
+              <span
+                className="
+                  inline-flex
+                  items-center
+                  gap-1
+                "
+              >
+                <Gauge
+                  size={12}
+                  strokeWidth={
+                    1.7
+                  }
+                />
+
+                {
+                  translatedDifficulty(
+                    itinerary
+                      .difficulty,
+                    t
+                  )
+                }
+              </span>
+
+            )
+          }
+
+        </div>
+
+
+        {/* OPEN */}
+
+        <button
+          type="button"
+
+          aria-label={
+            `${t.viewDetails}: ${itinerary.title}`
+          }
+
+          onClick={() =>
+            onOpen(
+              itinerary
+            )
+          }
+
+          className="
+            absolute
+            bottom-3
+            right-3
+            flex
+            h-8
+            w-8
+            items-center
+            justify-center
+            rounded-full
+            bg-[#606653]
+            text-white
+            shadow-sm
+            transition
+
+            hover:scale-105
+            hover:bg-[#4e5444]
+
+            focus-visible:outline-2
+            focus-visible:outline-offset-2
+            focus-visible:outline-[#606653]
+          "
+        >
+          <ArrowRight
+            size={16}
+          />
+        </button>
+
+      </div>
+
+    </article>
+  );
+}
+
 
 /* =====================================================
    PAGE
 ===================================================== */
 
-export default function ItinerariesPage() {
-  const [activeCategory, setActiveCategory] =
-    useState("All Itineraries");
+function ItinerariesContent() {
+  const {
+    language,
+  } =
+    useSiteLanguage();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [selectedItinerary, setSelectedItinerary] = useState(null);
 
-  /* =====================================================
-     FILTER + SEARCH LOGIC
-  ===================================================== */
+  const t =
+    pageCopy[
+      language
+    ] ??
+    pageCopy.en;
 
-  const visibleItineraries = itineraries.filter((item) => {
-    const matchesCategory =
-      activeCategory === "All Itineraries" ||
-      item[2] === activeCategory;
 
-    const searchableText = item
-      .slice(0, 5)
-      .join(" ")
-      .toLowerCase();
+  const [
+    itineraries,
+    setItineraries,
+  ] =
+    useState([]);
 
-    const matchesSearch = searchableText.includes(
-      searchTerm.toLowerCase()
+
+  const [
+    activeCategory,
+    setActiveCategory,
+  ] =
+    useState(
+      "all"
     );
 
-    return matchesCategory && matchesSearch;
-  });
 
-  const scrollTo = (id) => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView({ behavior: "smooth" });
-  };
+  const [
+    query,
+    setQuery,
+  ] =
+    useState("");
+
+
+  const [
+    searchOpen,
+    setSearchOpen,
+  ] =
+    useState(false);
+
+
+  const [
+    loading,
+    setLoading,
+  ] =
+    useState(true);
+
+
+  const [
+    error,
+    setError,
+  ] =
+    useState("");
+
+
+  const [
+    selectedItinerary,
+    setSelectedItinerary,
+  ] =
+    useState(null);
+
+
+  const [
+    loadingDetails,
+    setLoadingDetails,
+  ] =
+    useState(false);
+
+
+  const searchRef =
+    useRef(null);
+
+
+  /* =====================================================
+     LOAD DATABASE ITINERARIES
+  ===================================================== */
+
+  useEffect(() => {
+
+    const controller =
+      new AbortController();
+
+
+    let mounted =
+      true;
+
+
+    async function load() {
+
+      setLoading(
+        true
+      );
+
+      setError(
+        ""
+      );
+
+
+      try {
+
+        const rows =
+          await fetchAllItineraries(
+            controller.signal
+          );
+
+
+        if (
+          !mounted
+        ) {
+          return;
+        }
+
+
+        setItineraries(
+          rows.map(
+            normalizeItinerary
+          )
+        );
+
+      }
+
+      catch (err) {
+
+        if (
+          err?.name ===
+          "AbortError"
+        ) {
+          return;
+        }
+
+
+        if (
+          mounted
+        ) {
+          setError(
+            err?.message ??
+            "Unable to load."
+          );
+        }
+
+      }
+
+      finally {
+
+        if (
+          mounted
+        ) {
+          setLoading(
+            false
+          );
+        }
+
+      }
+
+    }
+
+
+    load();
+
+
+    return () => {
+
+      mounted =
+        false;
+
+      controller.abort();
+
+    };
+
+  }, []);
+
+
+  /* =====================================================
+     SEARCH FOCUS
+  ===================================================== */
+
+  useEffect(() => {
+
+    if (
+      searchOpen
+    ) {
+
+      requestAnimationFrame(
+        () =>
+          searchRef
+            .current
+            ?.focus()
+      );
+
+    }
+
+  }, [
+    searchOpen,
+  ]);
+
+
+  /* =====================================================
+     ESCAPE CLOSE MODAL
+  ===================================================== */
+
+  useEffect(() => {
+
+    if (
+      !selectedItinerary
+    ) {
+      return;
+    }
+
+
+    const keyDown =
+      (event) => {
+
+        if (
+          event.key ===
+          "Escape"
+        ) {
+          setSelectedItinerary(
+            null
+          );
+        }
+
+      };
+
+
+    document.addEventListener(
+      "keydown",
+      keyDown
+    );
+
+
+    return () => {
+
+      document.removeEventListener(
+        "keydown",
+        keyDown
+      );
+
+    };
+
+  }, [
+    selectedItinerary,
+  ]);
+
+
+  /* =====================================================
+     FILTER
+  ===================================================== */
+
+  const normalizedQuery =
+    query
+      .trim()
+      .toLowerCase();
+
+
+  const visibleItineraries =
+    useMemo(() => {
+
+      return itineraries.filter(
+        (itinerary) => {
+
+          const categoryMatches =
+            activeCategory ===
+              "all" ||
+            itinerary
+              .themes
+              .includes(
+                activeCategory
+              );
+
+
+          const searchMatches =
+            !normalizedQuery ||
+            itinerary
+              .searchText
+              .includes(
+                normalizedQuery
+              );
+
+
+          return (
+            categoryMatches &&
+            searchMatches
+          );
+
+        }
+      );
+
+    }, [
+      itineraries,
+      activeCategory,
+      normalizedQuery,
+    ]);
+
+
+  /* =====================================================
+     OPEN DETAILS
+  ===================================================== */
+
+  async function openDetails(
+    itinerary
+  ) {
+
+    setSelectedItinerary(
+      itinerary
+    );
+
+
+    if (
+      !itinerary.id
+    ) {
+      return;
+    }
+
+
+    setLoadingDetails(
+      true
+    );
+
+
+    try {
+
+      const response =
+        await fetch(
+          `${API_URL}/api/itineraries/${itinerary.id}`
+        );
+
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          `HTTP ${response.status}`
+        );
+      }
+
+
+      const payload =
+        await response.json();
+
+
+      const details =
+        normalizeItinerary(
+          readItinerary(
+            payload
+          )
+        );
+
+
+      setSelectedItinerary(
+        details
+      );
+
+    }
+
+    catch {
+
+      /*
+        Keep card data visible
+        if detail request fails.
+      */
+
+    }
+
+    finally {
+
+      setLoadingDetails(
+        false
+      );
+
+    }
+
+  }
+
+
+  /* =====================================================
+     RENDER
+  ===================================================== */
 
   return (
-    <AppShell>
-      <main className="min-h-screen bg-[#f1eee9] text-[#272725]">
 
-        <div className="w-full px-4 pb-5 sm:px-6 lg:px-8">
+    <main
+      lang={
+        language
+      }
 
-          {/* =====================================================
-              HERO
-          ===================================================== */}
+      dir={
+        language ===
+          "ar"
+          ? "rtl"
+          : "ltr"
+      }
 
-          <section
-            id="page-top"
-            className="relative isolate h-[290px] overflow-hidden sm:h-[315px]"
+      className="
+        min-h-screen
+        bg-[#f3f0eb]
+        text-[#272725]
+      "
+    >
+
+      <div
+        className="
+          mx-auto
+          max-w-[1440px]
+          px-4
+          pb-7
+
+          sm:px-6
+          lg:px-8
+        "
+      >
+
+
+        {/* =====================================================
+            HERO
+        ===================================================== */}
+
+        <section
+          className="
+            relative
+            isolate
+            h-[285px]
+            overflow-hidden
+            rounded-b-sm
+
+            sm:h-[315px]
+          "
+        >
+
+          <img
+            src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85"
+
+            alt="Lebanese landscape"
+
+            className="
+              absolute
+              inset-0
+              h-full
+              w-full
+              object-cover
+              object-center
+            "
+          />
+
+
+          <div
+            className="
+              absolute
+              inset-0
+              bg-gradient-to-r
+              from-[#17272e]/70
+              via-[#17272e]/35
+              to-[#4e291b]/20
+            "
+          />
+
+
+          <div
+            className="
+              relative
+              flex
+              h-full
+              items-center
+              justify-between
+              px-7
+
+              sm:px-12
+              lg:px-14
+            "
           >
-            <img
-              src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85"
-              alt="Lebanese mountains and coast at sunset"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-            />
 
-            <div className="absolute inset-0 bg-[rgba(21,35,43,0.32)]" />
+            <div
+              className="
+                max-w-[650px]
+                text-white
+              "
+            >
 
-            <div className="relative flex h-full items-center justify-between px-7 pb-2 sm:px-12 lg:px-14">
+              <p
+                className="
+                  mb-3
+                  text-[0.58rem]
+                  font-semibold
+                  uppercase
+                  tracking-[0.42em]
+                  text-[#eee7dc]
 
-              {/* LEFT */}
+                  sm:text-[0.65rem]
+                "
+              >
+                {
+                  t.eyebrow
+                }
+              </p>
 
-              <div className="max-w-[620px] text-white">
 
-                <p className="mb-3 text-[0.58rem] font-medium uppercase tracking-[0.45em] text-[#eee7dc] sm:text-[0.65rem]">
-                  Journeys with meaning
-                </p>
+              <h1
+                className="
+                  font-serif
+                  text-[3.1rem]
+                  leading-[0.95]
 
-                <h1 className="brand-display text-[3.25rem] leading-[0.92] sm:text-[4.4rem]">
-                  Curated Itineraries
-                </h1>
+                  sm:text-[4.25rem]
+                "
+              >
+                {
+                  t.title
+                }
+              </h1>
 
-                <p className="mt-4 max-w-[530px] text-[0.82rem] leading-[1.5] text-[#f6f2eb] sm:text-[0.98rem]">
-                  Handpicked journeys to help you discover the real
-                  Lebanon —
-                  <br className="hidden sm:block" />
-                  its history, nature, culture and people.
-                </p>
 
-              </div>
+              <p
+                className="
+                  mt-4
+                  max-w-[570px]
+                  text-[0.83rem]
+                  leading-[1.6]
+                  text-[#f6f2eb]
 
-              {/* RIGHT */}
-
-              <div className="hidden pb-3 pr-2 text-right text-[#f3ece2] sm:block">
-
-                <p className="script-text text-[2.15rem] leading-[0.92]">
-                  Same places,
-                </p>
-
-                <p className="script-text text-[2.15rem] leading-[0.92]">
-                  different stories.
-                </p>
-
-                <div className="ml-auto mt-4 h-px w-14 bg-[#c5a774]" />
-
-              </div>
+                  sm:text-[0.96rem]
+                "
+              >
+                {
+                  t.subtitle
+                }
+              </p>
 
             </div>
-          </section>
 
-          {/* =====================================================
-              FILTER + SEARCH TOOLBAR
-          ===================================================== */}
 
-          <div className="flex items-center justify-between gap-3 py-3">
+            <div
+              className="
+                hidden
+                max-w-[300px]
+                text-right
+                text-[#f3ece2]
 
-            {/* FILTERS */}
+                md:block
+              "
+            >
 
-            <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 sm:pb-0">
+              <p
+                className="
+                  font-serif
+                  text-[2rem]
+                  italic
+                  leading-[0.95]
+                "
+              >
+                {
+                  t.quoteTop1
+                }
+              </p>
 
-              {categories.map(([category, icon]) => {
-                const isActive =
-                  category === activeCategory;
+              <p
+                className="
+                  font-serif
+                  text-[2rem]
+                  italic
+                  leading-[0.95]
+                "
+              >
+                {
+                  t.quoteTop2
+                }
+              </p>
 
-                return (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() =>
-                      setActiveCategory(category)
-                    }
-                    className={`
-                      flex h-[38px]
-                      shrink-0
-                      items-center
-                      justify-center
-                      gap-2
-                      rounded-full
-                      border
-                      px-4
-                      text-[0.7rem]
-                      font-medium
-                      whitespace-nowrap
-                      transition-all
-                      duration-200
-                      ${
-                        isActive
-                          ? "border-[#626a55] bg-[#626a55] text-white shadow-[0_2px_6px_rgba(50,55,44,0.16)]"
-                          : "border-[#e0dcd4] bg-[#faf9f6] text-[#45433e] hover:border-[#bdb8ae] hover:bg-white"
+
+              <div
+                className="
+                  ml-auto
+                  mt-4
+                  h-px
+                  w-14
+                  bg-[#c5a774]
+                "
+              />
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* =====================================================
+            FILTERS
+        ===================================================== */}
+
+        <section
+          className="
+            mt-4
+            rounded-xl
+            border
+            border-[#dfdad1]
+            bg-[#f8f6f2]
+            p-2
+            shadow-sm
+          "
+        >
+
+          <div
+            className="
+              flex
+              flex-wrap
+              items-center
+              gap-2
+            "
+          >
+
+            {
+              filters.map(
+                ({
+                  id,
+                  icon: Icon,
+                }) => {
+
+                  const active =
+                    activeCategory ===
+                    id;
+
+
+                  return (
+
+                    <button
+                      key={
+                        id
                       }
-                    `}
-                  >
 
-                    <span
-                      className={`text-[0.88rem] leading-none ${
-                        isActive
-                          ? "text-white"
-                          : "text-[#777467]"
-                      }`}
+                      type="button"
+
+                      aria-pressed={
+                        active
+                      }
+
+                      onClick={() =>
+                        setActiveCategory(
+                          id
+                        )
+                      }
+
+                      className={`
+                        inline-flex
+                        min-h-[40px]
+                        items-center
+                        justify-center
+                        gap-2
+                        rounded-full
+                        border
+                        px-4
+                        text-[0.7rem]
+                        font-medium
+                        whitespace-nowrap
+                        transition
+
+                        focus-visible:outline-2
+                        focus-visible:outline-offset-2
+                        focus-visible:outline-[#626955]
+
+                        ${
+                          active
+
+                            ? `
+                              border-[#626955]
+                              bg-[#626955]
+                              text-white
+                              shadow-sm
+                            `
+
+                            : `
+                              border-[#ddd8cf]
+                              bg-white
+                              text-[#3d3c39]
+
+                              hover:border-[#c8c1b6]
+                              hover:bg-[#eeeae3]
+                            `
+                        }
+                      `}
                     >
-                      {icon}
-                    </span>
 
-                    {category}
+                      <Icon
+                        size={14}
+                        strokeWidth={
+                          1.7
+                        }
+                      />
 
-                  </button>
-                );
-              })}
+                      {
+                        t[id]
+                      }
 
-            </div>
+                    </button>
 
-            {/* SEARCH BUTTON */}
+                  );
+
+                }
+              )
+            }
+
+
+            {/* SEARCH */}
 
             <button
               type="button"
-              onClick={() =>
-                setIsSearchOpen((open) => !open)
+
+              aria-expanded={
+                searchOpen
               }
-              className={`
-                flex
-                h-[38px]
-                shrink-0
+
+              onClick={() =>
+                setSearchOpen(
+                  (open) =>
+                    !open
+                )
+              }
+
+              className="
+                inline-flex
+                min-h-[40px]
                 items-center
+                justify-center
                 gap-2
                 rounded-full
                 border
+                border-[#ddd8cf]
+                bg-white
                 px-4
-                text-[0.68rem]
+                text-[0.7rem]
                 font-medium
                 uppercase
-                tracking-[0.08em]
-                transition-all
-                duration-200
-                ${
-                  isSearchOpen
-                    ? "border-[#626a55] bg-[#626a55] text-white shadow-sm"
-                    : "border-[#d8d3cb] bg-[#faf9f6] text-[#45433e] hover:border-[#bdb8ae] hover:bg-white"
-                }
-              `}
+                tracking-[0.12em]
+                text-[#3d3c39]
+                transition
+
+                hover:bg-[#eeeae3]
+              "
             >
 
-              <span className="text-[0.95rem] leading-none">
-                ⌕
-              </span>
+              {
+                searchOpen
+                  ? (
+                    <X
+                      size={14}
+                    />
+                  )
+                  : (
+                    <Search
+                      size={14}
+                    />
+                  )
+              }
 
-              <span className="hidden lg:inline">
-                Search
-              </span>
+              {
+                t.search
+              }
 
             </button>
 
           </div>
 
-          {/* =====================================================
-              SEARCH FIELD
-          ===================================================== */}
 
-          {isSearchOpen && (
-            <div className="mb-3">
+          {/* SEARCH INPUT */}
 
-              <div className="relative">
+          {
+            searchOpen && (
 
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#77746d]">
-                  ⌕
-                </span>
+              <div
+                className="
+                  relative
+                  mt-2
+                "
+              >
 
-                <input
-                  id="itinerary-search"
-                  autoFocus
-                  value={searchTerm}
-                  onChange={(event) =>
-                    setSearchTerm(event.target.value)
-                  }
-                  placeholder="Search itineraries, places or themes..."
-                  className="
-                    h-[42px]
-                    w-full
-                    rounded-full
-                    border
-                    border-[#ddd8cf]
-                    bg-[#faf9f6]
-                    pl-11
-                    pr-11
-                    text-[0.78rem]
-                    text-[#3d3c39]
-                    outline-none
-                    transition
-                    placeholder:text-[#969189]
-                    focus:border-[#737a65]
-                    focus:bg-white
-                    focus:shadow-[0_2px_8px_rgba(60,60,50,0.07)]
-                  "
+                <Search
+                  size={17}
+
+                  className={`
+                    absolute
+                    top-1/2
+                    -translate-y-1/2
+                    text-[#77766f]
+
+                    ${
+                      language ===
+                      "ar"
+                        ? "right-4"
+                        : "left-4"
+                    }
+                  `}
                 />
 
-                {searchTerm && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchTerm("")}
-                    aria-label="Clear search"
-                    className="
-                      absolute
-                      right-4
-                      top-1/2
-                      -translate-y-1/2
-                      text-lg
-                      text-[#858179]
-                      transition
-                      hover:text-[#44423d]
-                    "
-                  >
-                    ×
-                  </button>
-                )}
 
-              </div>
+                <input
+                  ref={
+                    searchRef
+                  }
 
-            </div>
-          )}
+                  value={
+                    query
+                  }
 
-          {/* =====================================================
-              ITINERARY GRID
-          ===================================================== */}
+                  onChange={(
+                    event
+                  ) =>
+                    setQuery(
+                      event
+                        .target
+                        .value
+                    )
+                  }
 
-          <section
-            id="itinerary-grid"
-            className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4"
-          >
+                  placeholder={
+                    t.searchPlaceholder
+                  }
 
-            {visibleItineraries.map(
-              ([
-                title,
-                location,
-                category,
-                label,
-                difficulty,
-                duration,
-                description,
-                image,
-              ]) => (
-                <article
-                  key={title}
-                  className="
-                    overflow-hidden
-                    rounded-[10px]
+                  className={`
+                    h-11
+                    w-full
+                    rounded-lg
                     border
-                    border-[#ddd9d2]
-                    bg-[#f9f7f4]
-                    shadow-[0_2px_5px_rgba(39,36,31,0.07)]
-                    transition-all
-                    duration-200
-                    hover:-translate-y-1
-                    hover:shadow-[0_8px_18px_rgba(39,36,31,0.11)]
-                  "
-                >
+                    border-[#cfc8be]
+                    bg-white
+                    text-sm
+                    outline-none
+                    transition
 
-                  {/* IMAGE */}
+                    focus:border-[#8e896f]
+                    focus:ring-2
+                    focus:ring-[#8e896f]/20
 
-                  <div className="relative h-[125px] overflow-hidden">
+                    ${
+                      language ===
+                      "ar"
+                        ? "pr-11 pl-11"
+                        : "pl-11 pr-11"
+                    }
+                  `}
+                />
 
-                    <img
-                      src={image}
-                      alt={title}
-                      className="h-full w-full object-cover transition-transform duration-300 hover:scale-[1.03]"
-                    />
 
-                    <span className="absolute right-2.5 top-2.5 rounded-full bg-[#f2eee7]/90 px-2.5 py-1 text-[0.62rem] font-medium text-[#343430] shadow-sm">
-                      {duration}
-                    </span>
-
-                  </div>
-
-                  {/* CONTENT */}
-
-                  <div className="relative min-h-[92px] px-3 py-2.5">
-
-                    <h2 className="brand-display text-[1.03rem] font-semibold leading-none text-[#2d2c29]">
-                      {title}
-                    </h2>
-
-                    <p className="mt-1.5 truncate text-[0.63rem] text-[#74736e]">
-                      {location}
-                    </p>
-
-                    <div className="mt-2 flex items-center gap-3 pr-8 text-[0.59rem] text-[#5e605b]">
-
-                      <span className="truncate">
-                        <MetaIcon>⌖</MetaIcon>
-                        {label}
-                      </span>
-
-                      <span className="whitespace-nowrap">
-                        <MetaIcon>♧</MetaIcon>
-                        {difficulty}
-                      </span>
-
-                    </div>
-
-                    {/* DETAILS BUTTON */}
+                {
+                  query && (
 
                     <button
                       type="button"
+
                       onClick={() =>
-                        setSelectedItinerary({
-                          title,
-                          location,
-                          category,
-                          label,
-                          difficulty,
-                          duration,
-                          description,
-                          image,
-                        })
+                        setQuery("")
                       }
-                      aria-label={`View ${title}`}
-                      className="
+
+                      aria-label={
+                        t.close
+                      }
+
+                      className={`
                         absolute
-                        bottom-2.5
-                        right-3
-                        flex
-                        h-7
-                        w-7
-                        items-center
-                        justify-center
+                        top-1/2
+                        -translate-y-1/2
                         rounded-full
-                        bg-[#606653]
-                        text-[1rem]
-                        leading-none
-                        text-white
-                        transition-all
-                        duration-200
-                        hover:scale-105
-                        hover:bg-[#4f5645]
-                      "
+                        p-1
+                        text-[#77766f]
+
+                        hover:bg-[#eeeae3]
+
+                        ${
+                          language ===
+                          "ar"
+                            ? "left-4"
+                            : "right-4"
+                        }
+                      `}
                     >
-                      →
+                      <X
+                        size={14}
+                      />
                     </button>
 
-                  </div>
+                  )
+                }
 
-                </article>
-              )
-            )}
-
-          </section>
-
-          {/* =====================================================
-              NO RESULTS
-          ===================================================== */}
-
-          {visibleItineraries.length === 0 && (
-            <div className="py-16 text-center">
-
-              <h2 className="brand-display text-2xl text-[#34342f]">
-                No itineraries found
-              </h2>
-
-              <p className="mt-2 text-sm text-[#74736e]">
-                Try another category or search term.
-              </p>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveCategory("All Itineraries");
-                  setSearchTerm("");
-                }}
-                className="
-                  mt-5
-                  rounded-full
-                  bg-[#606653]
-                  px-5
-                  py-2
-                  text-xs
-                  uppercase
-                  tracking-[0.12em]
-                  text-white
-                  transition
-                  hover:bg-[#4f5645]
-                "
-              >
-                View All Itineraries
-              </button>
-
-            </div>
-          )}
-
-          {/* =====================================================
-              BOTTOM QUOTE
-          ===================================================== */}
-
-          <footer
-            id="heritage-stories"
-            className="
-              relative
-              mt-4
-              flex
-              min-h-[76px]
-              items-center
-              justify-between
-              overflow-hidden
-              rounded-[10px]
-              bg-[#e9e5dc]
-              px-7
-              py-4
-              sm:px-10
-            "
-          >
-
-            <div className="absolute right-1/4 top-0 h-full w-[310px] opacity-20 [background-image:repeating-radial-gradient(ellipse_at_center,_transparent_0,_transparent_18px,_#aca99f_19px,_transparent_20px)]" />
-
-            <div className="relative hidden text-[#606653] sm:block">
-              <span className="text-[2.8rem] leading-none">
-                ⌁
-              </span>
-            </div>
-
-            <div className="relative flex-1 text-center">
-
-              <p className="script-text text-[1.35rem] leading-none text-[#5e5b55] sm:text-[1.55rem]">
-                “More than a destination,
-              </p>
-
-              <p className="script-text text-[1.35rem] leading-none text-[#5e5b55] sm:text-[1.55rem]">
-                a journey through time, people and places.”
-              </p>
-
-              <div className="mx-auto mt-2 h-px w-12 bg-[#b79662]" />
-
-            </div>
-
-            <div className="relative hidden w-[145px] text-right text-[0.48rem] uppercase tracking-[0.36em] text-[#777269] sm:block">
-
-              <div>Lebanon</div>
-
-              <div className="mt-1">
-                Always a story
               </div>
 
-              <div className="mt-1">
-                To explore
-              </div>
+            )
+          }
 
-            </div>
+        </section>
 
-          </footer>
-
-        </div>
 
         {/* =====================================================
-            DETAILS MODAL
+            RESULTS NUMBER
         ===================================================== */}
 
-        {selectedItinerary && (
+        {
+          !loading &&
+          !error && (
+
+            <div
+              className="
+                mb-3
+                mt-3
+                flex
+                items-center
+                justify-between
+              "
+            >
+
+              <p
+                className="
+                  text-xs
+                  text-[#74736e]
+                "
+              >
+                {
+                  visibleItineraries
+                    .length
+                }
+
+                {" "}
+
+                {
+                  visibleItineraries
+                    .length ===
+                  1
+
+                    ? t.resultOne
+
+                    : t.results
+                }
+              </p>
+
+            </div>
+
+          )
+        }
+
+
+        {/* =====================================================
+            LOADING
+        ===================================================== */}
+
+        {
+          loading && (
+
+            <div
+              className="
+                flex
+                min-h-[320px]
+                items-center
+                justify-center
+              "
+            >
+
+              <div
+                className="
+                  text-center
+                  text-[#65675d]
+                "
+              >
+
+                <LoaderCircle
+                  size={32}
+
+                  className="
+                    mx-auto
+                    animate-spin
+                  "
+                />
+
+
+                <p
+                  className="
+                    mt-3
+                    text-sm
+                  "
+                >
+                  {
+                    t.loading
+                  }
+                </p>
+
+              </div>
+
+            </div>
+
+          )
+        }
+
+
+        {/* =====================================================
+            ERROR
+        ===================================================== */}
+
+        {
+          !loading &&
+          error && (
+
+            <div
+              className="
+                rounded-xl
+                border
+                border-red-200
+                bg-red-50
+                px-5
+                py-10
+                text-center
+                text-sm
+                text-red-700
+              "
+            >
+
+              {
+                t.error
+              }
+
+
+              <div
+                className="
+                  mt-2
+                  text-xs
+                  opacity-70
+                "
+              >
+                {
+                  error
+                }
+              </div>
+
+            </div>
+
+          )
+        }
+
+
+        {/* =====================================================
+            CARDS
+        ===================================================== */}
+
+        {
+          !loading &&
+          !error &&
+          visibleItineraries
+            .length >
+            0 && (
+
+            <section
+              className="
+                grid
+                items-stretch
+                gap-4
+
+                sm:grid-cols-2
+                xl:grid-cols-3
+                2xl:grid-cols-4
+              "
+            >
+
+              {
+                visibleItineraries
+                  .map(
+                    (
+                      itinerary
+                    ) => (
+
+                      <ItineraryCard
+                        key={
+                          itinerary.id ??
+                          itinerary.title
+                        }
+
+                        itinerary={
+                          itinerary
+                        }
+
+                        onOpen={
+                          openDetails
+                        }
+
+                        t={
+                          t
+                        }
+                      />
+
+                    )
+                  )
+              }
+
+            </section>
+
+          )
+        }
+
+
+        {/* =====================================================
+            EMPTY
+        ===================================================== */}
+
+        {
+          !loading &&
+          !error &&
+          visibleItineraries
+            .length ===
+            0 && (
+
+            <div
+              className="
+                rounded-xl
+                border
+                border-dashed
+                border-[#cec8bd]
+                bg-[#faf8f5]
+                px-6
+                py-16
+                text-center
+              "
+            >
+
+              <Search
+                size={28}
+
+                className="
+                  mx-auto
+                  text-[#858779]
+                "
+              />
+
+
+              <p
+                className="
+                  mt-3
+                  text-sm
+                  text-[#686860]
+                "
+              >
+                {
+                  t.noResults
+                }
+              </p>
+
+            </div>
+
+          )
+        }
+
+
+        {/* =====================================================
+            BOTTOM QUOTE
+        ===================================================== */}
+
+        <footer
+          className="
+            mt-6
+            flex
+            min-h-[105px]
+            items-center
+            justify-center
+            rounded-xl
+            bg-[#e9e5dc]
+            px-6
+            py-6
+            text-center
+          "
+        >
+
+          <div>
+
+            <p
+              className="
+                font-serif
+                text-[1.35rem]
+                italic
+                leading-tight
+                text-[#5e5b55]
+
+                sm:text-[1.55rem]
+              "
+            >
+              “
+              {
+                t.quoteBottom1
+              }
+            </p>
+
+
+            <p
+              className="
+                font-serif
+                text-[1.35rem]
+                italic
+                leading-tight
+                text-[#5e5b55]
+
+                sm:text-[1.55rem]
+              "
+            >
+              {
+                t.quoteBottom2
+              }
+              ”
+            </p>
+
+
+            <div
+              className="
+                mx-auto
+                mt-3
+                h-px
+                w-12
+                bg-[#b79662]
+              "
+            />
+
+          </div>
+
+        </footer>
+
+      </div>
+
+
+      {/* =====================================================
+          DETAILS MODAL
+      ===================================================== */}
+
+      {
+        selectedItinerary && (
+
           <div
-            className="fixed inset-0 z-40 flex items-center justify-center bg-[#24251f]/45 p-4"
-            role="presentation"
+            className="
+              fixed
+              inset-0
+              z-[2000]
+              flex
+              items-center
+              justify-center
+              bg-[#24251f]/55
+              p-3
+              backdrop-blur-[2px]
+
+              sm:p-5
+            "
+
             onClick={() =>
-              setSelectedItinerary(null)
+              setSelectedItinerary(
+                null
+              )
             }
           >
 
             <div
               role="dialog"
+
               aria-modal="true"
+
               aria-labelledby="itinerary-dialog-title"
-              onClick={(event) =>
+
+              onClick={(
+                event
+              ) =>
                 event.stopPropagation()
               }
+
               className="
+                flex
+                max-h-[92vh]
                 w-full
-                max-w-md
+                max-w-[660px]
+                flex-col
                 overflow-hidden
-                rounded-[12px]
+                rounded-2xl
                 border
                 border-[#d8d1c8]
                 bg-[#fbf8f3]
@@ -648,107 +2625,505 @@ export default function ItinerariesPage() {
               "
             >
 
-              {/* MODAL IMAGE */}
+              {/* HEADER */}
 
-              <div className="relative h-[180px]">
+              <div
+                className="
+                  flex
+                  shrink-0
+                  items-start
+                  justify-between
+                  gap-4
+                  border-b
+                  border-[#e4dfd6]
+                  bg-[#fbf8f3]
+                  p-5
+                "
+              >
 
-                <img
-                  src={selectedItinerary.image}
-                  alt={selectedItinerary.title}
-                  className="h-full w-full object-cover"
-                />
+                <div>
+
+                  <p
+                    className="
+                      text-[0.62rem]
+                      uppercase
+                      tracking-[0.2em]
+                      text-[#8e805f]
+                    "
+                  >
+                    {
+                      t.itineraryDetails
+                    }
+                  </p>
+
+
+                  <h2
+                    id="itinerary-dialog-title"
+
+                    className="
+                      mt-1
+                      font-serif
+                      text-3xl
+                      leading-tight
+                      text-[#34342f]
+                    "
+                  >
+                    {
+                      selectedItinerary
+                        .title
+                    }
+                  </h2>
+
+                </div>
+
 
                 <button
                   type="button"
+
                   onClick={() =>
-                    setSelectedItinerary(null)
+                    setSelectedItinerary(
+                      null
+                    )
                   }
-                  aria-label="Close itinerary details"
+
+                  aria-label={
+                    t.close
+                  }
+
                   className="
-                    absolute
-                    right-3
-                    top-3
                     flex
                     h-8
                     w-8
+                    shrink-0
                     items-center
                     justify-center
                     rounded-full
-                    bg-white/90
-                    text-xl
+                    bg-[#ece7de]
                     text-[#55554d]
-                    shadow-sm
                     transition
-                    hover:bg-white
+
+                    hover:bg-[#ddd7cd]
                   "
                 >
-                  ×
+                  <X
+                    size={17}
+                  />
                 </button>
 
               </div>
 
-              {/* MODAL BODY */}
 
-              <div className="p-6">
+              {/* SCROLLABLE CONTENT */}
 
-                <p className="text-[0.62rem] uppercase tracking-[0.2em] text-[#8e805f]">
-                  {selectedItinerary.duration}
-                </p>
+              <div
+                className="
+                  min-h-0
+                  flex-1
+                  overflow-y-auto
+                  p-5
+                "
+              >
 
-                <h2
-                  id="itinerary-dialog-title"
-                  className="brand-display mt-1 text-3xl text-[#34342f]"
+                {
+                  loadingDetails && (
+
+                    <div
+                      className="
+                        mb-4
+                        flex
+                        items-center
+                        gap-2
+                        text-xs
+                        text-[#77736b]
+                      "
+                    >
+
+                      <LoaderCircle
+                        size={15}
+
+                        className="
+                          animate-spin
+                        "
+                      />
+
+                      {
+                        t.loading
+                      }
+
+                    </div>
+
+                  )
+                }
+
+
+                {/* META */}
+
+                <div
+                  className="
+                    flex
+                    flex-wrap
+                    gap-2
+                  "
                 >
-                  {selectedItinerary.title}
-                </h2>
 
-                <p className="mt-3 text-sm text-[#6d6b64]">
-                  {selectedItinerary.location}
-                </p>
+                  {
+                    selectedItinerary
+                      .durationDays !=
+                    null && (
 
-                {/* TAGS */}
+                      <span
+                        className="
+                          inline-flex
+                          items-center
+                          gap-1.5
+                          rounded-full
+                          bg-[#e7eadf]
+                          px-3
+                          py-1.5
+                          text-xs
+                          text-[#566047]
+                        "
+                      >
 
-                <div className="mt-3 flex flex-wrap gap-2">
+                        <CalendarDays
+                          size={13}
+                        />
 
-                  <span className="rounded-full bg-[#ebe7df] px-3 py-1 text-[0.65rem] text-[#55554d]">
-                    {selectedItinerary.category}
-                  </span>
+                        {
+                          durationText(
+                            selectedItinerary
+                              .durationDays,
+                            t
+                          )
+                        }
 
-                  <span className="rounded-full bg-[#ebe7df] px-3 py-1 text-[0.65rem] text-[#55554d]">
-                    {selectedItinerary.label}
-                  </span>
+                      </span>
 
-                  <span className="rounded-full bg-[#ebe7df] px-3 py-1 text-[0.65rem] text-[#55554d]">
-                    {selectedItinerary.difficulty}
-                  </span>
+                    )
+                  }
+
+
+                  {
+                    selectedItinerary
+                      .difficulty && (
+
+                      <span
+                        className="
+                          inline-flex
+                          items-center
+                          gap-1.5
+                          rounded-full
+                          bg-[#eee9df]
+                          px-3
+                          py-1.5
+                          text-xs
+                          text-[#60594e]
+                        "
+                      >
+
+                        <Gauge
+                          size={13}
+                        />
+
+                        {
+                          translatedDifficulty(
+                            selectedItinerary
+                              .difficulty,
+                            t
+                          )
+                        }
+
+                      </span>
+
+                    )
+                  }
 
                 </div>
 
-                <p className="mt-5 text-sm leading-6 text-[#45443f]">
-                  {selectedItinerary.description}
-                </p>
+
+                {/* DESCRIPTION */}
+
+                {
+                  selectedItinerary
+                    .description && (
+
+                    <p
+                      className="
+                        mt-5
+                        text-sm
+                        leading-6
+                        text-[#55544e]
+                      "
+                    >
+                      {
+                        selectedItinerary
+                          .description
+                      }
+                    </p>
+
+                  )
+                }
+
+
+                {/* ROUTE */}
+
+                <div
+                  className="
+                    mt-6
+                    border-t
+                    border-[#e4dfd6]
+                    pt-5
+                  "
+                >
+
+                  <h3
+                    className="
+                      font-serif
+                      text-xl
+                      font-semibold
+                      text-[#34342f]
+                    "
+                  >
+                    {
+                      t.route
+                    }
+                  </h3>
+
+
+                  {
+                    selectedItinerary
+                      .stops.length >
+                    0 ? (
+
+                    <div
+                      className="
+                        mt-4
+                        space-y-3
+                      "
+                    >
+
+                      {
+                        selectedItinerary
+                          .stops
+                          .map(
+                            (
+                              stop,
+                              index
+                            ) => (
+
+                              <article
+                                key={
+                                  stop.id
+                                }
+
+                                className="
+                                  flex
+                                  gap-3
+                                  rounded-xl
+                                  border
+                                  border-[#e2ddd4]
+                                  bg-white
+                                  p-4
+                                  shadow-sm
+                                "
+                              >
+
+                                {/* NUMBER */}
+
+                                <div
+                                  className="
+                                    flex
+                                    h-8
+                                    w-8
+                                    shrink-0
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    bg-[#626955]
+                                    text-xs
+                                    font-semibold
+                                    text-white
+                                  "
+                                >
+                                  {
+                                    index +
+                                    1
+                                  }
+                                </div>
+
+
+                                <div
+                                  className="
+                                    min-w-0
+                                    flex-1
+                                  "
+                                >
+
+                                  <div
+                                    className="
+                                      flex
+                                      flex-wrap
+                                      items-start
+                                      justify-between
+                                      gap-2
+                                    "
+                                  >
+
+                                    <h4
+                                      className="
+                                        font-medium
+                                        leading-5
+                                        text-[#34342f]
+                                      "
+                                    >
+                                      {
+                                        stop.name
+                                      }
+                                    </h4>
+
+
+                                    {
+                                      stop.dayNumber !=
+                                      null && (
+
+                                        <span
+                                          className="
+                                            shrink-0
+                                            rounded-full
+                                            bg-[#f1eee8]
+                                            px-2
+                                            py-1
+                                            text-[10px]
+                                            text-[#68665f]
+                                          "
+                                        >
+                                          {
+                                            t.dayLabel
+                                          }
+
+                                          {" "}
+
+                                          {
+                                            stop.dayNumber
+                                          }
+                                        </span>
+
+                                      )
+                                    }
+
+                                  </div>
+
+
+                                  {
+                                    (
+                                      stop.city ||
+                                      stop.region
+                                    ) && (
+
+                                    <p
+                                      className="
+                                        mt-1
+                                        text-xs
+                                        text-[#77736b]
+                                      "
+                                    >
+                                      {
+                                        [
+                                          stop.city,
+                                          stop.region,
+                                        ]
+
+                                          .filter(
+                                            Boolean
+                                          )
+
+                                          .join(
+                                            ", "
+                                          )
+                                      }
+                                    </p>
+
+                                  )
+                                  }
+
+
+                                  {
+                                    stop.notes && (
+
+                                      <p
+                                        className="
+                                          mt-2
+                                          text-xs
+                                          leading-5
+                                          text-[#66645d]
+                                        "
+                                      >
+                                        {
+                                          stop.notes
+                                        }
+                                      </p>
+
+                                    )
+                                  }
+
+                                </div>
+
+                              </article>
+
+                            )
+                          )
+                      }
+
+                    </div>
+
+                  ) : (
+
+                    <p
+                      className="
+                        mt-3
+                        text-sm
+                        text-[#77736b]
+                      "
+                    >
+                      {
+                        t.noStops
+                      }
+                    </p>
+
+                  )
+                  }
+
+                </div>
+
+
+                {/* BACK */}
 
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedItinerary(null);
-                    scrollTo("itinerary-grid");
-                  }}
+
+                  onClick={() =>
+                    setSelectedItinerary(
+                      null
+                    )
+                  }
+
                   className="
                     mt-6
                     rounded-full
                     bg-[#606653]
-                    px-4
-                    py-2
+                    px-5
+                    py-2.5
                     text-xs
-                    uppercase
-                    tracking-[0.12em]
+                    font-medium
                     text-white
                     transition
-                    hover:bg-[#4f5645]
+
+                    hover:bg-[#505644]
                   "
                 >
-                  Back to itineraries
+                  {
+                    t.back
+                  }
                 </button>
 
               </div>
@@ -756,9 +3131,23 @@ export default function ItinerariesPage() {
             </div>
 
           </div>
-        )}
 
-      </main>
+        )
+      }
+
+    </main>
+  );
+}
+
+
+/* =====================================================
+   EXPORT PAGE
+===================================================== */
+
+export default function ItinerariesPage() {
+  return (
+    <AppShell>
+      <ItinerariesContent />
     </AppShell>
   );
 }

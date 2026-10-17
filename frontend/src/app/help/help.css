@@ -2,6 +2,19 @@
    HELP PAGE
 ========================================================= */
 
+* {
+  box-sizing: border-box;
+}
+
+body:has(.help-page) > .navbar {
+  display: none !important;
+}
+
+body:has(.help-page) {
+  margin: 0;
+  background: #f7f5f0;
+}
+
 .help-page {
   --cream: #f7f5f0;
   --paper: #fbfaf7;
@@ -14,12 +27,248 @@
   width: 100%;
   min-height: 100vh;
 
+  display: block;
+
   background: var(--cream);
   color: var(--text);
 
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+/* =========================================================
+   LEFT SIDEBAR
+========================================================= */
+
+.help-sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+
+  position: sticky;
+  top: 0;
+  align-self: start;
+
+  background: #fbfaf7;
+  border-right: 1px solid #e6e2d9;
+
+  padding: 34px 28px 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  z-index: 100;
 }
 
+.help-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.help-sidebar {
+  scrollbar-width: none;
+}
+
+.help-brand {
+  margin-bottom: 39px;
+}
+
+.brand-arabic {
+  color: var(--gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.brand-name {
+  max-width: 245px;
+  color: #101010;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 23px;
+  line-height: 1.03;
+  margin-bottom: 5px;
+}
+
+.help-brand p {
+  margin: 0;
+  color: #363636;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.sidebar-main-nav,
+.sidebar-secondary-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-main-nav a,
+.sidebar-secondary-nav a {
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: #171717;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 400;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-main-nav a:hover,
+.sidebar-secondary-nav a:hover {
+  background: #f1eee8;
+}
+
+.sidebar-main-nav svg,
+.sidebar-secondary-nav svg {
+  flex-shrink: 0;
+}
+
+.sidebar-divider {
+  height: 1px;
+  margin: 17px 0;
+  background: #dedad1;
+}
+
+.sidebar-secondary-nav .sidebar-selected {
+  position: relative;
+  background: #eeece6;
+}
+
+.selected-gold-line {
+  width: 28px;
+  height: 2px;
+  position: absolute;
+  right: 18px;
+  background: var(--gold);
+}
+
+.sidebar-decorative {
+  height: 350px;
+  position: relative;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.sidebar-handwriting {
+  position: absolute;
+  left: 22px;
+  top: 15px;
+  color: #302d27;
+  font-family: "Snell Roundhand", "Brush Script MT", cursive;
+  font-size: 28px;
+  line-height: 1.05;
+  font-style: italic;
+  transform: rotate(-8deg);
+  z-index: 3;
+}
+
+.sidebar-art {
+  position: absolute;
+  width: 360px;
+  height: 285px;
+  left: 50%;
+  top: 75px;
+  transform: translateX(-50%);
+  background-image: url("/images/help-sidebar-art.png");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: contain;
+  z-index: 1;
+}
+
+.sidebar-words {
+  position: absolute;
+  right: 10px;
+  bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #36342f;
+}
+
+.sidebar-words i {
+  width: 22px;
+  height: 2px;
+  margin-top: 6px;
+  background: var(--gold);
+}
+
+/* =========================================================
+   MAIN RIGHT AREA
+========================================================= */
+
+.help-main {
+  min-width: 0;
+  background: var(--cream);
+}
+
+/* =========================================================
+   TOP NAVBAR
+========================================================= */
+
+.help-topbar {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background: #fbfaf7;
+  border-bottom: 1px solid #eeeae2;
+  padding: 0 48px;
+}
+
+.help-topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+.help-topbar-links a {
+  color: #111;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.help-topbar-links a:hover {
+  color: #8d7040;
+}
+
+.top-search-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.top-divider {
+  width: 1px;
+  height: 24px;
+  margin-left: 2px;
+  background: #ae8b50;
+}
+
+.top-language {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  color: #111;
+  background: transparent;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
 
 /* =========================================================
    HERO
@@ -792,5 +1041,73 @@
 
   .faq-heading {
     align-items: flex-start;
+  }
+}
+
+/* =========================================================
+   HELP LAYOUT RESPONSIVE RESTORE
+========================================================= */
+
+@media (min-width: 1500px) {
+  .help-page {
+    --sidebar-width: 330px;
+  }
+
+  .help-sidebar {
+    width: 330px;
+  }
+
+  .help-topbar {
+    padding-right: 58px;
+  }
+}
+
+@media (max-width: 1120px) {
+  .help-page {
+    --sidebar-width: 250px;
+  }
+
+  .help-sidebar {
+    width: 250px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .brand-arabic {
+    font-size: 29px;
+  }
+
+  .brand-name {
+    font-size: 20px;
+  }
+
+  .help-topbar-links {
+    gap: 18px;
+  }
+
+  .help-topbar-links a {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 800px) {
+  .help-page {
+    display: block;
+  }
+
+  .help-sidebar {
+    display: none;
+  }
+
+  .help-topbar {
+    height: auto;
+    padding: 16px 20px;
+  }
+
+  .help-topbar-links {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px 20px;
   }
 }

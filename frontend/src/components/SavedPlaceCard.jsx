@@ -1,107 +1,600 @@
 "use client";
 
-import Image from "next/image";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Bookmark, Ellipsis, MapPin } from "lucide-react";
 
-export default function SavedPlaceCard({ place, onRemove }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+import {
+  ArrowRight,
+  Bookmark,
+  Ellipsis,
+  LoaderCircle,
+  MapPin,
+  Trash2,
+} from "lucide-react";
 
-  // Close the "..." menu when clicking anywhere else.
+
+export default function SavedPlaceCard({
+  place,
+  onRemove,
+  busy = false,
+  labels = {},
+}) {
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] =
+    useState(false);
+
+
+  const [
+    imageError,
+    setImageError,
+  ] =
+    useState(false);
+
+
+  const menuRef =
+    useRef(null);
+
+
+  const viewDetails =
+    labels.viewDetails ||
+    "View Details";
+
+
+  const removeLabel =
+    labels.remove ||
+    "Remove from saved";
+
+
+  const moreLabel =
+    labels.more ||
+    "More options";
+
+
+  /* =====================================================
+     CLOSE MENU
+  ===================================================== */
+
   useEffect(() => {
-    if (!menuOpen) return;
-    const close = (e) => {
-      if (!menuRef.current?.contains(e.target)) setMenuOpen(false);
+
+    if (!menuOpen) {
+      return;
+    }
+
+
+    function handleOutside(
+      event
+    ) {
+
+      if (
+        !menuRef
+          .current
+          ?.contains(
+            event.target
+          )
+      ) {
+        setMenuOpen(
+          false
+        );
+      }
+
+    }
+
+
+    function handleEscape(
+      event
+    ) {
+
+      if (
+        event.key ===
+        "Escape"
+      ) {
+        setMenuOpen(
+          false
+        );
+      }
+
+    }
+
+
+    document.addEventListener(
+      "mousedown",
+      handleOutside
+    );
+
+
+    document.addEventListener(
+      "keydown",
+      handleEscape
+    );
+
+
+    return () => {
+
+      document.removeEventListener(
+        "mousedown",
+        handleOutside
+      );
+
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
+
     };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, [menuOpen]);
+
+  }, [
+    menuOpen,
+  ]);
+
+
+  const image =
+    imageError
+      ? "/images/heritage-hero.jpg"
+      : place.image;
+
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md">
-      <div className="relative aspect-[16/10]">
-        <Image
-          src={place.image}
-          alt={place.title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-          className="object-cover"
+
+    <article
+      className="
+        flex
+        min-w-0
+        flex-col
+        overflow-hidden
+        rounded-xl
+        border
+        border-border
+        bg-white
+        shadow-sm
+        transition
+
+        hover:-translate-y-0.5
+        hover:shadow-md
+      "
+    >
+
+      {/* =================================================
+          IMAGE
+      ================================================= */}
+
+      <div
+        className="
+          relative
+          aspect-[16/10]
+          overflow-hidden
+          bg-[#dde1d6]
+        "
+      >
+
+        <img
+          src={
+            image
+          }
+
+          alt={
+            place.title
+          }
+
+          onError={() =>
+            setImageError(
+              true
+            )
+          }
+
+          className="
+            h-full
+            w-full
+            object-cover
+          "
         />
-        <span className="absolute left-3 top-3 rounded-full bg-ink/60 px-3 py-1 text-[11.5px] font-medium text-white backdrop-blur-sm">
-          {place.badge}
+
+
+        <div
+          className="
+            absolute
+            inset-0
+            bg-gradient-to-t
+            from-black/15
+            to-transparent
+          "
+        />
+
+
+        <span
+          className="
+            absolute
+            left-3
+            top-3
+            max-w-[70%]
+            truncate
+            rounded-full
+            bg-ink/65
+            px-3
+            py-1
+            text-[10px]
+            font-medium
+            text-white
+            backdrop-blur-sm
+          "
+        >
+          {
+            place.badge
+          }
         </span>
 
-        <div ref={menuRef} className="absolute right-3 top-3">
+
+        {/* =================================================
+            ... MENU
+        ================================================= */}
+
+        <div
+          ref={
+            menuRef
+          }
+
+          className="
+            absolute
+            right-3
+            top-3
+          "
+        >
+
           <button
             type="button"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={`More options for ${place.title}`}
-            aria-expanded={menuOpen}
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm hover:bg-white"
+
+            disabled={
+              busy
+            }
+
+            onClick={() =>
+              setMenuOpen(
+                (
+                  previous
+                ) =>
+                  !previous
+              )
+            }
+
+            aria-label={
+              `${moreLabel}: ${place.title}`
+            }
+
+            aria-expanded={
+              menuOpen
+            }
+
+            className="
+              flex
+              h-8
+              w-8
+              items-center
+              justify-center
+              rounded-full
+              bg-white/95
+              text-ink
+              shadow-sm
+
+              hover:bg-white
+
+              disabled:opacity-50
+            "
           >
-            <Ellipsis size={16} strokeWidth={2} />
+            {
+              busy ? (
+
+                <LoaderCircle
+                  size={15}
+
+                  className="
+                    animate-spin
+                  "
+                />
+
+              ) : (
+
+                <Ellipsis
+                  size={17}
+                />
+
+              )
+            }
           </button>
-          {menuOpen && (
-            <ul className="absolute right-0 top-9 z-10 w-40 overflow-hidden rounded-lg border border-border bg-white py-1 shadow-md">
-              <li>
+
+
+          {
+            menuOpen && (
+
+              <div
+                className="
+                  absolute
+                  right-0
+                  top-10
+                  z-20
+                  w-44
+                  overflow-hidden
+                  rounded-lg
+                  border
+                  border-border
+                  bg-white
+                  py-1
+                  shadow-xl
+                "
+              >
+
                 <Link
-                  href={`/places/${place.id}`}
-                  className="block px-3 py-2 text-[13px] text-ink-soft hover:bg-cream-soft hover:text-ink"
+                  href={
+                    `/saved/${place.id}`
+                  }
+
+                  onClick={() =>
+                    setMenuOpen(
+                      false
+                    )
+                  }
+
+                  className="
+                    block
+                    px-4
+                    py-2.5
+                    text-[12px]
+                    text-ink-soft
+
+                    hover:bg-cream-soft
+                    hover:text-ink
+                  "
                 >
-                  View details
+                  {
+                    viewDetails
+                  }
                 </Link>
-              </li>
-              <li>
+
+
                 <button
                   type="button"
+
+                  disabled={
+                    busy
+                  }
+
                   onClick={() => {
-                    setMenuOpen(false);
-                    onRemove(place.id);
+
+                    setMenuOpen(
+                      false
+                    );
+
+                    onRemove(
+                      place.id
+                    );
+
                   }}
-                  className="block w-full px-3 py-2 text-left text-[13px] text-ink-soft hover:bg-cream-soft hover:text-ink"
+
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-2
+                    px-4
+                    py-2.5
+                    text-left
+                    text-[12px]
+                    text-red-700
+
+                    hover:bg-red-50
+
+                    disabled:opacity-50
+                  "
                 >
-                  Remove from saved
+                  <Trash2
+                    size={13}
+                  />
+
+                  {
+                    removeLabel
+                  }
                 </button>
-              </li>
-            </ul>
-          )}
+
+              </div>
+
+            )
+          }
+
         </div>
+
       </div>
 
-      <div className="flex flex-1 flex-col px-4 pb-4 pt-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="font-serif text-[17px] font-semibold leading-tight text-ink">
-              {place.title}
+
+      {/* =================================================
+          BODY
+      ================================================= */}
+
+      <div
+        className="
+          flex
+          flex-1
+          flex-col
+          px-4
+          pb-4
+          pt-3
+        "
+      >
+
+        <div
+          className="
+            flex
+            items-start
+            justify-between
+            gap-3
+          "
+        >
+
+          <div
+            className="
+              min-w-0
+            "
+          >
+
+            <h3
+              className="
+                line-clamp-2
+                font-serif
+                text-[18px]
+                font-semibold
+                leading-tight
+                text-ink
+              "
+            >
+              {
+                place.title
+              }
             </h3>
-            <p className="mt-1 flex items-center gap-1 text-[13px] text-ink-soft">
-              <MapPin size={13} strokeWidth={1.75} />
-              {place.location}
+
+
+            <p
+              className="
+                mt-1
+                flex
+                items-center
+                gap-1
+                text-[12px]
+                text-ink-soft
+              "
+            >
+              <MapPin
+                size={13}
+              />
+
+              <span
+                className="
+                  truncate
+                "
+              >
+                {
+                  place.location
+                }
+              </span>
+
             </p>
+
           </div>
+
+
           <button
             type="button"
-            onClick={() => onRemove(place.id)}
-            aria-label={`Remove ${place.title} from saved places`}
-            title="Remove from saved"
-            className="mt-0.5 shrink-0 text-olive transition-colors hover:text-ink"
+
+            disabled={
+              busy
+            }
+
+            onClick={() =>
+              onRemove(
+                place.id
+              )
+            }
+
+            aria-label={
+              `${removeLabel}: ${place.title}`
+            }
+
+            title={
+              removeLabel
+            }
+
+            className="
+              mt-0.5
+              shrink-0
+              text-olive
+              transition
+
+              hover:text-ink
+
+              disabled:opacity-50
+            "
           >
-            <Bookmark size={18} strokeWidth={1.75} fill="currentColor" />
+            {
+              busy ? (
+
+                <LoaderCircle
+                  size={18}
+
+                  className="
+                    animate-spin
+                  "
+                />
+
+              ) : (
+
+                <Bookmark
+                  size={18}
+                  strokeWidth={
+                    1.75
+                  }
+                  fill="currentColor"
+                />
+
+              )
+            }
           </button>
+
         </div>
 
-        <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">{place.note}</p>
+
+        <p
+          className="
+            mt-3
+            line-clamp-3
+            text-[13px]
+            leading-relaxed
+            text-ink-soft
+          "
+        >
+          {
+            place.note
+          }
+        </p>
+
 
         <Link
-          href={`/places/${place.id}`}
-          className="mt-auto inline-flex items-center gap-1.5 pt-3 text-[13px] text-ink hover:text-olive"
+          href={
+            `/saved/${place.id}`
+          }
+
+          className="
+            mt-auto
+            inline-flex
+            items-center
+            gap-1.5
+            pt-4
+            text-[13px]
+            text-ink
+
+            hover:text-olive
+          "
         >
-          View <span className="underline underline-offset-4">Details</span>
-          <ArrowRight size={14} strokeWidth={1.75} />
+          <span
+            className="
+              underline
+              underline-offset-4
+            "
+          >
+            {
+              viewDetails
+            }
+          </span>
+
+          <ArrowRight
+            size={14}
+          />
         </Link>
+
       </div>
+
     </article>
   );
 }
